@@ -31,9 +31,9 @@ export default function LoginForm() {
   });
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
-    remember: true,
+    email: '',
+    password: '',
+    remember: false,
   };
 
   const methods = useForm({

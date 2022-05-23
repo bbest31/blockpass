@@ -56,7 +56,7 @@ function AuthProvider({ children }) {
         auth0Client = new Auth0Client({
           client_id: AUTH0_API.clientId,
           domain: AUTH0_API.domain,
-          redirect_uri: window.location.origin,
+          redirect_uri: 'http://localhost:3030/dashboard/analytics',
         });
 
         await auth0Client.checkSession();

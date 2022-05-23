@@ -3,6 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Card, Stack, Link, Alert, Tooltip, Container, Typography } from '@mui/material';
+import AuthSocial from '../../sections/auth/AuthSocial';
 // routes
 import { PATH_AUTH } from '../../routes/paths';
 // hooks
@@ -15,8 +16,8 @@ import Image from '../../components/Image';
 // sections
 import { LoginForm } from '../../sections/auth/login';
 // assets
-import logo128 from "../../assets/icons/logo128.svg";
-import logo512 from "../../assets/icons/logo512.svg"
+import logo128 from '../../assets/icons/logo128.svg';
+
 
 // ----------------------------------------------------------------------
 
@@ -107,15 +108,12 @@ export default function Login() {
 
               <Tooltip title={capitalCase(method)} placement="right">
                 <>
-                  <Image
-                    disabledEffect
-                    src={logo128}
-                    sx={{ width: 32, height: 32 }}
-                  />
+                  <Image disabledEffect src={logo128} sx={{ width: 32, height: 32 }} />
                 </>
               </Tooltip>
             </Stack>
 
+            <AuthSocial />
             <LoginForm />
 
             {/* Uncomment below code when we add self-registration */}

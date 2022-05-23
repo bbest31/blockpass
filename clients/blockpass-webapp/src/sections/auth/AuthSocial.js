@@ -5,7 +5,7 @@ import Iconify from '../../components/Iconify';
 
 // ----------------------------------------------------------------------
 
-export default function AuthFirebaseSocial() {
+export default function AuthSocial() {
   return (
     <>
       <Stack direction="row" spacing={2}>

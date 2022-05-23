@@ -26,6 +26,21 @@ yarn start
 
 ## 3.Build
 
+### .env file
+
+```
+GENERATE_SOURCEMAP=false
+
+PORT=3030
+
+# HOST
+REACT_APP_HOST_API_KEY=https://minimal-assets-api-dev.vercel.app
+
+# AUTH0
+REACT_APP_AUTH0_DOMAIN=
+REACT_APP_AUTH0_CLIENT_ID=
+```
+
 ```sh
 npm run build or yarn build
 ```
