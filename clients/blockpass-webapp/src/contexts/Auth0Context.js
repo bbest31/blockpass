@@ -4,7 +4,7 @@ import { Auth0Client } from '@auth0/auth0-spa-js';
 // routes
 import { PATH_AUTH } from '../routes/paths';
 //
-import { AUTH0_API } from '../config';
+import { AUTH0_API, PATH_AFTER_LOGIN } from '../config';
 
 // ----------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ function AuthProvider({ children }) {
         auth0Client = new Auth0Client({
           client_id: AUTH0_API.clientId,
           domain: AUTH0_API.domain,
-          redirect_uri: 'http://localhost:3030/dashboard/analytics',
+          redirect_uri: `${window.location.origin}${PATH_AFTER_LOGIN}`,
         });
 
         await auth0Client.checkSession();
