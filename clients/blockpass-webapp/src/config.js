@@ -34,6 +34,10 @@ export const MAPBOX_API = process.env.REACT_APP_MAPBOX_API;
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = PATH_DASHBOARD.general.analytics; // as '/dashboard/analytics'
 
+export const MIXPANEL_API = {
+  debug : process.env.NODE_ENV !== "production"
+}
+
 // LAYOUT
 // ----------------------------------------------------------------------
 

@@ -39,6 +39,9 @@ REACT_APP_HOST_API_KEY=https://minimal-assets-api-dev.vercel.app
 # AUTH0
 REACT_APP_AUTH0_DOMAIN=
 REACT_APP_AUTH0_CLIENT_ID=
+
+# MIXPANEL
+REACT_APP_MIXPANEL_TOKEN=
 ```
 
 ```sh

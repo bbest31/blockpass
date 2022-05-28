@@ -1,6 +1,7 @@
 import { createContext, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Auth0Client } from '@auth0/auth0-spa-js';
+import { useMixpanel } from 'react-mixpanel-browser';
 // routes
 import { PATH_AUTH } from '../routes/paths';
 //
@@ -49,6 +50,7 @@ AuthProvider.propTypes = {
 
 function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const mixpanel = useMixpanel();
 
   useEffect(() => {
     const initialize = async () => {
@@ -94,12 +96,19 @@ function AuthProvider({ children }) {
 
     if (isAuthenticated) {
       const user = await auth0Client.getUser();
+      if (mixpanel.config.token) {
+        mixpanel.identify(user.sub);
+        mixpanel.track('Login');
+      }
       dispatch({ type: 'LOGIN', payload: { user } });
     }
   };
 
   const logout = () => {
     auth0Client.logout();
+    if (mixpanel.config.token) {
+      mixpanel.track('Logout');
+    }
     window.location.href = PATH_AUTH.login;
     dispatch({ type: 'LOGOUT' });
   };
