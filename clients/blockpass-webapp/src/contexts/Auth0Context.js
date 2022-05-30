@@ -133,7 +133,7 @@ function AuthProvider({ children }) {
           photoURL: state?.user?.picture,
           email: state?.user?.email,
           displayName: state?.user?.email,
-          role: 'admin', // can pull this from user permission object from Auth0
+          role: 'Admin', // can pull this from user permission object from Auth0
         },
         login,
         logout,

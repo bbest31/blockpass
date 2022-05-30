@@ -34,6 +34,16 @@ export const PATH_PAGE = {
   components: '/components',
 };
 
+// Event Organizer App Routes
+export const PATH_APP = {
+  general: {
+    dashboard: '/dashboard',
+    events: '/events',
+    analytics: '/analytics',
+    account: '/account'
+  }
+}
+
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
   general: {
@@ -42,6 +52,7 @@ export const PATH_DASHBOARD = {
     analytics: path(ROOTS_DASHBOARD, '/analytics'),
     banking: path(ROOTS_DASHBOARD, '/banking'),
     booking: path(ROOTS_DASHBOARD, '/booking'),
+    account: path(ROOTS_DASHBOARD, '/account'),
   },
   mail: {
     root: path(ROOTS_DASHBOARD, '/mail'),
