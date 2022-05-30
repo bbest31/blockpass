@@ -1,5 +1,5 @@
 // routes
-import { PATH_DASHBOARD, PATH_PAGE } from '../../../routes/paths';
+import { PATH_APP, PATH_DASHBOARD, PATH_PAGE } from '../../../routes/paths';
 // components
 import Label from '../../../components/Label';
 import Iconify from '../../../components/Iconify';
@@ -32,10 +32,10 @@ const navConfig = [
   {
     subheader: 'general',
     items: [
-      { title: 'app', path: PATH_DASHBOARD.general.app, icon: ICONS.dashboard },
-      { title: 'events', path: PATH_DASHBOARD.calendar, icon: ICONS.calendar },
-      { title: 'analytics', path: PATH_DASHBOARD.general.analytics, icon: ICONS.analytics },
-      { title: 'account', path: PATH_DASHBOARD.general.account, icon: ICONS.user },
+      { title: 'dashboard', path: PATH_APP.general.dashboard, icon: ICONS.dashboard },
+      { title: 'events', path: PATH_APP.general.events, icon: ICONS.calendar },
+      { title: 'analytics', path: PATH_APP.general.analytics, icon: ICONS.analytics },
+      { title: 'account', path: PATH_APP.general.account, icon: ICONS.user },
     ],
   },
 
