@@ -96,9 +96,14 @@ function AuthProvider({ children }) {
 
     if (isAuthenticated) {
       const user = await auth0Client.getUser();
-      if (mixpanel.config.token) {
-        mixpanel.identify(user.sub);
-        mixpanel.track('Login');
+
+      try {
+        if (mixpanel.config.token) {
+          mixpanel.identify(user.sub);
+          mixpanel.track('Login');
+        }
+      } catch (err) {
+        console.warn('Mixpanel token not present: ', err);
       }
       dispatch({ type: 'LOGIN', payload: { user } });
     }
@@ -106,9 +111,14 @@ function AuthProvider({ children }) {
 
   const logout = () => {
     auth0Client.logout();
-    if (mixpanel.config.token) {
-      mixpanel.track('Logout');
+    try {
+      if (mixpanel.config.token) {
+        mixpanel.track('Logout');
+      }
+    } catch (err) {
+      console.warn('Mixpanel token not present: ', err);
     }
+
     window.location.href = PATH_AUTH.login;
     dispatch({ type: 'LOGOUT' });
   };
