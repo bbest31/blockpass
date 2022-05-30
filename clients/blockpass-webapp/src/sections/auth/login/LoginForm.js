@@ -23,17 +23,19 @@ export default function LoginForm() {
 
   const isMountedRef = useIsMountedRef();
 
-  const [showPassword, setShowPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
+    // email: Yup.string().email('Email must be a valid email address').required('Email is required'),
+    // password: Yup.string().required('Password is required'),
+    // organization: Yup.string().required('Organization is required'),
   });
 
   const defaultValues = {
-    email: '',
-    password: '',
-    remember: false,
+    // email: '',
+    // password: '',
+    // organization: '',
+    // remember: false,
   };
 
   const methods = useForm({
@@ -50,7 +52,7 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     try {
-      await login(data.email, data.password);
+      await login();
     } catch (error) {
       console.error(error);
 
@@ -64,12 +66,12 @@ export default function LoginForm() {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
+      <Stack spacing={3} sx={{ my: 2 }}>
         {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
-        <RHFTextField name="email" label="Email address" />
+        {/* <RHFTextField name="organization" label="Organization" /> */}
 
-        <RHFTextField
+        {/* <RHFTextField
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
@@ -82,15 +84,15 @@ export default function LoginForm() {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <RHFCheckbox name="remember" label="Remember me" />
+      {/* <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+        <RHFCheckbox name="remember" label="Remember me" /> 
         <Link component={RouterLink} variant="subtitle2" to={PATH_AUTH.resetPassword}>
           Forgot password?
         </Link>
-      </Stack>
+      </Stack> */}
 
       <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
         Login

@@ -31,9 +31,11 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/lib/integration/react';
+import { MixpanelProvider } from 'react-mixpanel-browser';
 // @mui
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { MIXPANEL_API } from './config';
 // redux
 import { store, persistor } from './redux/store';
 // contexts
@@ -53,23 +55,25 @@ import reportWebVitals from './reportWebVitals';
 // ----------------------------------------------------------------------
 
 ReactDOM.render(
-  <AuthProvider>
-    <HelmetProvider>
-      <ReduxProvider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <SettingsProvider>
-              <CollapseDrawerProvider>
-                <BrowserRouter>
-                  <App />
-                </BrowserRouter>
-              </CollapseDrawerProvider>
-            </SettingsProvider>
-          </LocalizationProvider>
-        </PersistGate>
-      </ReduxProvider>
-    </HelmetProvider>
-  </AuthProvider>,
+  <MixpanelProvider config={{ ...MIXPANEL_API }}>
+    <AuthProvider>
+      <HelmetProvider>
+        <ReduxProvider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <SettingsProvider>
+                <CollapseDrawerProvider>
+                  <BrowserRouter>
+                    <App />
+                  </BrowserRouter>
+                </CollapseDrawerProvider>
+              </SettingsProvider>
+            </LocalizationProvider>
+          </PersistGate>
+        </ReduxProvider>
+      </HelmetProvider>
+    </AuthProvider>
+  </MixpanelProvider>,
   document.getElementById('root')
 );
 

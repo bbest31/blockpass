@@ -1,10 +1,11 @@
 import { createContext, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Auth0Client } from '@auth0/auth0-spa-js';
+import { useMixpanel } from 'react-mixpanel-browser';
 // routes
 import { PATH_AUTH } from '../routes/paths';
 //
-import { AUTH0_API } from '../config';
+import { AUTH0_API, PATH_AFTER_LOGIN } from '../config';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +50,7 @@ AuthProvider.propTypes = {
 
 function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const mixpanel = useMixpanel();
 
   useEffect(() => {
     const initialize = async () => {
@@ -56,7 +58,7 @@ function AuthProvider({ children }) {
         auth0Client = new Auth0Client({
           client_id: AUTH0_API.clientId,
           domain: AUTH0_API.domain,
-          redirect_uri: 'http://localhost:3030/dashboard/analytics',
+          redirect_uri: `${window.location.origin}${PATH_AFTER_LOGIN}`,
         });
 
         await auth0Client.checkSession();
@@ -94,12 +96,29 @@ function AuthProvider({ children }) {
 
     if (isAuthenticated) {
       const user = await auth0Client.getUser();
+
+      try {
+        if (mixpanel.config.token) {
+          mixpanel.identify(user.sub);
+          mixpanel.track('Login');
+        }
+      } catch (err) {
+        console.warn('Mixpanel token not present: ', err);
+      }
       dispatch({ type: 'LOGIN', payload: { user } });
     }
   };
 
   const logout = () => {
     auth0Client.logout();
+    try {
+      if (mixpanel.config.token) {
+        mixpanel.track('Logout');
+      }
+    } catch (err) {
+      console.warn('Mixpanel token not present: ', err);
+    }
+
     window.location.href = PATH_AUTH.login;
     dispatch({ type: 'LOGOUT' });
   };
