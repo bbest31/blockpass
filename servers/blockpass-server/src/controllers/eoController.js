@@ -1,5 +1,6 @@
 'use strict';
 const { getEoEvents } = require('../services/eoServices.js');
+const { httpResponseMessage } = require('./responseMessages.js');
 
 async function getEvents(req, res) {
   const { orgId } = req.body;
@@ -9,7 +10,7 @@ async function getEvents(req, res) {
       res.status(200).send(event);
     })
     .catch((err) => {
-      res.status(500).send('Internal server error.');
+      res.status(500).send(httpResponseMessage[500]);
     });
 }
 
