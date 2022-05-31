@@ -9,7 +9,7 @@ async function getEvents(req, res) {
       res.status(200).send(event);
     })
     .catch((err) => {
-      res.status(500).send(err);
+      res.status(500).send('Internal server error.');
     });
 }
 
