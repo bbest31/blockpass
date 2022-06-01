@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const mongoose = require('mongoose');
-const eoRoutes = require('./src/routes/eoRoutes.js');
+const organizationRoutes = require('./src/routes/organizationRoutes.js');
 const app = express();
 const port = 3000;
 
@@ -17,7 +17,7 @@ app.get('/', async (req, res) => {
   res.send('Hello World!');
 });
 
-app.use('/eo', eoRoutes);
+app.use('/organization', organizationRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

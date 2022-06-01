@@ -1,13 +1,13 @@
 'use strict';
-const { getEoEvents } = require('../services/eoServices.js');
+const { getOrganizationEvents } = require('../services/organizationServices.js');
 const { httpResponseMessage } = require('./responseMessages.js');
 
 async function getEvents(req, res) {
   const { orgId } = req.body;
 
-  await getEoEvents(orgId)
-    .then((event) => {
-      res.status(200).send(event);
+  await getOrganizationEvents(orgId)
+    .then((events) => {
+      res.status(200).send(events);
     })
     .catch((err) => {
       res.status(500).send(httpResponseMessage[500]);
