@@ -3,9 +3,9 @@ const { getOrganizationEvents } = require('../services/organizationServices.js')
 const { httpResponseMessage } = require('./responseMessages.js');
 
 async function getEvents(req, res) {
-  const { orgId } = req.body;
+  const { id } = req.params;
 
-  await getOrganizationEvents(orgId)
+  await getOrganizationEvents(id)
     .then((events) => {
       res.status(200).send(events);
     })
