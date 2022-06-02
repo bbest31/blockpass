@@ -2,7 +2,7 @@ import { capitalCase } from 'change-case';
 // @mui
 import { Container, Tab, Box, Tabs } from '@mui/material';
 // routes
-import { PATH_APP, PATH_DASHBOARD } from '../../routes/paths';
+import { PATH_APP } from '../../routes/paths';
 // hooks
 import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
@@ -13,13 +13,8 @@ import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
-import {
-  AccountGeneral,
-  AccountBilling,
-  AccountSocialLinks,
-  AccountNotifications,
-  AccountChangePassword,
-} from '../../sections/@dashboard/user/account';
+import { AccountGeneral, AccountBilling, AccountChangePassword } from '../../sections/@dashboard/user/account';
+import AccountOrganization from '../../sections/@dashboard/user/account/AccountOrganization';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +42,7 @@ export default function UserAccount() {
     {
       value: 'organization',
       icon: <Iconify icon={'fa6-solid:user-group'} width={20} height={20} />,
-      component: <AccountNotifications />,
+      component: <AccountOrganization />,
     },
   ];
 
