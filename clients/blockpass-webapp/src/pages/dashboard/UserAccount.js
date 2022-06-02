@@ -2,7 +2,7 @@ import { capitalCase } from 'change-case';
 // @mui
 import { Container, Tab, Box, Tabs } from '@mui/material';
 // routes
-import { PATH_DASHBOARD } from '../../routes/paths';
+import { PATH_APP, PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
@@ -26,7 +26,7 @@ import {
 export default function UserAccount() {
   const { themeStretch } = useSettings();
 
-  const { currentTab, onChangeTab } = useTabs('general');
+  const { currentTab, onChangeTab } = useTabs('my_info');
 
   const ACCOUNT_TABS = [
     {
@@ -52,15 +52,11 @@ export default function UserAccount() {
   ];
 
   return (
-    <Page title="User: Account Settings">
+    <Page title="Account">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
           heading="Account"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'User', href: PATH_DASHBOARD.user.root },
-            { name: 'Account Settings' },
-          ]}
+          links={[{ name: 'Dashboard', href: PATH_APP.general.dashboard }, { name: 'Account' }]}
         />
 
         <Tabs
