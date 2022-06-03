@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { useCallback } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -11,7 +10,7 @@ import { LoadingButton } from '@mui/lab';
 import useAuth from '../../../../hooks/useAuth';
 // utils
 // components
-import { FormProvider, RHFSelect, RHFTextField } from '../../../../components/hook-form';
+import { FormProvider, RHFTextField } from '../../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -61,7 +60,7 @@ export default function AccountOrganization() {
                 display: 'grid',
                 rowGap: 3,
                 columnGap: 2,
-                gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
+                gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' },
               }}
             >
               <RHFTextField name="orgDisplayName" label="Organization Name" />

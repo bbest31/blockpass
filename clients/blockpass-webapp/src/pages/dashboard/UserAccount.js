@@ -7,7 +7,7 @@ import { PATH_APP } from '../../routes/paths';
 import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
 // _mock_
-import { _userPayment, _userAddressBook, _userInvoices, _userAbout } from '../../_mock';
+import { _userWallets } from '../../_mock';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
@@ -37,7 +37,7 @@ export default function UserAccount() {
     {
       value: 'wallet',
       icon: <Iconify icon={'ic:round-receipt'} width={20} height={20} />,
-      component: <AccountBilling cards={_userPayment} addressBook={_userAddressBook} invoices={_userInvoices} />,
+      component: <AccountBilling wallets={_userWallets} />,
     },
     {
       value: 'organization',
