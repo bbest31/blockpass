@@ -6,12 +6,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const organizationRoutes = require('./src/routes/organizationRoutes.js');
 const cors = require('cors');
+const helmet = require('helmet');
 const checkJwt = require('./src/middlewares/checkJwt.js');
 
 const app = express();
 const port = process.env.PORT;
 
 app.use(cors());
+app.use(helmet())
 app.use(checkJwt);
 
 async function main() {

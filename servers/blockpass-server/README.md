@@ -33,7 +33,7 @@ npm run dev
 - express-oauth2-jwt-bearer v1.1.0
 - dotenv v16.0.1
 - cors v2.8.5
-
+- helmet v5.1.0
 ---
 ## Acknowledgements
 - [express](https://mongoosejs.com/)
@@ -42,3 +42,4 @@ npm run dev
 - [logrocket folder structure](https://blog.logrocket.com/organizing-express-js-project-structure-better-productivity/)
 - [express-oauth2-jwt-bearer](https://auth0.github.io/node-oauth2-jwt-bearer/)
 - [cors](https://expressjs.com/en/resources/middleware/cors.html)
+- [helmet](https://www.npmjs.com/package/helmet)
