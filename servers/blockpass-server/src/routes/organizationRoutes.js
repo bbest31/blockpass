@@ -1,7 +1,10 @@
 'use strict';
 const router = require('express').Router();
 const { getEvents } = require('../controllers/organizationController.js');
-const { checkReadPermission, checkOrganizationId } = require('../middlewares/organizationMiddlewares.js');
+const { checkOrganizationId } = require('../middlewares/organizationMiddlewares.js');
+const checkPermission = require('../middlewares/permissionMiddleware.js');
+
+const checkReadPermission = checkPermission('read', 'events');
 
 router.get('/:id/events', checkOrganizationId, checkReadPermission, getEvents);
 

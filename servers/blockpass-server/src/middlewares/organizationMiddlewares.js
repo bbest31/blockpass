@@ -1,8 +1,5 @@
 'use strict';
 const { httpResponseMessage } = require('../utils/responseMessages');
-const { claimIncludes } = require('express-oauth2-jwt-bearer');
-
-const checkReadPermission = claimIncludes('permissions', 'read:events');
 
 const checkOrganizationId = (req, res, next) => {
   const orgIdClaim = req.auth.payload.org_id;
@@ -15,4 +12,4 @@ const checkOrganizationId = (req, res, next) => {
   }
 };
 
-module.exports = { checkReadPermission, checkOrganizationId };
+module.exports = { checkOrganizationId };
