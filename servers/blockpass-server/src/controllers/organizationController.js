@@ -1,6 +1,6 @@
 'use strict';
 const { getOrganizationEvents } = require('../services/organizationServices.js');
-const { httpResponseMessage } = require('./responseMessages.js');
+const { httpResponseMessage } = require('../utils/responseMessages.js');
 
 async function getEvents(req, res) {
   const { id } = req.params;
