@@ -37,6 +37,7 @@ npm run dev
 - dotenv v16.0.1
 - cors v2.8.5
 - helmet v5.1.0
+- auth0 v2.42.0
 
 ---
 ## Acknowledgements
@@ -47,3 +48,4 @@ npm run dev
 - [express-oauth2-jwt-bearer](https://auth0.github.io/node-oauth2-jwt-bearer/)
 - [cors](https://expressjs.com/en/resources/middleware/cors.html)
 - [helmet](https://www.npmjs.com/package/helmet)
+- [node-auth0](https://www.npmjs.com/package/auth0#user-content-management-api-client)
