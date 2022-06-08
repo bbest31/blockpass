@@ -15,21 +15,23 @@ const initialState = {
   isAuthenticated: false,
   isInitialized: false,
   user: null,
+  organization: null,
 };
 
 const handlers = {
   INITIALIZE: (state, action) => {
-    const { isAuthenticated, user } = action.payload;
-    return { ...state, isAuthenticated, isInitialized: true, user };
+    const { isAuthenticated, user, organization } = action.payload;
+    return { ...state, isAuthenticated, isInitialized: true, user, organization };
   },
   LOGIN: (state, action) => {
-    const { user } = action.payload;
-    return { ...state, isAuthenticated: true, user };
+    const { user, organization } = action.payload;
+    return { ...state, isAuthenticated: true, user, organization };
   },
   LOGOUT: (state) => ({
     ...state,
     isAuthenticated: false,
     user: null,
+    organization: null,
   }),
 };
 
@@ -67,22 +69,22 @@ function AuthProvider({ children }) {
 
         if (isAuthenticated) {
           const user = await auth0Client.getUser();
-
+          const org = null;
           dispatch({
             type: 'INITIALIZE',
-            payload: { isAuthenticated, user },
+            payload: { isAuthenticated, user, org },
           });
         } else {
           dispatch({
             type: 'INITIALIZE',
-            payload: { isAuthenticated, user: null },
+            payload: { isAuthenticated, user: null, organization: null },
           });
         }
       } catch (err) {
         console.error(err);
         dispatch({
           type: 'INITIALIZE',
-          payload: { isAuthenticated: false, user: null },
+          payload: { isAuthenticated: false, user: null, organization: null },
         });
       }
     };
@@ -96,7 +98,7 @@ function AuthProvider({ children }) {
 
     if (isAuthenticated) {
       const user = await auth0Client.getUser();
-
+      const organization = null;
       try {
         if (mixpanel.config.token) {
           mixpanel.identify(user.sub);
@@ -105,7 +107,11 @@ function AuthProvider({ children }) {
       } catch (err) {
         console.warn('Mixpanel token not present: ', err);
       }
-      dispatch({ type: 'LOGIN', payload: { user } });
+
+      /**
+       * TODO: Get Organization Info and add to auth context.
+       */
+      dispatch({ type: 'LOGIN', payload: { user, organization } });
     }
   };
 
@@ -134,6 +140,11 @@ function AuthProvider({ children }) {
           email: state?.user?.email,
           displayName: state?.user?.email,
           role: 'Admin', // can pull this from user permission object from Auth0
+        },
+        organization: {
+          id: state?.user?.org_id,
+          name: '',
+          wallet: '',
         },
         login,
         logout,

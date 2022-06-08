@@ -47,11 +47,11 @@ export default function Router() {
             </GuestGuard>
           ),
         },
-        { path: 'login-unprotected', element: <Login /> },
-        { path: 'register-unprotected', element: <Register /> },
-        { path: 'reset-password', element: <ResetPassword /> },
-        { path: 'new-password', element: <NewPassword /> },
-        { path: 'verify', element: <VerifyCode /> },
+        // { path: 'login-unprotected', element: <Login /> },
+        // { path: 'register-unprotected', element: <Register /> },
+        // { path: 'reset-password', element: <ResetPassword /> },
+        // { path: 'new-password', element: <NewPassword /> },
+        // { path: 'verify', element: <VerifyCode /> },
       ],
     },
 

@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-// import { useCallback } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,31 +9,27 @@ import { LoadingButton } from '@mui/lab';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
-// import { fData } from '../../../../utils/formatNumber';
-// _mock
-// import { countries } from '../../../../_mock';
 // components
 import { FormProvider, RHFTextField } from '../../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function AccountGeneral() {
+export default function AccountOrganization() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAuth();
+  const { organization } = useAuth();
 
-  const UpdateUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required'),
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
+  const UpdateOrganizationSchema = Yup.object().shape({
+    orgName: Yup.string().required('Organization Name is required'),
   });
 
+  /** TODO: grab org display name. */
   const defaultValues = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
+    orgDisplayName: organization?.displayName || '',
   };
 
   const methods = useForm({
-    resolver: yupResolver(UpdateUserSchema),
+    resolver: yupResolver(UpdateOrganizationSchema),
     defaultValues,
   });
 
@@ -65,11 +60,10 @@ export default function AccountGeneral() {
                 display: 'grid',
                 rowGap: 3,
                 columnGap: 2,
-                gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
+                gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' },
               }}
             >
-              <RHFTextField name="displayName" label="Name" />
-              <RHFTextField name="email" label="Email Address" />
+              <RHFTextField name="orgDisplayName" label="Organization Name" />
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
