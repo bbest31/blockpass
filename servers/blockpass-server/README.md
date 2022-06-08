@@ -17,7 +17,10 @@ PORT=8000
 
 #AUTH0
 AUTH0_ISSUER_BASE_URL=
+AUTH0_BASE_URL=
 AUTH0_AUDIENCE=
+AUTH0_CLIENT_ID=
+AUTH0_CLIENT_SECRET=
 ```
 
 ## 3.Start
@@ -34,6 +37,7 @@ npm run dev
 - dotenv v16.0.1
 - cors v2.8.5
 - helmet v5.1.0
+
 ---
 ## Acknowledgements
 - [express](https://mongoosejs.com/)
