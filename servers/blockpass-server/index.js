@@ -4,16 +4,21 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const express = require('express');
 const mongoose = require('mongoose');
-const organizationRoutes = require('./src/routes/organizationRoutes.js');
 const cors = require('cors');
 const helmet = require('helmet');
 const checkJwt = require('./src/middlewares/checkJwt.js');
 
+//  ROUTES 
+const organizationRoutes = require('./src/routes/organizationRoutes.js');
+const userRoutes = require('./src/routes/userRoutes');
+
+
+// APP SETUP
 const app = express();
 const port = process.env.PORT;
 
 app.use(cors());
-app.use(helmet())
+app.use(helmet());
 app.use(checkJwt);
 
 async function main() {
@@ -24,12 +29,9 @@ main().catch((err) => console.log(err));
 // Parse incoming payloads as json
 app.use(express.json());
 
-app.get('/', async (req, res) => {
-  res.send('Hello World!');
-});
-
 app.use('/organization', organizationRoutes);
+app.use('/users', userRoutes);
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`BlockPass server listening on port ${port}`);
 });
