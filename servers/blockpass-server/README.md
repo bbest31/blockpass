@@ -38,6 +38,7 @@ npm run dev
 - cors v2.8.5
 - helmet v5.1.0
 - auth0 v2.42.0
+- winston v3.7.2
 
 ---
 ## Acknowledgements
@@ -49,3 +50,4 @@ npm run dev
 - [cors](https://expressjs.com/en/resources/middleware/cors.html)
 - [helmet](https://www.npmjs.com/package/helmet)
 - [node-auth0](https://www.npmjs.com/package/auth0#user-content-management-api-client)
+- [winston](https://github.com/winstonjs/winston/tree/2.x)
