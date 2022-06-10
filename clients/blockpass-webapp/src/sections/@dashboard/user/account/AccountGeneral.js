@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 // import { useCallback } from 'react';
 // form
@@ -7,10 +8,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Box, Grid, Card, Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import HTTP from '../../../../utils/http';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
 // import { fData } from '../../../../utils/formatNumber';
+import axiosInstance from '../../../../utils/axios';
 // _mock
 // import { countries } from '../../../../_mock';
 // components
@@ -21,21 +24,22 @@ import { FormProvider, RHFTextField } from '../../../../components/hook-form';
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAuth();
+  const { user, getAccessToken, refreshUser } = useAuth();
 
   const UpdateUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required'),
+    name: Yup.string().required('Name is required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
   });
 
-  const defaultValues = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-  };
+  const [name, setName] = useState(user?.name ? user.name : '');
+  const [email, setEmail] = useState(user?.email ? user.email : '');
 
   const methods = useForm({
     resolver: yupResolver(UpdateUserSchema),
-    defaultValues,
+    defaultValues: {
+      name,
+      email,
+    },
   });
 
   const {
@@ -43,13 +47,46 @@ export default function AccountGeneral() {
     formState: { isSubmitting },
   } = methods;
 
-  /**
-   * TODO: save new changes
-   */
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar('Update success!');
+      let updateUser = false;
+      const newUserData = {};
+
+      if (email !== data.email) {
+        updateUser = true;
+        newUserData.email = data.email;
+      }
+
+      if (name !== data.name) {
+        updateUser = true;
+        newUserData.name = data.name;
+      }
+
+      let token;
+      try {
+        token = await getAccessToken();
+      } catch (err) {
+        console.error(err);
+      }
+
+      if (updateUser) {
+        axiosInstance
+          .patch(`/users/${user.id}`, newUserData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then(() => {
+            enqueueSnackbar('Update success!');
+            setEmail(data.email);
+            setName(data.name);
+            refreshUser();
+          })
+          .catch((err) => {
+            enqueueSnackbar('Something went wrong', { variant: 'error' });
+            throw err;
+          });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -68,7 +105,7 @@ export default function AccountGeneral() {
                 gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
               }}
             >
-              <RHFTextField name="displayName" label="Name" />
+              <RHFTextField name="name" label="Name" />
               <RHFTextField name="email" label="Email Address" />
             </Box>
 

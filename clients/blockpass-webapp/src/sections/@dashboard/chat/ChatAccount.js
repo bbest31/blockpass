@@ -54,7 +54,7 @@ export default function ChatAccount() {
         <Stack direction="row" alignItems="center" spacing={2} sx={{ py: 2, pr: 1, pl: 2.5 }}>
           <div>
             <Typography noWrap variant="subtitle1">
-              {user?.displayName}
+              {user?.name}
             </Typography>
             <Typography noWrap variant="body2" sx={{ color: 'text.secondary' }}>
               {user?.email}

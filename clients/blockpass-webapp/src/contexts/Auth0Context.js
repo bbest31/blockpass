@@ -33,6 +33,11 @@ const handlers = {
     user: null,
     organization: null,
   }),
+  REFRESH: (state, action) => {
+    const { user } = action.payload;
+    const { isAuthenticated, isInitialized, organization } = state;
+    return { isAuthenticated, isInitialized, user, organization };
+  },
 };
 
 const reducer = (state, action) => (handlers[action.type] ? handlers[action.type](state, action) : state);
@@ -42,6 +47,8 @@ const AuthContext = createContext({
   method: 'auth0',
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
+  getAccessToken: () => String,
+  refreshUser: () => Promise.resolve(),
 });
 
 // ----------------------------------------------------------------------
@@ -61,6 +68,7 @@ function AuthProvider({ children }) {
           client_id: AUTH0_API.clientId,
           domain: AUTH0_API.domain,
           redirect_uri: `${window.location.origin}${PATH_AFTER_LOGIN}`,
+          audience: AUTH0_API.audience,
         });
 
         await auth0Client.checkSession();
@@ -129,6 +137,21 @@ function AuthProvider({ children }) {
     dispatch({ type: 'LOGOUT' });
   };
 
+  const getAccessToken = async () => {
+    const isAuthenticated = await auth0Client.isAuthenticated();
+    let accessToken = '';
+    if (isAuthenticated) {
+      accessToken = await auth0Client.getTokenSilently({ ignoreCache: true });
+    }
+    return accessToken;
+  };
+
+  const refreshUser = async () => {
+    await auth0Client.getTokenSilently({ ignoreCache: true });
+    const user = await auth0Client.getUser();
+    dispatch({ type: 'REFRESH', payload: { user } });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -138,7 +161,7 @@ function AuthProvider({ children }) {
           id: state?.user?.sub,
           photoURL: state?.user?.picture,
           email: state?.user?.email,
-          displayName: state?.user?.email,
+          name: state?.user?.name,
           role: 'Admin', // can pull this from user permission object from Auth0
         },
         organization: {
@@ -148,6 +171,8 @@ function AuthProvider({ children }) {
         },
         login,
         logout,
+        getAccessToken,
+        refreshUser,
       }}
     >
       {children}
