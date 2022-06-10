@@ -6,7 +6,7 @@ const checkOrganizationId = (req, res, next) => {
   const orgIdUrlParam = req.params.id;
 
   if (orgIdClaim !== orgIdUrlParam) {
-    return res.status(401).send(httpResponseMessage[401]);
+    next({ status: 401, message: httpResponseMessage[401] });
   } else {
     next();
   }
