@@ -8,7 +8,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Box, Grid, Card, Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import HTTP from '../../../../utils/http';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
@@ -62,12 +61,7 @@ export default function AccountGeneral() {
         newUserData.name = data.name;
       }
 
-      let token;
-      try {
-        token = await getAccessToken();
-      } catch (err) {
-        console.error(err);
-      }
+      const token = await getAccessToken();
 
       if (updateUser) {
         axiosInstance
@@ -108,7 +102,6 @@ export default function AccountGeneral() {
               <RHFTextField name="name" label="Name" />
               <RHFTextField name="email" label="Email Address" />
             </Box>
-
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save Changes

@@ -147,7 +147,14 @@ function AuthProvider({ children }) {
   };
 
   const refreshUser = async () => {
-    await auth0Client.getTokenSilently({ ignoreCache: true });
+    try {
+      await auth0Client.getTokenSilently({ ignoreCache: true });
+    } catch (err) {
+      if (err.error !== 'login_required') {
+        throw err;
+      }
+      login();
+    }
     const user = await auth0Client.getUser();
     dispatch({ type: 'REFRESH', payload: { user } });
   };
