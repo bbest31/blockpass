@@ -39,6 +39,11 @@ const handlers = {
     const { isAuthenticated, isInitialized, organization } = state;
     return { isAuthenticated, isInitialized, user, organization };
   },
+  REFRESH_ORG: (state, action) => {
+    const { organization } = action.payload;
+    const { isAuthenticated, isInitialized, user } = state;
+    return { isAuthenticated, isInitialized, user, organization };
+  },
 };
 
 const reducer = (state, action) => (handlers[action.type] ? handlers[action.type](state, action) : state);
@@ -50,6 +55,7 @@ const AuthContext = createContext({
   logout: () => Promise.resolve(),
   getAccessToken: () => String,
   refreshUser: () => Promise.resolve(),
+  refreshOrg: () => Promise.resolve(),
 });
 
 // ----------------------------------------------------------------------
@@ -169,6 +175,21 @@ function AuthProvider({ children }) {
     dispatch({ type: 'REFRESH', payload: { user } });
   };
 
+  const refreshOrg = async () => {
+    const token = await auth0Client.getTokenSilently();
+    const user = await auth0Client.getUser();
+    const resp = await axiosInstance.get(`/organizations/${user.org_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (resp.status !== 200) {
+      throw Error(resp.data);
+    }
+    const organization = resp.data;
+    dispatch({ type: 'REFRESH_ORG', payload: { organization } });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -186,6 +207,7 @@ function AuthProvider({ children }) {
         logout,
         getAccessToken,
         refreshUser,
+        refreshOrg,
       }}
     >
       {children}

@@ -61,9 +61,8 @@ export default function AccountGeneral() {
         newUserData.name = data.name;
       }
 
-      const token = await getAccessToken();
-
       if (updateUser) {
+        const token = await getAccessToken();
         axiosInstance
           .patch(`/users/${user.id}`, newUserData, {
             headers: {
