@@ -9,6 +9,13 @@ async function getOrganizationEvents(orgId) {
   return events;
 }
 
+async function getOrganization(orgId) {
+  const org = await managementAPI.organizations.getByID({ id: orgId }).catch((err) => {
+    throw err;
+  });
+  return org;
+}
+
 async function patchOrganization(orgId, payload) {
   // search for disallowed payload attributes
   Object.keys(payload).forEach((key) => {
@@ -30,6 +37,7 @@ async function patchOrganization(orgId, payload) {
 }
 
 module.exports = {
+  getOrganization,
   patchOrganization,
   getOrganizationEvents,
 };

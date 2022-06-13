@@ -1,8 +1,21 @@
 'use strict';
-const { getOrganizationEvents, patchOrganization } = require('../services/organizationServices.js');
+const { getOrganizationEvents, getOrganization, patchOrganization } = require('../services/organizationServices.js');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 
 // Organizations
+
+async function readOrganization(req, res) {
+  const { id } = req.params;
+
+  await getOrganization(id)
+    .then((org) => {
+      res.status(200).send(org);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send(httpResponseMessage[500]);
+    });
+}
 
 async function updateOrganization(req, res) {
   const { id } = req.params;
@@ -20,7 +33,7 @@ async function updateOrganization(req, res) {
 
 // Events
 
-async function getEvents(req, res) {
+async function readEvents(req, res) {
   const { id } = req.params;
 
   await getOrganizationEvents(id)
@@ -32,4 +45,4 @@ async function getEvents(req, res) {
     });
 }
 
-module.exports = { getEvents, updateOrganization };
+module.exports = { readEvents, updateOrganization, readOrganization };
