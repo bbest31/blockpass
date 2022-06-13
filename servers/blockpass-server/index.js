@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const checkJwt = require('./src/middlewares/checkJwt.js');
+const sendErrorResponse = require('./src/middlewares/errorResponseMiddleware.js');
 
 //  ROUTES 
 const organizationRoutes = require('./src/routes/organizationRoutes.js');
@@ -31,6 +32,8 @@ app.use(express.json());
 
 app.use('/organization', organizationRoutes);
 app.use('/users', userRoutes);
+
+app.use(sendErrorResponse);
 
 app.listen(port, () => {
   console.log(`BlockPass server listening on port ${port}`);
