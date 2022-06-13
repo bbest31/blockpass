@@ -2,6 +2,7 @@ import { createContext, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Auth0Client } from '@auth0/auth0-spa-js';
 import { useMixpanel } from 'react-mixpanel-browser';
+import axiosInstance from '../utils/axios';
 // routes
 import { PATH_AUTH } from '../routes/paths';
 //
@@ -77,10 +78,16 @@ function AuthProvider({ children }) {
 
         if (isAuthenticated) {
           const user = await auth0Client.getUser();
-          const org = null;
+          const token = await auth0Client.getTokenSilently();
+          const resp = await axiosInstance.get(`/organizations/${user.org_id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const org = resp.data;
           dispatch({
             type: 'INITIALIZE',
-            payload: { isAuthenticated, user, org },
+            payload: { isAuthenticated, user, organization: org },
           });
         } else {
           dispatch({
@@ -106,7 +113,13 @@ function AuthProvider({ children }) {
 
     if (isAuthenticated) {
       const user = await auth0Client.getUser();
-      const organization = null;
+      const token = await auth0Client.getTokenSilently();
+      const resp = await axiosInstance.get(`/organizations/${user.org_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const org = resp.data;
       try {
         if (mixpanel.config.token) {
           mixpanel.identify(user.sub);
@@ -116,10 +129,7 @@ function AuthProvider({ children }) {
         console.warn('Mixpanel token not present: ', err);
       }
 
-      /**
-       * TODO: Get Organization Info and add to auth context.
-       */
-      dispatch({ type: 'LOGIN', payload: { user, organization } });
+      dispatch({ type: 'LOGIN', payload: { user, organization: org } });
     }
   };
 
@@ -171,11 +181,7 @@ function AuthProvider({ children }) {
           name: state?.user?.name,
           role: 'Admin', // can pull this from user permission object from Auth0
         },
-        organization: {
-          id: state?.user?.org_id,
-          name: '',
-          wallet: '',
-        },
+        organization: state?.organization,
         login,
         logout,
         getAccessToken,
