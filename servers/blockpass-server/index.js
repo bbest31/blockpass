@@ -30,7 +30,7 @@ main().catch((err) => console.log(err));
 // Parse incoming payloads as json
 app.use(express.json());
 
-app.use('/organization', organizationRoutes);
+app.use('/organizations', organizationRoutes);
 app.use('/users', userRoutes);
 
 app.use(sendErrorResponse);
