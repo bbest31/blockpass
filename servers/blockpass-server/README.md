@@ -1,15 +1,16 @@
 
 ---
-## 1.Install
+## 1. Install
 ### MongoDB
-> Download [MongoDB](https://www.mongodb.com/try/download/community) and make sure an instance is running.
+* Download [MongoDB](https://www.mongodb.com/try/download/community) and make sure an instance is running.
+* Ensure to also install Mongo Compass when it asks you for a graphical UI to view the db data.
 
 ### npm
 ```
 npm i
 ```
 
-## 2.Environment variables
+## 2. Environment variables
 ```sh
 NODE_ENV=development
 
@@ -23,7 +24,7 @@ AUTH0_CLIENT_ID=
 AUTH0_CLIENT_SECRET=
 ```
 
-## 3.Start
+## 3. Start
 ### Run as dev using nodemon
 ```sh
 npm run dev

@@ -36,9 +36,13 @@ PORT=3030
 # HOST
 REACT_APP_HOST_API_KEY=https://minimal-assets-api-dev.vercel.app
 
+# SERVER
+REACT_APP_API_SERVER=
+
 # AUTH0
 REACT_APP_AUTH0_DOMAIN=
 REACT_APP_AUTH0_CLIENT_ID=
+REACT_APP_AUTH0_AUDIENCE=
 
 # MIXPANEL
 REACT_APP_MIXPANEL_TOKEN=
@@ -58,3 +62,8 @@ Your app is ready to be deployed.
 ## User Guide
 
 You can find detailed instructions on using Create React App and many tips in [its documentation](https://facebook.github.io/create-react-app/).
+
+## References
+
+* [Axios](https://www.npmjs.com/package/axios)
+* [Auth0 JS SPA](https://github.com/auth0/auth0-spa-js)

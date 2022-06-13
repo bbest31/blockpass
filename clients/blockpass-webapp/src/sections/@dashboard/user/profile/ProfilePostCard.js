@@ -79,7 +79,7 @@ export default function ProfilePostCard({ post }) {
         avatar={<MyAvatar />}
         title={
           <Link to="#" variant="subtitle2" color="text.primary" component={RouterLink}>
-            {user?.displayName}
+            {user?.name}
           </Link>
         }
         subheader={
