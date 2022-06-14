@@ -22,7 +22,7 @@ export default function AccountOrganization() {
   const { organization, getAccessToken, refreshOrg } = useAuth();
 
   const UpdateOrganizationSchema = Yup.object().shape({
-    orgName: Yup.string().required('Organization Display Name is required'),
+    display_name: Yup.string().required('Organization Display Name is required'),
   });
 
   const [orgDisplayName, setOrgDisplayName] = useState(organization?.display_name ? organization.display_name : '');
@@ -40,7 +40,6 @@ export default function AccountOrganization() {
   } = methods;
 
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       if (orgDisplayName !== data.display_name) {
         const token = await getAccessToken();
