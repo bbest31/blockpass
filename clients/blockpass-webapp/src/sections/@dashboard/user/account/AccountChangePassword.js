@@ -1,47 +1,55 @@
-import * as Yup from 'yup';
+import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 // form
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
 import { Stack, Card } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+// hooks
+import useAuth from '../../../../hooks/useAuth';
+// utils
+import axiosInstance from '../../../../utils/axios';
 // components
-import { FormProvider, RHFTextField } from '../../../../components/hook-form';
+import { FormProvider } from '../../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
 export default function AccountChangePassword() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const ChangePassWordSchema = Yup.object().shape({
-    oldPassword: Yup.string().required('Old Password is required'),
-    newPassword: Yup.string().min(6, 'Password must be at least 6 characters').required('New Password is required'),
-    confirmNewPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'Passwords must match'),
-  });
+  const [isEmailSent, setIsEmailSent] = useState(false);
 
-  const defaultValues = {
-    oldPassword: '',
-    newPassword: '',
-    confirmNewPassword: '',
-  };
-
-  const methods = useForm({
-    resolver: yupResolver(ChangePassWordSchema),
-    defaultValues,
-  });
+  const methods = useForm({});
+  const { user, getAccessToken } = useAuth();
 
   const {
-    reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      enqueueSnackbar('Update success!');
+      const token = await getAccessToken();
+
+      // TODO: eventually grab user connections using https://auth0.com/docs/api/management/v2/#!/Users/get_users_by_id
+      const data = {
+        email: user.email,
+        connection: 'Username-Password-Authentication',
+      };
+      axiosInstance
+        .post(`/users/${user.id}/change-password`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(() => {
+          enqueueSnackbar('Email sent!');
+          setIsEmailSent(true);
+        })
+        .catch((err) => {
+          enqueueSnackbar('Something went wrong', { variant: 'error' });
+          throw err;
+        });
     } catch (error) {
       console.error(error);
     }
@@ -50,15 +58,11 @@ export default function AccountChangePassword() {
   return (
     <Card sx={{ p: 3 }}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3} alignItems="flex-end">
-          <RHFTextField name="oldPassword" type="password" label="Old Password" />
-
-          <RHFTextField name="newPassword" type="password" label="New Password" />
-
-          <RHFTextField name="confirmNewPassword" type="password" label="Confirm New Password" />
-
+        <Stack spacing={3} alignItems="flex-start">
+          <h2>Reset Password</h2>
+          <p>You will receive an email with a link to set a new password for your account.</p>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Save Changes
+            {isEmailSent ? 'Resend Email' : 'Send Email'}
           </LoadingButton>
         </Stack>
       </FormProvider>
