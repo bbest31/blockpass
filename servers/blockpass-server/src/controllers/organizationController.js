@@ -1,6 +1,7 @@
 'use strict';
 const { getOrganizationEvents, getOrganization, patchOrganization } = require('../services/organizationServices.js');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
+const logger = require('../utils/logger');
 
 // Organizations
 
@@ -12,7 +13,7 @@ async function readOrganization(req, res) {
       res.status(200).send(org);
     })
     .catch((err) => {
-      console.error(err);
+      logger.error('error', err);
       res.status(500).send(httpResponseMessage[500]);
     });
 }
@@ -26,7 +27,7 @@ async function updateOrganization(req, res) {
       res.status(200).send(org);
     })
     .catch((err) => {
-      console.error(err);
+      logger.error('error', err);
       res.status(500).send(httpResponseMessage[500]);
     });
 }
@@ -41,6 +42,7 @@ async function readEvents(req, res) {
       res.status(200).send(events);
     })
     .catch((err) => {
+      logger.error('error', err);
       res.status(500).send(httpResponseMessage[500]);
     });
 }

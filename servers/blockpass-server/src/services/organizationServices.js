@@ -1,6 +1,7 @@
 'use strict';
 const Event = require('../models/Events.js');
 const { managementAPI } = require('../apis/auth0Api.js');
+const logger = require('../utils/logger');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name'];
 
@@ -27,7 +28,7 @@ async function patchOrganization(orgId, payload) {
   const org = await managementAPI.organizations
     .update({ id: orgId }, payload)
     .then((orgData) => {
-      console.log(`Organization info updated for org: ${orgData.name}`);
+      logger.log('info', `Organization info updated for org: ${orgData.name}`);
     })
     .catch((err) => {
       throw err;
