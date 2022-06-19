@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Box, Card, IconButton, Typography, CardContent, InputAdornment } from '@mui/material';
 // utils
-import { fDateTime } from '../../../../utils/formatTime';
+import { fDateTimeSuffix } from '../../../../utils/formatTime';
 import cssStyles from '../../../../utils/cssStyles';
 // components
 import Image from '../../../../components/Image';
@@ -71,7 +71,7 @@ function GalleryItem({ image }) {
         <div>
           <Typography variant="subtitle1">{name}</Typography>
           <Typography variant="body2" sx={{ opacity: 0.72 }}>
-            {fDateTime(startDate)}
+            {fDateTimeSuffix(startDate)}
           </Typography>
         </div>
         <IconButton color="inherit">
