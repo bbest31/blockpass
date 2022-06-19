@@ -1,5 +1,5 @@
 import { capitalCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Tab, Box, Card, Typography, Tabs, Container } from '@mui/material';
@@ -10,21 +10,16 @@ import useAuth from '../../hooks/useAuth';
 import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
 // _mock_
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from '../../_mock';
+import { _userAbout, _userGallery } from '../../_mock';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
-import {
-  Profile,
-  ProfileCover,
-  ProfileFriends,
-  ProfileGallery,
-  ProfileFollowers,
-} from '../../sections/@dashboard/user/profile';
-
+import { ProfileCover } from '../../sections/@dashboard/user/profile';
 import { OrganizationEventGallery, OrganizationEventToolbar } from '../../sections/@dashboard/user/organization';
+// utils
+import axiosInstance from '../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -52,9 +47,13 @@ const FILTER_OPTIONS = {
 // ----------------------------------------------------------------------
 
 export default function UserProfile() {
+  useEffect(() => {
+    getEvents();
+  }, []);
+
   const { themeStretch } = useSettings();
 
-  const { user } = useAuth();
+  const { organization, getAccessToken } = useAuth();
 
   const { currentTab, onChangeTab } = useTabs('upcoming');
 
@@ -62,10 +61,12 @@ export default function UserProfile() {
 
   const [findEvent, setFindEvent] = useState('');
 
+  const [events, setEvents] = useState([]);
+
   const handleChangeTab = (event, value) => {
     onChangeTab(event, value);
-    setFilterDate(FILTER_OPTIONS[value][0])
-  }
+    setFilterDate(FILTER_OPTIONS[value][0]);
+  };
 
   const handleFilterDate = (event) => {
     setFilterDate(event.target.value);
@@ -75,16 +76,35 @@ export default function UserProfile() {
     setFindEvent(value);
   };
 
+  const getEvents = async () => {
+    try {
+      const token = await getAccessToken();
+
+      axiosInstance
+        .get(`/organization/${organization.id}/events`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setEvents(res.data);
+          console.log(res.data);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const EVENT_TABS = [
     {
       value: 'upcoming',
       icon: <Iconify icon={'ic:round-calendar-today'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={_userGallery} />,
+      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={events} />,
     },
     {
       value: 'past',
       icon: <Iconify icon={'ic:round-inventory-2'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Past Events'} gallery={_userGallery} />,
+      component: <OrganizationEventGallery title={'Past Events'} gallery={events} />,
     },
   ];
 

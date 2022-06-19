@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Box, Card, IconButton, Typography, CardContent, InputAdornment } from '@mui/material';
 // utils
-import { fDate } from '../../../../utils/formatTime';
+import { fDateTime } from '../../../../utils/formatTime';
 import cssStyles from '../../../../utils/cssStyles';
 // components
 import Image from '../../../../components/Image';
@@ -30,7 +30,7 @@ OrganizationEventGallery.propTypes = {
   title: PropTypes.string,
 };
 
-export default function OrganizationEventGallery({ gallery, title }) {
+export default function OrganizationEventGallery({ gallery }) {
   return (
     <Box sx={{ mt: 2 }}>
       <Card sx={{ p: 3 }}>
@@ -46,7 +46,7 @@ export default function OrganizationEventGallery({ gallery, title }) {
           }}
         >
           {gallery.map((image) => (
-            <GalleryItem key={image.id} image={image} />
+            <GalleryItem key={image._id} image={image} />
           ))}
         </Box>
       </Card>
@@ -61,17 +61,17 @@ GalleryItem.propTypes = {
   onOpenLightbox: PropTypes.func,
 };
 
-function GalleryItem({ image, onOpenLightbox }) {
-  const { imageUrl, title, postAt } = image;
+function GalleryItem({ image }) {
+  const { img, name, startDate } = image;
   return (
     <Card sx={{ cursor: 'pointer', position: 'relative' }}>
-      <Image alt="gallery image" ratio="1/1" src={imageUrl} />
+      <Image alt="gallery image" ratio="1/1" src={img} />
 
       <CaptionStyle>
         <div>
-          <Typography variant="subtitle1">{title}</Typography>
+          <Typography variant="subtitle1">{name}</Typography>
           <Typography variant="body2" sx={{ opacity: 0.72 }}>
-            {fDate(postAt)}
+            {fDateTime(startDate)}
           </Typography>
         </div>
         <IconButton color="inherit">
