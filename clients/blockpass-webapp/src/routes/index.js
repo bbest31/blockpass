@@ -66,7 +66,7 @@ export default function Router() {
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'dashboard', element: <GeneralApp /> },
-        { path: 'events', element: <Calendar /> },
+        { path: 'events', element: <Events /> },
         { path: 'analytics', element: <GeneralAnalytics /> },
         { path: 'account', element: <UserAccount /> },
       ],
@@ -221,6 +221,9 @@ const UserCards = Loadable(lazy(() => import('../pages/dashboard/UserCards')));
 const UserList = Loadable(lazy(() => import('../pages/dashboard/UserList')));
 const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')));
 const UserCreate = Loadable(lazy(() => import('../pages/dashboard/UserCreate')));
+
+// EVENTS
+const Events = Loadable(lazy(() => import('../pages/dashboard/OrganizationEvents')));
 
 // APP
 const Chat = Loadable(lazy(() => import('../pages/dashboard/Chat')));
