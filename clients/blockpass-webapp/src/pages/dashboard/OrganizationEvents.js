@@ -78,7 +78,7 @@ export default function UserProfile() {
     setFilterOption(option);
 
     // Sort events based on default option in new tab
-    filterMap[option]();
+    filterMap[option](value);
   };
 
   const handleFilterOption = (event) => {
@@ -106,10 +106,10 @@ export default function UserProfile() {
         .then((res) => {
           res.data.sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
           setEvents(res.data);
-          setFilteredEvents(res.data);
+          setFilteredEvents(filterUpcomingEvents(res.data));
         })
         .catch((err) => {
-          if (axiosInstance.isCancel(err)) {
+          if (axios.isCancel(err)) {
             console.log('aborted');
           }
         });
@@ -118,24 +118,38 @@ export default function UserProfile() {
     }
   };
 
-  const sortAscending = () => {
-    const sortedEvents = [...events].sort(
-      (event1, event2) => new Date(event1.startDate) - new Date(event2.startDate)
-    );
+  const sortAscending = (tabValue) => {
+    const sortedEvents = [...events].sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
+
     setEvents(sortedEvents);
-    searchEvents(sortedEvents);
+    if (tabValue === 'upcoming') {
+      searchEvents(filterUpcomingEvents(sortedEvents));
+    } else {
+      searchEvents(filterPastEvents(sortedEvents));
+    }
   };
 
-  const sortDescending = () => {
-    const sortedEvents = [...events].sort(
-      (event1, event2) => new Date(event2.startDate) - new Date(event1.startDate)
-    );
+  const sortDescending = (tabValue) => {
+    const sortedEvents = [...events].sort((event1, event2) => new Date(event2.startDate) - new Date(event1.startDate));
     setEvents(sortedEvents);
     searchEvents(sortedEvents);
+    if (tabValue === 'upcoming') {
+      searchEvents(filterUpcomingEvents(sortedEvents));
+    } else {
+      searchEvents(filterPastEvents(sortedEvents));
+    }
   };
 
   const searchEvents = (eventList) => {
     setFilteredEvents(eventList.filter(({ name }) => name.toLowerCase().includes(findEvent)));
+  };
+
+  const filterUpcomingEvents = (eventList) => {
+    return eventList.filter(({ startDate }) => new Date(startDate) > Date.now());
+  };
+
+  const filterPastEvents = (eventList) => {
+    return eventList.filter(({ startDate }) => new Date(startDate) < Date.now());
   };
 
   const filterMap = {
