@@ -74,7 +74,7 @@ export default function UserProfile() {
     filterMap[option]();
   };
 
-  const handleFilterDate = (event) => {
+  const handleFilterOption = (event) => {
     const option = event.target.value;
     setFilterOption(option);
     filterMap[option]();
@@ -184,7 +184,7 @@ export default function UserProfile() {
             filterName={findEvent}
             filterRole={filterOption}
             onFilterName={handleFindEvents}
-            onFilterRole={handleFilterDate}
+            onFilterRole={handleFilterOption}
             optionsRole={FILTER_OPTIONS[currentTab]}
           />
         </Box>
