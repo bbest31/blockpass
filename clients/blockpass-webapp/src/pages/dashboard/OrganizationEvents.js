@@ -63,6 +63,8 @@ export default function UserProfile() {
 
   const [events, setEvents] = useState([]);
 
+  const [filteredEvents, setFilteredEvents] = useState([]);
+
   const handleChangeTab = (event, value) => {
     const option = FILTER_OPTIONS[value][0];
     onChangeTab(event, value);
@@ -80,6 +82,7 @@ export default function UserProfile() {
 
   const handleFindEvents = (value) => {
     setFindEvent(value);
+    setFilteredEvents(events.filter(({ name }) => name.toLowerCase().includes(value)));
   };
 
   const getEvents = async () => {
@@ -95,6 +98,7 @@ export default function UserProfile() {
         .then((res) => {
           res.data.sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
           setEvents(res.data);
+          setFilteredEvents(res.data);
         });
     } catch (error) {
       console.error(error);
@@ -106,6 +110,7 @@ export default function UserProfile() {
       (event1, event2) => new Date(event1.startDate) - new Date(event2.startDate)
     );
     setEvents(sortedEvents);
+    searchEvents(sortedEvents);
   };
 
   const sortDescending = () => {
@@ -113,6 +118,11 @@ export default function UserProfile() {
       (event1, event2) => new Date(event2.startDate) - new Date(event1.startDate)
     );
     setEvents(sortedEvents);
+    searchEvents(sortedEvents);
+  };
+
+  const searchEvents = (eventList) => {
+    setFilteredEvents(eventList.filter(({ name }) => name.toLowerCase().includes(findEvent)));
   };
 
   const filterMap = {
@@ -126,12 +136,12 @@ export default function UserProfile() {
     {
       value: 'upcoming',
       icon: <Iconify icon={'ic:round-calendar-today'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={events} />,
+      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={filteredEvents} />,
     },
     {
       value: 'past',
       icon: <Iconify icon={'ic:round-inventory-2'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Past Events'} gallery={events} />,
+      component: <OrganizationEventGallery title={'Past Events'} gallery={filteredEvents} />,
     },
   ];
 
