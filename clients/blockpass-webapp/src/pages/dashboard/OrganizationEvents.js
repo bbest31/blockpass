@@ -102,17 +102,17 @@ export default function UserProfile() {
   };
 
   const sortAscending = () => {
-    const filteredEvents = [...events].sort(
+    const sortedEvents = [...events].sort(
       (event1, event2) => new Date(event1.startDate) - new Date(event2.startDate)
     );
-    setEvents(filteredEvents);
+    setEvents(sortedEvents);
   };
 
   const sortDescending = () => {
-    const filteredEvents = [...events].sort(
+    const sortedEvents = [...events].sort(
       (event1, event2) => new Date(event2.startDate) - new Date(event1.startDate)
     );
-    setEvents(filteredEvents);
+    setEvents(sortedEvents);
   };
 
   const filterMap = {
