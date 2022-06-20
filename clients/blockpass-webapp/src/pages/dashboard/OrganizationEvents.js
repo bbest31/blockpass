@@ -1,5 +1,6 @@
 import { capitalCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Tab, Box, Card, Typography, Tabs, Container } from '@mui/material';
@@ -48,7 +49,13 @@ const FILTER_OPTIONS = {
 
 export default function UserProfile() {
   useEffect(() => {
-    getEvents();
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    getEvents(source);
+
+    return () => {
+      source.cancel();
+    };
   }, []);
 
   const { themeStretch } = useSettings();
@@ -85,7 +92,7 @@ export default function UserProfile() {
     setFilteredEvents(events.filter(({ name }) => name.toLowerCase().includes(value)));
   };
 
-  const getEvents = async () => {
+  const getEvents = async (source) => {
     try {
       const token = await getAccessToken();
 
@@ -94,11 +101,17 @@ export default function UserProfile() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          CancelToken: source.token,
         })
         .then((res) => {
           res.data.sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
           setEvents(res.data);
           setFilteredEvents(res.data);
+        })
+        .catch((err) => {
+          if (axiosInstance.isCancel(err)) {
+            console.log('aborted');
+          }
         });
     } catch (error) {
       console.error(error);
