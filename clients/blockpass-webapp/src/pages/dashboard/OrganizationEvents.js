@@ -57,19 +57,25 @@ export default function UserProfile() {
 
   const { currentTab, onChangeTab } = useTabs('upcoming');
 
-  const [filterDate, setFilterDate] = useState('ascending');
+  const [filterOption, setFilterOption] = useState('ascending');
 
   const [findEvent, setFindEvent] = useState('');
 
   const [events, setEvents] = useState([]);
 
   const handleChangeTab = (event, value) => {
+    const option = FILTER_OPTIONS[value][0];
     onChangeTab(event, value);
-    setFilterDate(FILTER_OPTIONS[value][0]);
+    setFilterOption(option);
+
+    // Sort events based on default option in new tab
+    filterMap[option]();
   };
 
   const handleFilterDate = (event) => {
-    setFilterDate(event.target.value);
+    const option = event.target.value;
+    setFilterOption(option);
+    filterMap[option]();
   };
 
   const handleFindEvents = (value) => {
@@ -87,12 +93,33 @@ export default function UserProfile() {
           },
         })
         .then((res) => {
+          res.data.sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
           setEvents(res.data);
-          console.log(res.data);
         });
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const sortAscending = () => {
+    const filteredEvents = [...events].sort(
+      (event1, event2) => new Date(event1.startDate) - new Date(event2.startDate)
+    );
+    setEvents(filteredEvents);
+  };
+
+  const sortDescending = () => {
+    const filteredEvents = [...events].sort(
+      (event1, event2) => new Date(event2.startDate) - new Date(event1.startDate)
+    );
+    setEvents(filteredEvents);
+  };
+
+  const filterMap = {
+    ascending: sortAscending,
+    descending: sortDescending,
+    newest: sortDescending,
+    oldest: sortAscending,
   };
 
   const EVENT_TABS = [
@@ -145,7 +172,7 @@ export default function UserProfile() {
 
           <OrganizationEventToolbar
             filterName={findEvent}
-            filterRole={filterDate}
+            filterRole={filterOption}
             onFilterName={handleFindEvents}
             onFilterRole={handleFilterDate}
             optionsRole={FILTER_OPTIONS[currentTab]}
