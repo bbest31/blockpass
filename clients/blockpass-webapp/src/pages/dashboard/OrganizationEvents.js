@@ -72,24 +72,32 @@ export default function UserProfile() {
 
   const [filteredEvents, setFilteredEvents] = useState([]);
 
+  useEffect(() => {
+    const matchedEvents = events.filter(({ name }) => name.toLowerCase().includes(findEvent));
+    if (currentTab === 'upcoming') {
+      searchEvents(filterUpcomingEvents(matchedEvents));
+    } else {
+      searchEvents(filterPastEvents(matchedEvents));
+    }
+  }, [findEvent]);
+
+  useEffect(() => {
+    filterMap[filterOption]();
+  }, [filterOption]);
+
   const handleChangeTab = (event, value) => {
     const option = FILTER_OPTIONS[value][0];
     onChangeTab(event, value);
     setFilterOption(option);
-
-    // Sort events based on default option in new tab
-    filterMap[option](value);
   };
 
   const handleFilterOption = (event) => {
     const option = event.target.value;
     setFilterOption(option);
-    filterMap[option]();
   };
 
   const handleFindEvents = (value) => {
     setFindEvent(value);
-    setFilteredEvents(events.filter(({ name }) => name.toLowerCase().includes(value)));
   };
 
   const getEvents = async (source) => {
@@ -118,22 +126,22 @@ export default function UserProfile() {
     }
   };
 
-  const sortAscending = (tabValue) => {
+  const sortAscending = () => {
     const sortedEvents = [...events].sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
-
     setEvents(sortedEvents);
-    if (tabValue === 'upcoming') {
+
+    if (currentTab === 'upcoming') {
       searchEvents(filterUpcomingEvents(sortedEvents));
     } else {
       searchEvents(filterPastEvents(sortedEvents));
     }
   };
 
-  const sortDescending = (tabValue) => {
+  const sortDescending = () => {
     const sortedEvents = [...events].sort((event1, event2) => new Date(event2.startDate) - new Date(event1.startDate));
     setEvents(sortedEvents);
-    searchEvents(sortedEvents);
-    if (tabValue === 'upcoming') {
+
+    if (currentTab === 'upcoming') {
       searchEvents(filterUpcomingEvents(sortedEvents));
     } else {
       searchEvents(filterPastEvents(sortedEvents));
