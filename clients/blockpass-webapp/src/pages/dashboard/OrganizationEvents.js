@@ -97,7 +97,7 @@ export default function UserProfile() {
       const token = await getAccessToken();
 
       axiosInstance
-        .get(`/organization/${organization.id}/events`, {
+        .get(`/organizations/${organization.id}/events`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
