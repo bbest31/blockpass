@@ -212,7 +212,7 @@ export default function UserProfile() {
         </Card>
         <Box sx={{ mt: 5 }}>
           <Typography variant="h4" sx={{ mb: 2 }}>
-            Upcoming events
+            {`${capitalCase(currentTab)} events`}
           </Typography>
 
           <OrganizationEventToolbar
