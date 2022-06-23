@@ -2,6 +2,7 @@ import { createContext, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Auth0Client } from '@auth0/auth0-spa-js';
 import { useMixpanel } from 'react-mixpanel-browser';
+import axiosInstance from '../utils/axios';
 // routes
 import { PATH_AUTH } from '../routes/paths';
 //
@@ -38,6 +39,11 @@ const handlers = {
     const { isAuthenticated, isInitialized, organization } = state;
     return { isAuthenticated, isInitialized, user, organization };
   },
+  REFRESH_ORG: (state, action) => {
+    const { organization } = action.payload;
+    const { isAuthenticated, isInitialized, user } = state;
+    return { isAuthenticated, isInitialized, user, organization };
+  },
 };
 
 const reducer = (state, action) => (handlers[action.type] ? handlers[action.type](state, action) : state);
@@ -49,6 +55,7 @@ const AuthContext = createContext({
   logout: () => Promise.resolve(),
   getAccessToken: () => String,
   refreshUser: () => Promise.resolve(),
+  refreshOrg: () => Promise.resolve(),
 });
 
 // ----------------------------------------------------------------------
@@ -77,10 +84,16 @@ function AuthProvider({ children }) {
 
         if (isAuthenticated) {
           const user = await auth0Client.getUser();
-          const org = null;
+          const token = await auth0Client.getTokenSilently();
+          const resp = await axiosInstance.get(`/organizations/${user.org_id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const org = resp.data;
           dispatch({
             type: 'INITIALIZE',
-            payload: { isAuthenticated, user, org },
+            payload: { isAuthenticated, user, organization: org },
           });
         } else {
           dispatch({
@@ -106,7 +119,13 @@ function AuthProvider({ children }) {
 
     if (isAuthenticated) {
       const user = await auth0Client.getUser();
-      const organization = null;
+      const token = await auth0Client.getTokenSilently();
+      const resp = await axiosInstance.get(`/organizations/${user.org_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const org = resp.data;
       try {
         if (mixpanel.config.token) {
           mixpanel.identify(user.sub);
@@ -116,10 +135,7 @@ function AuthProvider({ children }) {
         console.warn('Mixpanel token not present: ', err);
       }
 
-      /**
-       * TODO: Get Organization Info and add to auth context.
-       */
-      dispatch({ type: 'LOGIN', payload: { user, organization } });
+      dispatch({ type: 'LOGIN', payload: { user, organization: org } });
     }
   };
 
@@ -159,6 +175,21 @@ function AuthProvider({ children }) {
     dispatch({ type: 'REFRESH', payload: { user } });
   };
 
+  const refreshOrg = async () => {
+    const token = await auth0Client.getTokenSilently();
+    const user = await auth0Client.getUser();
+    const resp = await axiosInstance.get(`/organizations/${user.org_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (resp.status !== 200) {
+      throw Error(resp.data);
+    }
+    const organization = resp.data;
+    dispatch({ type: 'REFRESH_ORG', payload: { organization } });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -171,15 +202,12 @@ function AuthProvider({ children }) {
           name: state?.user?.name,
           role: 'Admin', // can pull this from user permission object from Auth0
         },
-        organization: {
-          id: state?.user?.org_id,
-          name: '',
-          wallet: '',
-        },
+        organization: state?.organization,
         login,
         logout,
         getAccessToken,
         refreshUser,
+        refreshOrg,
       }}
     >
       {children}

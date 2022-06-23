@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm } from 'react-hook-form';
@@ -9,6 +10,7 @@ import { LoadingButton } from '@mui/lab';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
+import axiosInstance from '../../../../utils/axios';
 // components
 import { FormProvider, RHFTextField } from '../../../../components/hook-form';
 
@@ -17,20 +19,19 @@ import { FormProvider, RHFTextField } from '../../../../components/hook-form';
 export default function AccountOrganization() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { organization } = useAuth();
+  const { organization, getAccessToken, refreshOrg } = useAuth();
 
   const UpdateOrganizationSchema = Yup.object().shape({
-    orgName: Yup.string().required('Organization Name is required'),
+    display_name: Yup.string().required('Organization Display Name is required'),
   });
 
-  /** TODO: grab org display name. */
-  const defaultValues = {
-    orgDisplayName: organization?.displayName || '',
-  };
+  const [orgDisplayName, setOrgDisplayName] = useState(organization?.display_name ? organization.display_name : '');
 
   const methods = useForm({
     resolver: yupResolver(UpdateOrganizationSchema),
-    defaultValues,
+    defaultValues: {
+      display_name: orgDisplayName,
+    },
   });
 
   const {
@@ -38,13 +39,22 @@ export default function AccountOrganization() {
     formState: { isSubmitting },
   } = methods;
 
-  /**
-   * TODO: save new changes
-   */
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar('Update success!');
+      if (orgDisplayName !== data.display_name) {
+        const token = await getAccessToken();
+        axiosInstance
+          .patch(`/organizations/${organization.id}`, data, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then(() => {
+            enqueueSnackbar('Update success!');
+            setOrgDisplayName(data.display_name);
+            refreshOrg();
+          });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -63,7 +73,7 @@ export default function AccountOrganization() {
                 gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' },
               }}
             >
-              <RHFTextField name="orgDisplayName" label="Organization Name" />
+              <RHFTextField name="display_name" label="Organization Display Name" />
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
