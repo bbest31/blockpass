@@ -53,5 +53,5 @@ npm run dev
 - [express-oauth2-jwt-bearer](https://auth0.github.io/node-oauth2-jwt-bearer/)
 - [cors](https://expressjs.com/en/resources/middleware/cors.html)
 - [helmet](https://www.npmjs.com/package/helmet)
-- [node-auth0](https://www.npmjs.com/package/auth0#user-content-management-api-client)
+- [node-auth0](https://auth0.github.io/node-auth0/)
 - [winston](https://github.com/winstonjs/winston/tree/2.x)
