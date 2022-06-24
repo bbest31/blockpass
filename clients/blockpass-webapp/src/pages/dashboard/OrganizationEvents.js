@@ -17,8 +17,7 @@ import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
-import { ProfileCover } from '../../sections/@dashboard/user/profile';
-import { OrganizationEventGallery, OrganizationEventToolbar } from '../../sections/@dashboard/user/organization';
+import { OrganizationEventGallery, OrganizationEventToolbar, OrganizationCover } from '../../sections/@dashboard/user/organization';
 // utils
 import axiosInstance from '../../utils/axios';
 
@@ -194,7 +193,7 @@ export default function UserProfile() {
             position: 'relative',
           }}
         >
-          <ProfileCover myProfile={_userAbout} />
+          <OrganizationCover myProfile={_userAbout} />
 
           <TabsWrapperStyle>
             <Tabs
