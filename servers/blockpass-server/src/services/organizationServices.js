@@ -3,7 +3,7 @@ const Event = require('../models/Events.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
 
-const ORGANIZATION_ATTRIBUTES = ['display_name'];
+const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
 
 async function getOrganizationEvents(orgId) {
   const events = await Event.find({ orgId: orgId }).exec();
