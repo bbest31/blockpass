@@ -29,6 +29,7 @@ async function patchOrganization(orgId, payload) {
     .update({ id: orgId }, payload)
     .then((orgData) => {
       logger.log('info', `Organization info updated for org: ${orgData.name}`);
+      return orgData;
     })
     .catch((err) => {
       throw err;
