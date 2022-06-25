@@ -10,6 +10,11 @@ export const HOST_API = process.env.REACT_APP_HOST_API_KEY || '';
 
 export const SERVER_API = process.env.REACT_APP_API_SERVER || '';
 
+export const MORALIS_API = {
+  SERVER_URL: process.env.REACT_APP_MORALIS_SERVER_URL,
+  APP_ID: process.env.REACT_APP_MORALIS_APP_ID,
+};
+
 export const FIREBASE_API = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -29,7 +34,7 @@ export const COGNITO_API = {
 export const AUTH0_API = {
   clientId: process.env.REACT_APP_AUTH0_CLIENT_ID,
   domain: process.env.REACT_APP_AUTH0_DOMAIN,
-  audience: process.env.REACT_APP_AUTH0_AUDIENCE
+  audience: process.env.REACT_APP_AUTH0_AUDIENCE,
 };
 
 export const MAPBOX_API = process.env.REACT_APP_MAPBOX_API;
