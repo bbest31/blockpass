@@ -11,7 +11,7 @@ import ethereumSymbol from '../../../../assets/icons/ethereum_symbol.svg';
 // ----------------------------------------------------------------------
 
 AccountBillingPaymentMethod.propTypes = {
-  wallets: PropTypes.array,
+  wallets: PropTypes.object,
   isOpen: PropTypes.bool,
   onOpen: PropTypes.func,
   onCancel: PropTypes.func,
@@ -25,9 +25,9 @@ export default function AccountBillingPaymentMethod({ wallets, isOpen, onOpen, o
       </Typography>
 
       <Stack spacing={2} direction={{ xs: 'column', md: 'row' }}>
-        {wallets.map((wallet) => (
+        {Object.entries(wallets).map(([network,address], index) => (
           <Paper
-            key={wallet.id}
+            key={index}
             sx={{
               p: 3,
               width: 1,
@@ -37,10 +37,10 @@ export default function AccountBillingPaymentMethod({ wallets, isOpen, onOpen, o
           >
             <Image
               alt="icon"
-              src={wallet.walletNetwork === 'matic_mainnet' ? polygonSymbol : ethereumSymbol}
+              src={network === 'matic_mainnet' ? polygonSymbol : ethereumSymbol}
               sx={{ mb: 1, maxWidth: 36 }}
             />
-            <Typography variant="subtitle2">{fWalletAddressShortDisplay(wallet.walletAddress)}</Typography>
+            <Typography variant="subtitle2">{fWalletAddressShortDisplay(address)}</Typography>
             <IconButton
               sx={{
                 top: 8,
@@ -76,7 +76,7 @@ export default function AccountBillingPaymentMethod({ wallets, isOpen, onOpen, o
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
               <TextField fullWidth label="Wallet Address" disabled />
             </Stack>
-
+          {/* TODO: Connect user wallet and then build button to save currently connected wallet */}
             <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
               <Button color="inherit" variant="outlined" onClick={onCancel}>
                 Cancel

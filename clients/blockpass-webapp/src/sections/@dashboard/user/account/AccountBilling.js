@@ -9,7 +9,7 @@ import AccountBillingPaymentMethod from './AccountBillingPaymentMethod';
 // ----------------------------------------------------------------------
 
 AccountBilling.propTypes = {
-  wallets: PropTypes.array,
+  wallets: PropTypes.object,
 };
 
 export default function AccountBilling({ wallets }) {

@@ -5,6 +5,7 @@ import { Container, Tab, Box, Tabs } from '@mui/material';
 import { PATH_APP } from '../../routes/paths';
 // hooks
 import useTabs from '../../hooks/useTabs';
+import useAuth from '../../hooks/useAuth';
 import useSettings from '../../hooks/useSettings';
 // _mock_
 import { _userWallets } from '../../_mock';
@@ -23,6 +24,9 @@ export default function UserAccount() {
 
   const { currentTab, onChangeTab } = useTabs('my_info');
 
+  // TODO: Get organization wallets from organization metadata and pass to wallet tab.
+  const { organization } = useAuth();
+
   const ACCOUNT_TABS = [
     {
       value: 'my_info',
@@ -37,7 +41,7 @@ export default function UserAccount() {
     {
       value: 'wallet',
       icon: <Iconify icon={'ic:round-receipt'} width={20} height={20} />,
-      component: <AccountBilling wallets={_userWallets} />,
+      component: <AccountBilling wallets={organization.metadata} />,
     },
     {
       value: 'organization',
