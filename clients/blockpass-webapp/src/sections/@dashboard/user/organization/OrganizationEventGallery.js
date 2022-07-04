@@ -27,10 +27,10 @@ const CaptionStyle = styled(CardContent)(({ theme }) => ({
 
 OrganizationEventGallery.propTypes = {
   gallery: PropTypes.array.isRequired,
-  title: PropTypes.string,
+  tab: PropTypes.string,
 };
 
-export default function OrganizationEventGallery({ gallery }) {
+export default function OrganizationEventGallery({ gallery, tab }) {
   return (
     <Box sx={{ mt: 2 }}>
       <Card sx={{ p: 3 }}>
@@ -45,9 +45,9 @@ export default function OrganizationEventGallery({ gallery }) {
             },
           }}
         >
-          {gallery.map((image) => (
+          {gallery.length !== 0 ? gallery.map((image) => (
             <GalleryItem key={image._id} image={image} />
-          ))}
+          )) : `No ${tab} events`}
         </Box>
       </Card>
     </Box>

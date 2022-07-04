@@ -171,12 +171,12 @@ export default function UserProfile() {
     {
       value: 'upcoming',
       icon: <Iconify icon={'ic:round-calendar-today'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={filteredEvents} />,
+      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={filteredEvents} tab={currentTab}/>,
     },
     {
       value: 'past',
       icon: <Iconify icon={'ic:round-inventory-2'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Past Events'} gallery={filteredEvents} />,
+      component: <OrganizationEventGallery title={'Past Events'} gallery={filteredEvents} tab={currentTab}/>,
     },
   ];
 
