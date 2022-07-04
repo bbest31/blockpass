@@ -1,5 +1,6 @@
 import { capitalCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import { useSnackbar } from 'notistack';
 import axios from 'axios';
 // @mui
 import { styled } from '@mui/material/styles';
@@ -17,7 +18,11 @@ import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
-import { OrganizationEventGallery, OrganizationEventToolbar, OrganizationCover } from '../../sections/@dashboard/user/organization';
+import {
+  OrganizationEventGallery,
+  OrganizationEventToolbar,
+  OrganizationCover,
+} from '../../sections/@dashboard/user/organization';
 // utils
 import axiosInstance from '../../utils/axios';
 
@@ -56,6 +61,8 @@ export default function UserProfile() {
       source.cancel();
     };
   }, []);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { themeStretch } = useSettings();
 
@@ -100,29 +107,23 @@ export default function UserProfile() {
   };
 
   const getEvents = async (source) => {
-    try {
-      const token = await getAccessToken();
+    const token = await getAccessToken();
 
-      axiosInstance
-        .get(`/organizations/${organization.id}/events`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          CancelToken: source.token,
-        })
-        .then((res) => {
-          res.data.sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
-          setEvents(res.data);
-          setFilteredEvents(filterUpcomingEvents(res.data));
-        })
-        .catch((err) => {
-          if (axios.isCancel(err)) {
-            console.log('aborted');
-          }
-        });
-    } catch (error) {
-      console.error(error);
-    }
+    axiosInstance
+      .get(`/organizations/${organization.id}/events`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        CancelToken: source.token,
+      })
+      .then((res) => {
+        res.data.sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
+        setEvents(res.data);
+        setFilteredEvents(filterUpcomingEvents(res.data));
+      })
+      .catch((err) => {
+        enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
+      });
   };
 
   const sortAscending = () => {
