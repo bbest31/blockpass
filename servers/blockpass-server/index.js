@@ -9,10 +9,12 @@ const helmet = require('helmet');
 const checkJwt = require('./src/middlewares/checkJwt.js');
 const sendErrorResponse = require('./src/middlewares/errorResponseMiddleware.js');
 
-//  ROUTES 
+// UTILS
+const { httpResponseMessage } = require('./src/utils/responseMessages.js');
+
+//  ROUTES
 const organizationRoutes = require('./src/routes/organizationRoutes.js');
 const userRoutes = require('./src/routes/userRoutes');
-
 
 // APP SETUP
 const app = express();
@@ -32,6 +34,10 @@ app.use(express.json());
 
 app.use('/organizations', organizationRoutes);
 app.use('/users', userRoutes);
+
+app.get('*', (_, res) => {
+  res.status(404).send(httpResponseMessage[404]);
+});
 
 app.use(sendErrorResponse);
 
