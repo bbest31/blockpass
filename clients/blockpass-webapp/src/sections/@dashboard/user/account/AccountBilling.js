@@ -9,10 +9,10 @@ import AccountBillingPaymentMethod from './AccountBillingPaymentMethod';
 // ----------------------------------------------------------------------
 
 AccountBilling.propTypes = {
-  wallets: PropTypes.object,
+  metadata: PropTypes.object,
 };
 
-export default function AccountBilling({ wallets }) {
+export default function AccountBilling({ metadata }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -42,7 +42,7 @@ export default function AccountBilling({ wallets }) {
           </Card> */}
 
           <AccountBillingPaymentMethod
-            wallets={wallets}
+            metadata={metadata}
             isOpen={open}
             onOpen={() => setOpen(!open)}
             onCancel={() => setOpen(false)}

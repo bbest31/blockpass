@@ -24,7 +24,6 @@ export default function UserAccount() {
 
   const { currentTab, onChangeTab } = useTabs('my_info');
 
-  // TODO: Get organization wallets from organization metadata and pass to wallet tab.
   const { organization } = useAuth();
 
   const ACCOUNT_TABS = [
@@ -41,7 +40,7 @@ export default function UserAccount() {
     {
       value: 'wallet',
       icon: <Iconify icon={'ic:round-receipt'} width={20} height={20} />,
-      component: <AccountBilling wallets={organization.metadata} />,
+      component: <AccountBilling metadata={organization.metadata} />,
     },
     {
       value: 'organization',

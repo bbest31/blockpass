@@ -57,6 +57,7 @@ export default function AccountOrganization() {
       }
     } catch (error) {
       console.error(error);
+      enqueueSnackbar('Something went wrong', { variant: 'error' });
     }
   };
 

@@ -2,6 +2,7 @@
 import { enUS, frFR, zhCN, viVN, arSD } from '@mui/material/locale';
 // routes
 import { PATH_APP } from './routes/paths';
+import { NETWORKS } from './utils/networks';
 
 // API
 // ----------------------------------------------------------------------
@@ -14,6 +15,9 @@ export const MORALIS_API = {
   SERVER_URL: process.env.REACT_APP_MORALIS_SERVER_URL,
   APP_ID: process.env.REACT_APP_MORALIS_APP_ID,
 };
+
+export const MATIC_NETWORK =
+  process.env.NODE_ENV === 'production' ? NETWORKS.POLYGON_MAINNET : NETWORKS.POLYGON_TESTNET;
 
 export const FIREBASE_API = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
