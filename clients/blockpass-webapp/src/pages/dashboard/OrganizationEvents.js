@@ -50,7 +50,7 @@ const FILTER_OPTIONS = {
 
 // ----------------------------------------------------------------------
 
-export default function UserProfile() {
+export default function OrganizationEvents() {
   useEffect(() => {
     const controller = new AbortController();
     getEvents(controller);
