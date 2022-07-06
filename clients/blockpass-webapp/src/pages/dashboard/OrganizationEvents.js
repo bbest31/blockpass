@@ -77,11 +77,10 @@ export default function UserProfile() {
   const [filteredEvents, setFilteredEvents] = useState([]);
 
   useEffect(() => {
-    const matchedEvents = events.filter(({ name }) => name.toLowerCase().includes(findEvent));
     if (currentTab === 'upcoming') {
-      searchEvents(filterUpcomingEvents(matchedEvents));
+      searchEvents(filterUpcomingEvents(events));
     } else {
-      searchEvents(filterPastEvents(matchedEvents));
+      searchEvents(filterPastEvents(events));
     }
   }, [findEvent]);
 
@@ -149,7 +148,7 @@ export default function UserProfile() {
   };
 
   const searchEvents = (eventList) => {
-    setFilteredEvents(eventList.filter(({ name }) => name.toLowerCase().includes(findEvent)));
+    setFilteredEvents(eventList.filter(({ name }) => name.toLowerCase().includes(findEvent.toLowerCase())));
   };
 
   const filterUpcomingEvents = (eventList) => {
