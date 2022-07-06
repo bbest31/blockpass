@@ -4,13 +4,10 @@ import { styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
 // utils
 import cssStyles from '../../../../utils/cssStyles';
-import createAvatar from '../../../../utils/createAvatar';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
-// components
-import MyAvatar from '../../../../components/MyAvatar';
-import Avatar from '../../../../components/Avatar';
-import Image from '../../../../components/Image';
+// sections
+import OrganizationAvatar from './OrganizationAvatar';
 
 // ----------------------------------------------------------------------
 
@@ -49,7 +46,6 @@ OrganizationCover.propTypes = {
 
 export default function OrganizationCover({ myProfile }) {
   const { organization } = useAuth();
-
   const { cover } = myProfile;
 
   return (
@@ -81,20 +77,5 @@ export default function OrganizationCover({ myProfile }) {
         <Image alt="profile cover" src={cover} sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
       )} */}
     </RootStyle>
-  );
-}
-
-function OrganizationAvatar({ ...other }) {
-  const { organization } = useAuth();
-
-  return (
-    <Avatar
-      src={organization?.branding?.logo_url}
-      alt={organization?.display_name}
-      color={organization?.branding?.logo_url ? 'default' : createAvatar(organization?.display_name).color}
-      {...other}
-    >
-      {createAvatar(organization?.display_name).name}
-    </Avatar>
   );
 }
