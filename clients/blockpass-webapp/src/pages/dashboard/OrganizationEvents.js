@@ -1,7 +1,6 @@
 import { capitalCase } from 'change-case';
 import { useState, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
-import axios from 'axios';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Tab, Box, Card, Typography, Tabs, Container } from '@mui/material';
@@ -53,12 +52,11 @@ const FILTER_OPTIONS = {
 
 export default function UserProfile() {
   useEffect(() => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-    getEvents(source);
+    const controller = new AbortController();
+    getEvents(controller);
 
     return () => {
-      source.cancel();
+      controller.abort();
     };
   }, []);
 
@@ -106,7 +104,7 @@ export default function UserProfile() {
     setFindEvent(value);
   };
 
-  const getEvents = async (source) => {
+  const getEvents = async (controller) => {
     const token = await getAccessToken();
 
     axiosInstance
@@ -114,7 +112,7 @@ export default function UserProfile() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        CancelToken: source.token,
+        signal: controller.signal,
       })
       .then((res) => {
         res.data.sort((event1, event2) => new Date(event1.startDate) - new Date(event2.startDate));
@@ -122,7 +120,9 @@ export default function UserProfile() {
         setFilteredEvents(filterUpcomingEvents(res.data));
       })
       .catch((err) => {
-        enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
+        if (!controller.signal.aborted) {
+          enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
+        }
       });
   };
 
@@ -171,12 +171,12 @@ export default function UserProfile() {
     {
       value: 'upcoming',
       icon: <Iconify icon={'ic:round-calendar-today'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={filteredEvents} tab={currentTab}/>,
+      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={filteredEvents} tab={currentTab} />,
     },
     {
       value: 'past',
       icon: <Iconify icon={'ic:round-inventory-2'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Past Events'} gallery={filteredEvents} tab={currentTab}/>,
+      component: <OrganizationEventGallery title={'Past Events'} gallery={filteredEvents} tab={currentTab} />,
     },
   ];
 
