@@ -20,11 +20,11 @@ const CaptionStyle = styled(CardContent)(({ theme }) => ({
   color: theme.palette.common.white,
 }));
 
-GalleryItem.propTypes = {
-  image: PropTypes.object,
+OrganizationGalleryItem.propTypes = {
+  event: PropTypes.object,
 };
 
-export default function GalleryItem({ event }) {
+export default function OrganizationGalleryItem({ event }) {
   const { img, name, startDate } = event;
   return (
     <Card sx={{ cursor: 'pointer', position: 'relative' }}>
