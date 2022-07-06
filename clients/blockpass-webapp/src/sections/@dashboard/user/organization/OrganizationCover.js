@@ -7,7 +7,7 @@ import cssStyles from '../../../../utils/cssStyles';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // sections
-import OrganizationAvatar from './OrganizationAvatar';
+// import OrganizationAvatar from './OrganizationAvatar';
 
 // ----------------------------------------------------------------------
 
@@ -28,13 +28,12 @@ const InfoStyle = styled('div')(({ theme }) => ({
   right: 0,
   zIndex: 99,
   position: 'absolute',
-  marginTop: theme.spacing(5),
+  marginTop: theme.spacing(11),
   [theme.breakpoints.up('md')]: {
     right: 'auto',
     display: 'flex',
     alignItems: 'center',
-    left: theme.spacing(3),
-    bottom: theme.spacing(3),
+    bottom: theme.spacing(7),
   },
 }));
 
@@ -46,12 +45,12 @@ OrganizationCover.propTypes = {
 
 export default function OrganizationCover({ myProfile }) {
   const { organization } = useAuth();
-  const { cover } = myProfile;
+  // const { cover } = myProfile;
 
   return (
     <RootStyle>
       <InfoStyle>
-        <OrganizationAvatar
+        {/* <OrganizationAvatar
           sx={{
             mx: 'auto',
             borderWidth: 2,
@@ -61,7 +60,7 @@ export default function OrganizationCover({ myProfile }) {
             width: { xs: 80, md: 128 },
             height: { xs: 80, md: 128 },
           }}
-        />
+        /> */}
         <Box
           sx={{
             ml: { md: 3 },
