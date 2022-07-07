@@ -57,8 +57,10 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
   const connectWallet = async () => {
     if (!isAuthenticated) {
       await authenticate({ signingMessage: 'Connect to BlockPass' })
-        .then(() => {
-          enqueueSnackbar('Wallet connected!');
+        .then((user) => {
+          if (user) {
+            enqueueSnackbar('Wallet connected!');
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -151,7 +153,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
   return (
     <Card sx={{ p: 3 }}>
       <Typography variant="overline" sx={{ mb: 3, display: 'block', color: 'text.secondary' }}>
-        Payment Method
+        Wallet Addresses
       </Typography>
 
       <Stack spacing={2} direction={{ xs: 'column', md: 'row' }}>
