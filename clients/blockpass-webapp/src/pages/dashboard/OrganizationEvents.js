@@ -11,7 +11,7 @@ import useAuth from '../../hooks/useAuth';
 import useTabs from '../../hooks/useTabs';
 import useSettings from '../../hooks/useSettings';
 // _mock_
-import { _userAbout, _userGallery } from '../../_mock';
+import { _userAbout } from '../../_mock';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
@@ -82,7 +82,7 @@ export default function OrganizationEvents() {
     } else {
       searchEvents(filterPastEvents(events));
     }
-  }, [findEvent]);
+  }, [findEvent, currentTab, events]);
 
   useEffect(() => {
     filterMap[filterOption]();
@@ -118,7 +118,7 @@ export default function OrganizationEvents() {
         setEvents(res.data);
         setFilteredEvents(filterUpcomingEvents(res.data));
       })
-      .catch((err) => {
+      .catch(() => {
         if (!controller.signal.aborted) {
           enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
         }
@@ -151,14 +151,10 @@ export default function OrganizationEvents() {
     setFilteredEvents(eventList.filter(({ name }) => name.toLowerCase().includes(findEvent.toLowerCase())));
   };
 
-  const filterUpcomingEvents = (eventList) => {
-    return eventList.filter(({ startDate }) => new Date(startDate) > Date.now());
-  };
+  const filterUpcomingEvents = (eventList) => eventList.filter(({ startDate }) => new Date(startDate) > Date.now());
 
-  const filterPastEvents = (eventList) => {
-    return eventList.filter(({ startDate }) => new Date(startDate) < Date.now());
-  };
-
+  const filterPastEvents = (eventList) => eventList.filter(({ startDate }) => new Date(startDate) < Date.now());
+  
   const filterMap = {
     ascending: sortAscending,
     descending: sortDescending,

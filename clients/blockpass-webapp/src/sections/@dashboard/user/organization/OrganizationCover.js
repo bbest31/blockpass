@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
@@ -39,14 +38,9 @@ const InfoStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-OrganizationCover.propTypes = {
-  myProfile: PropTypes.object,
-};
-
-export default function OrganizationCover({ myProfile }) {
+export default function OrganizationCover() {
   const { organization } = useAuth();
-  // const { cover } = myProfile;
-
+  
   return (
     <RootStyle>
       <InfoStyle>
@@ -72,9 +66,6 @@ export default function OrganizationCover({ myProfile }) {
           <Typography variant="h4">{organization?.display_name}</Typography>
         </Box>
       </InfoStyle>
-      {/* {cover && (
-        <Image alt="profile cover" src={cover} sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
-      )} */}
     </RootStyle>
   );
 }
