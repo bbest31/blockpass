@@ -44,6 +44,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
   const { organization, getAccessToken, refreshOrg } = useAuth();
   const [anchorElement, setAnchorElement] = useState(null);
   const [openMenu, setOpenMenuActions] = useState(false);
+  const [isWalletConnected, setIsWalletConnected] = useState(isAuthenticated);
 
   const handleClick = (event) => {
     setAnchorElement(event.currentTarget);
@@ -55,10 +56,11 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
   };
 
   const connectWallet = async () => {
-    if (!isAuthenticated) {
+    if (!isWalletConnected) {
       await authenticate({ signingMessage: 'Connect to BlockPass' })
         .then((user) => {
           if (user) {
+            setIsWalletConnected(true);
             enqueueSnackbar('Wallet connected!');
           }
         })
@@ -67,6 +69,11 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
           enqueueSnackbar('Something went wrong', { variant: 'error' });
         });
     }
+  };
+
+  const disconnectWallet = () => {
+    logout();
+    setIsWalletConnected(false);
   };
 
   const saveWallet = async () => {
@@ -215,8 +222,9 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
               <TextField
                 fullWidth
-                label="Wallet Address"
-                defaultValue={isAuthenticated ? user.get('ethAddress') : ''}
+                placeholder='Wallet Address'
+                InputProps={{ readOnly: true }}
+                value={isWalletConnected ? user.get('ethAddress') : ''}
                 // InputProps={{
                 //   endAdornment: (
                 //     <InputAdornment position="end">
@@ -228,14 +236,13 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
                 //     </InputAdornment>
                 //   ),
                 // }}
-                disabled
               />
             </Stack>
             <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
               <Button color="inherit" variant="outlined" onClick={onCancel}>
                 Cancel
               </Button>
-              {!isAuthenticated ? (
+              {!isWalletConnected ? (
                 <LoadingButton type="submit" variant="contained" onClick={connectWallet}>
                   Connect Wallet
                 </LoadingButton>
@@ -244,7 +251,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
                   <LoadingButton type="submit" variant="contained" onClick={saveWallet}>
                     Save Wallet
                   </LoadingButton>
-                  <LoadingButton variant="string" onClick={() => logout()}>
+                  <LoadingButton variant="string" onClick={disconnectWallet}>
                     Disconnect Wallet
                   </LoadingButton>
                 </div>
