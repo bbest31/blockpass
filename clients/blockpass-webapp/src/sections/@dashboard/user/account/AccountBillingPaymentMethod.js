@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useMoralis } from 'react-moralis';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
   Box,
@@ -38,18 +38,29 @@ AccountBillingPaymentMethod.propTypes = {
 };
 
 export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, onCancel }) {
-  const { authenticate, isAuthenticated, user, logout } = useMoralis();
+  const { authenticate, isAuthenticated, user, logout, isWeb3Enabled, enableWeb3, chainId } = useMoralis();
   const { enqueueSnackbar } = useSnackbar();
   const [wallets, setWallets] = useState(metadata);
   const { organization, getAccessToken, refreshOrg } = useAuth();
   const [anchorElement, setAnchorElement] = useState(null);
   const [openMenu, setOpenMenuActions] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(isAuthenticated);
+  const [wrongNetwork, setWrongNetwork] = useState(false);
 
   const handleClick = (event) => {
     setAnchorElement(event.currentTarget);
     setOpenMenuActions(true);
   };
+
+  useEffect(() => {
+    if (!isWeb3Enabled) {
+      enableWeb3();
+    }
+
+    if (chainId?.toString() !== `0x${MATIC_NETWORK.chainId.toString(16)}`) {
+      setWrongNetwork(true);
+    }
+  }, [chainId, isWeb3Enabled, enableWeb3]);
 
   const handleClose = () => {
     setOpenMenuActions(false);
@@ -57,28 +68,47 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
 
   const connectWallet = async () => {
     if (!isWalletConnected) {
-      await authenticate({ signingMessage: 'Connect to BlockPass' })
-        .then((user) => {
-          if (user) {
-            setIsWalletConnected(true);
-            enqueueSnackbar('Wallet connected!');
+      await authenticate({
+        signingMessage: 'Connect to BlockPass',
+        chainId: MATIC_NETWORK.chainId,
+        onError: (err) => {
+          switch (err.code) {
+            case 4001:
+              // user denied message signature
+              enqueueSnackbar('User denied message signature', { variant: 'error' });
+              break;
+            default:
+              console.error(err);
+              enqueueSnackbar('Something went wrong', { variant: 'error' });
+              break;
           }
-        })
-        .catch((err) => {
-          console.error(err);
-          enqueueSnackbar('Something went wrong', { variant: 'error' });
-        });
+        },
+        onSuccess: () => {
+          if (chainId.toString() !== `0x${MATIC_NETWORK.chainId.toString(16)}`) {
+            enqueueSnackbar('Connected to unsupported network!', { variant: 'warning' });
+            setWrongNetwork(true);
+          } else {
+            enqueueSnackbar('Wallet connected!');
+            setWrongNetwork(false);
+          }
+          setIsWalletConnected(true);
+        },
+      }).catch((err) => {
+        console.error(err);
+        enqueueSnackbar('Something went wrong', { variant: 'error' });
+      });
     }
   };
 
   const disconnectWallet = () => {
     logout();
     setIsWalletConnected(false);
+    setWrongNetwork(false);
   };
 
   const saveWallet = async () => {
     const newWallet = user.get('ethAddress');
-    if (isDuplicateWallet(MATIC_NETWORK, newWallet)) {
+    if (isDuplicateWallet(MATIC_NETWORK.network, newWallet)) {
       // wallet is already saved so do nothing.
       enqueueSnackbar('Wallet already saved', { variant: 'info' });
       return;
@@ -86,7 +116,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
 
     // build new metadata object for org
     const temp = { ...wallets };
-    temp[MATIC_NETWORK] = newWallet;
+    temp[MATIC_NETWORK.network] = newWallet;
 
     try {
       const token = await getAccessToken();
@@ -222,9 +252,12 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
               <TextField
                 fullWidth
-                placeholder='Wallet Address'
+                placeholder="Wallet Address"
                 InputProps={{ readOnly: true }}
                 value={isWalletConnected ? user.get('ethAddress') : ''}
+                color={wrongNetwork && isWalletConnected ? 'warning' : 'primary'}
+                helperText={wrongNetwork && isWalletConnected ? 'Unsupported network connected' : ''}
+                focused={wrongNetwork && isWalletConnected}
                 // InputProps={{
                 //   endAdornment: (
                 //     <InputAdornment position="end">
@@ -248,7 +281,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
                 </LoadingButton>
               ) : (
                 <div>
-                  <LoadingButton type="submit" variant="contained" onClick={saveWallet}>
+                  <LoadingButton type="submit" variant="contained" onClick={saveWallet} disabled={wrongNetwork}>
                     Save Wallet
                   </LoadingButton>
                   <LoadingButton variant="string" onClick={disconnectWallet}>

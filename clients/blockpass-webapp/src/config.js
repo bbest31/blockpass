@@ -16,9 +16,10 @@ export const MORALIS_API = {
   APP_ID: process.env.REACT_APP_MORALIS_APP_ID,
 };
 
-export const MATIC_NETWORK =
-  process.env.NODE_ENV === 'production' ? NETWORKS.POLYGON_MAINNET : NETWORKS.POLYGON_TESTNET;
-
+export const MATIC_NETWORK = {
+  network: process.env.NODE_ENV === 'production' ? NETWORKS.POLYGON_MAINNET : NETWORKS.POLYGON_TESTNET,
+  chainId: process.env.NODE_ENV === 'production' ? 0x38 : 0x13881,
+};
 export const FIREBASE_API = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
