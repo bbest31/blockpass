@@ -1,6 +1,7 @@
 import { capitalCase } from 'change-case';
 import { useState, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
+import { useMixpanel } from 'react-mixpanel-browser';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Tab, Box, Card, Typography, Tabs, Container } from '@mui/material';
@@ -24,6 +25,7 @@ import {
 } from '../../sections/@dashboard/user/organization';
 // utils
 import axiosInstance from '../../utils/axios';
+import { trackEvent } from '../../utils/mixpanelUtils';
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +53,8 @@ const FILTER_OPTIONS = {
 // ----------------------------------------------------------------------
 
 export default function OrganizationEvents() {
+  const mixpanel = useMixpanel();
+
   useEffect(() => {
     const controller = new AbortController();
     getEvents(controller);
@@ -88,10 +92,15 @@ export default function OrganizationEvents() {
     filterMap[filterOption]();
   }, [filterOption]);
 
+  useEffect(() => {
+    trackEvent(mixpanel, 'Navigate', { page: 'OrganizationEvents', tab: 'upcoming' });
+  }, []);
+
   const handleChangeTab = (event, value) => {
     const option = FILTER_OPTIONS[value][0];
     onChangeTab(event, value);
     setFilterOption(option);
+    trackEvent(mixpanel, 'Navigate', { page: 'OrganizationEvents', tab: value });
   };
 
   const handleFilterOption = (event) => {
@@ -154,7 +163,7 @@ export default function OrganizationEvents() {
   const filterUpcomingEvents = (eventList) => eventList.filter(({ startDate }) => new Date(startDate) > Date.now());
 
   const filterPastEvents = (eventList) => eventList.filter(({ startDate }) => new Date(startDate) < Date.now());
-  
+
   const filterMap = {
     ascending: sortAscending,
     descending: sortDescending,

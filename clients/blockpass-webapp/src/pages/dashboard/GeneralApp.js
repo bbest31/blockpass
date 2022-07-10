@@ -2,6 +2,7 @@
 import { useTheme } from '@mui/material/styles';
 import { Container, Grid, Stack, Button } from '@mui/material';
 // hooks
+import { useMixpanel } from 'react-mixpanel-browser';
 import useAuth from '../../hooks/useAuth';
 import useSettings from '../../hooks/useSettings';
 // _mock_
@@ -23,11 +24,16 @@ import {
 } from '../../sections/@dashboard/general/app';
 // assets
 import { SeoIllustration } from '../../assets';
+// utils
+import { trackEvent } from '../../utils/mixpanelUtils';
 
 // ----------------------------------------------------------------------
 
 export default function GeneralApp() {
   const { user } = useAuth();
+  const mixpanel = useMixpanel();
+
+  trackEvent(mixpanel, 'Navigate', { page: 'Dashboard' });
 
   const theme = useTheme();
 
