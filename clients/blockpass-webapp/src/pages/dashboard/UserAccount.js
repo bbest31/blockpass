@@ -1,4 +1,6 @@
 import { capitalCase } from 'change-case';
+import { useMixpanel } from 'react-mixpanel-browser';
+import { useEffect } from 'react';
 // @mui
 import { Container, Tab, Box, Tabs } from '@mui/material';
 // routes
@@ -16,6 +18,8 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import { AccountGeneral, AccountBilling, AccountChangePassword } from '../../sections/@dashboard/user/account';
 import AccountOrganization from '../../sections/@dashboard/user/account/AccountOrganization';
+// utils
+import { trackEvent } from '../../utils/mixpanelUtils';
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +29,12 @@ export default function UserAccount() {
   const { currentTab, onChangeTab } = useTabs('my_info');
 
   const { organization } = useAuth();
+
+  const mixpanel = useMixpanel();
+
+  useEffect(() => {
+    trackEvent(mixpanel, 'Navigate', { page: 'UserAccount', tab: 'my_info' });
+  }, []);
 
   const ACCOUNT_TABS = [
     {
@@ -49,6 +59,11 @@ export default function UserAccount() {
     },
   ];
 
+  const handleChangeTab = (event, value) => {
+    onChangeTab(event, value);
+    trackEvent(mixpanel, 'Navigate', { page: 'UserAccount', tab: value });
+  };
+
   return (
     <Page title="Account">
       <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -62,7 +77,7 @@ export default function UserAccount() {
           variant="scrollable"
           scrollButtons="auto"
           value={currentTab}
-          onChange={onChangeTab}
+          onChange={handleChangeTab}
         >
           {ACCOUNT_TABS.map((tab) => (
             <Tab disableRipple key={tab.value} label={capitalCase(tab.value)} icon={tab.icon} value={tab.value} />

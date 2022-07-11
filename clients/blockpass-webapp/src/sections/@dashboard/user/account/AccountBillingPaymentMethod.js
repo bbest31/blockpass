@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useMoralis } from 'react-moralis';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
+import { useMixpanel } from 'react-mixpanel-browser';
 // @mui
 import {
   Box,
@@ -26,6 +27,7 @@ import useAuth from '../../../../hooks/useAuth';
 // utils
 import axiosInstance from '../../../../utils/axios';
 import { getNetworkIcon } from '../../../../utils/networks';
+import { trackEvent } from '../../../../utils/mixpanelUtils';
 // config
 import { MATIC_NETWORK } from '../../../../config';
 // ----------------------------------------------------------------------
@@ -46,6 +48,8 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
   const [openMenu, setOpenMenuActions] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(isAuthenticated);
   const [wrongNetwork, setWrongNetwork] = useState(false);
+
+  const mixpanel = useMixpanel();
 
   const handleClick = (event) => {
     setAnchorElement(event.currentTarget);
@@ -92,10 +96,12 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
             setWrongNetwork(false);
           }
           setIsWalletConnected(true);
+          trackEvent(mixpanel, 'Connect Wallet', { success: true, network: chainId.toString() });
         },
       }).catch((err) => {
         console.error(err);
         enqueueSnackbar('Something went wrong', { variant: 'error' });
+        trackEvent(mixpanel, 'Connect Wallet', { success: false });
       });
     }
   };
@@ -136,6 +142,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
           refreshOrg();
           setWallets(temp);
           onCancel();
+          trackEvent(mixpanel, 'Save Wallet', { network: MATIC_NETWORK.network });
         });
     } catch (err) {
       console.error(err);

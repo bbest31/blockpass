@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+// import { useState } from 'react';
+// import { Link as RouterLink } from 'react-router-dom';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, Stack, Alert, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // routes
-import { PATH_AUTH } from '../../../routes/paths';
+// import { PATH_AUTH } from '../../../routes/paths';
 // hooks
 import useAuth from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
