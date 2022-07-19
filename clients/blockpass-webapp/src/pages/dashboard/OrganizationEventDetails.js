@@ -16,7 +16,7 @@ import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
-import { OrganizationEventGeneral } from '../../sections/@dashboard/user/organization';
+import { OrganizationEventGeneral, OrganizationEventImageUpload } from '../../sections/@dashboard/user/organization';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +34,11 @@ export default function OrganizationEventDetails({ eventItem }) {
       value: 'basic_info',
       icon: <Iconify icon={'ic:round-account-box'} width={20} height={20} />,
       component: <OrganizationEventGeneral />,
+    },
+    {
+      value: 'details',
+      icon: <Iconify icon={'ic:round-vpn-key'} width={20} height={20} />,
+      component: <OrganizationEventImageUpload />,
     },
   ];
 
