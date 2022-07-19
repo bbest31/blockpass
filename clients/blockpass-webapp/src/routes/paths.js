@@ -39,6 +39,7 @@ export const PATH_APP = {
   general: {
     dashboard: '/dashboard',
     events: '/events',
+    eventDetail: '/events/details',
     analytics: '/analytics',
     account: '/account'
   }

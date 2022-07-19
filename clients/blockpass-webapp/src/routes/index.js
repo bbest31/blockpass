@@ -67,6 +67,7 @@ export default function Router() {
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'dashboard', element: <GeneralApp /> },
         { path: 'events', element: <Events /> },
+        { path: 'events/details', element: <OrganizationEventDetails /> },
         { path: 'analytics', element: <GeneralAnalytics /> },
         { path: 'account', element: <UserAccount /> },
       ],
@@ -224,6 +225,7 @@ const UserCreate = Loadable(lazy(() => import('../pages/dashboard/UserCreate')))
 
 // EVENTS
 const Events = Loadable(lazy(() => import('../pages/dashboard/OrganizationEvents')));
+const OrganizationEventDetails = Loadable(lazy(() => import('../pages/dashboard/OrganizationEventDetails')));
 
 // APP
 const Chat = Loadable(lazy(() => import('../pages/dashboard/Chat')));
