@@ -36,12 +36,12 @@ export default function OrganizationEventDetails({ eventItem }) {
   const EVENT_TABS = [
     {
       value: 'basic_info',
-      icon: <Iconify icon={'ic:round-account-box'} width={20} height={20} />,
+      icon: <Iconify icon={'ic:baseline-info'} width={20} height={20} />,
       component: <OrganizationEventGeneral />,
     },
     {
       value: 'details',
-      icon: <Iconify icon={'ic:round-vpn-key'} width={20} height={20} />,
+      icon: <Iconify icon={'ic:baseline-photo'} width={20} height={20} />,
       component: <OrganizationEventImageUpload />,
     },
     {
