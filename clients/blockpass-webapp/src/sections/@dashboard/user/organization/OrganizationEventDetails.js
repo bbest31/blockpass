@@ -32,7 +32,7 @@ export default function OrganizationEventDetails({ eventItem }) {
     {
       value: 'basic_info',
       icon: <Iconify icon={'ic:baseline-info'} width={20} height={20} />,
-      component: <OrganizationEventGeneral />,
+      component: <OrganizationEventGeneral eventItem={eventItem} />,
     },
     {
       value: 'details',
