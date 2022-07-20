@@ -11,7 +11,7 @@ import { _userAbout } from '../../_mock';
 // components
 import Page from '../../components/Page';
 // sections
-import { OrganizationEventsView } from '../../sections/@dashboard/user/organization';
+import { OrganizationEventsView, OrganizationEventDetails } from '../../sections/@dashboard/user/organization';
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +46,11 @@ export default function OrganizationEvents() {
   return (
     <Page title="Events">
       <Container maxWidth={themeStretch ? false : 'lg'}>
-        <OrganizationEventsView />
+        {selectedEvent ? (
+          <OrganizationEventDetails eventItem={selectedEvent} />
+        ) : (
+          <OrganizationEventsView eventItem={selectedEvent} onClickHandler={setSelectedEvent} />
+        )}
       </Container>
     </Page>
   );

@@ -8,9 +8,10 @@ import OrganizationGalleryItem from './OrganizationGalleryItem';
 OrganizationEventGallery.propTypes = {
   gallery: PropTypes.array.isRequired,
   tab: PropTypes.string,
+  onClickHandler: PropTypes.func,
 };
 
-export default function OrganizationEventGallery({ gallery, tab }) {
+export default function OrganizationEventGallery({ gallery, tab, onClickHandler }) {
   return (
     <Box sx={{ mt: 2 }}>
       <Card sx={{ p: 3 }}>
@@ -25,9 +26,11 @@ export default function OrganizationEventGallery({ gallery, tab }) {
             },
           }}
         >
-          {gallery.length !== 0 ? gallery.map((event) => (
-            <OrganizationGalleryItem key={event._id} event={event} />
-          )) : `No ${tab} events`}
+          {gallery.length !== 0
+            ? gallery.map((event) => (
+                <OrganizationGalleryItem key={event._id} event={event} onClickHandler={onClickHandler} />
+              ))
+            : `No ${tab} events`}
         </Box>
       </Card>
     </Box>

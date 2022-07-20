@@ -2,26 +2,22 @@ import { capitalCase } from 'change-case';
 import { useState, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { useMixpanel } from 'react-mixpanel-browser';
+import PropTypes from 'prop-types';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Tab, Box, Card, Typography, Tabs, Container } from '@mui/material';
+import { Tab, Box, Card, Typography, Tabs } from '@mui/material';
 // routes
 import { PATH_APP } from '../../../../routes/paths';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 import useTabs from '../../../../hooks/useTabs';
-import useSettings from '../../../../hooks/useSettings';
 // _mock_
 import { _userAbout } from '../../../../_mock';
 // components
 import Iconify from '../../../../components/Iconify';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 // sections
-import {
-  OrganizationEventGallery,
-  OrganizationEventToolbar,
-  OrganizationCover,
-} from './index';
+import { OrganizationEventGallery, OrganizationEventToolbar, OrganizationCover } from './index';
 // utils
 import axiosInstance from '../../../../utils/axios';
 import { trackEvent } from '../../../../utils/mixpanelUtils';
@@ -49,9 +45,13 @@ const FILTER_OPTIONS = {
   past: ['newest', 'oldest'],
 };
 
+OrganizationEventsView.propTypes = {
+  onClickHandler: PropTypes.func,
+};
+
 // ----------------------------------------------------------------------
 
-export default function OrganizationEventsView() {
+export default function OrganizationEventsView({ onClickHandler }) {
   const mixpanel = useMixpanel();
 
   useEffect(() => {
@@ -64,8 +64,6 @@ export default function OrganizationEventsView() {
   }, []);
 
   const { enqueueSnackbar } = useSnackbar();
-
-  const { themeStretch } = useSettings();
 
   const { organization, getAccessToken } = useAuth();
 
@@ -174,12 +172,26 @@ export default function OrganizationEventsView() {
     {
       value: 'upcoming',
       icon: <Iconify icon={'ic:round-calendar-today'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Upcoming Events'} gallery={filteredEvents} tab={currentTab} />,
+      component: (
+        <OrganizationEventGallery
+          title={'Upcoming Events'}
+          gallery={filteredEvents}
+          tab={currentTab}
+          onClickHandler={onClickHandler}
+        />
+      ),
     },
     {
       value: 'past',
       icon: <Iconify icon={'ic:round-inventory-2'} width={20} height={20} />,
-      component: <OrganizationEventGallery title={'Past Events'} gallery={filteredEvents} tab={currentTab} />,
+      component: (
+        <OrganizationEventGallery
+          title={'Past Events'}
+          gallery={filteredEvents}
+          tab={currentTab}
+          onClickHandler={onClickHandler}
+        />
+      ),
     },
   ];
 
