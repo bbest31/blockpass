@@ -46,6 +46,7 @@ export default function OrganizationEventGeneral({ eventItem }) {
   const [website, setWebsite] = useState(event?.website ? event.website : '');
   const [description, setDescription] = useState(event?.description ? event.description : '');
   const [formDisabled, setFormDisabled] = useState(true);
+  const [displayEndDate, setDisplayEndDate] = useState(endDate !== '');
 
   const methods = useForm({
     resolver: yupResolver(UpdateEventSchema),
@@ -71,48 +72,52 @@ export default function OrganizationEventGeneral({ eventItem }) {
     setFormDisabled(true);
   };
 
+  const endDateSwitchHandler = () => {
+    setDisplayEndDate(!displayEndDate);
+  };
+
   const saveChanges = (data) => {
     try {
-      let updateUser = false;
+      let updateEvent = false;
       const newUserData = {};
 
       if (eventName !== data.eventName) {
-        updateUser = true;
+        updateEvent = true;
         newUserData.eventName = data.eventName;
       }
 
       if (location !== data.location) {
-        updateUser = true;
+        updateEvent = true;
         newUserData.location = data.location;
       }
 
       if (startDate !== data.startDate) {
-        updateUser = true;
+        updateEvent = true;
         newUserData.startDate = data.startDate;
       }
 
       if (startTime !== data.startTime) {
-        updateUser = true;
+        updateEvent = true;
         newUserData.startTime = data.startTime;
       }
 
       if (endDate !== data.endDate) {
-        updateUser = true;
+        updateEvent = true;
         newUserData.endDate = data.endDate;
       }
 
       if (endTime !== data.endTime) {
-        updateUser = true;
+        updateEvent = true;
         newUserData.endTime = data.endTime;
       }
 
       if (website !== data.website) {
-        updateUser = true;
+        updateEvent = true;
         newUserData.website = data.website;
       }
 
       if (description !== data.description) {
-        updateUser = true;
+        updateEvent = true;
         newUserData.description = data.description;
       }
 
@@ -121,6 +126,7 @@ export default function OrganizationEventGeneral({ eventItem }) {
       console.error(error);
     }
   };
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
@@ -141,14 +147,21 @@ export default function OrganizationEventGeneral({ eventItem }) {
               <RHFTextField name="location" label="Location" sx={singleColumn} disabled={formDisabled} />
               <RHFTextField name="startDate" label="Start Date" disabled={formDisabled} />
               <RHFTextField name="startTime" label="Start Time" disabled={formDisabled} />
-              <RHFTextField name="endDate" label="End Date" disabled={formDisabled} />
-              <RHFTextField name="endTime" label="End Time" disabled={formDisabled} />
+              {displayEndDate && (
+                <>
+                  <RHFTextField name="endDate" label="End Date" disabled={formDisabled} />
+                  <RHFTextField name="endTime" label="End Time" disabled={formDisabled} />
+                </>
+              )}
               <Box>
                 <FormControlLabel
                   // value="start"
                   control={<Switch />}
                   label="End Date"
                   labelPlacement="start"
+                  disabled={formDisabled}
+                  checked={displayEndDate}
+                  onChange={endDateSwitchHandler}
                 />
               </Box>
               <RHFTextField name="website" label="Website (optional)" sx={singleColumn} disabled={formDisabled} />
@@ -160,9 +173,6 @@ export default function OrganizationEventGeneral({ eventItem }) {
               </Box>
             </Box>
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              {/* <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {setFormDisabled ? 'Edit Info' : 'Save Changes'}
-              </LoadingButton> */}
               {formDisabled ? (
                 <EditButton onClickHandler={() => setFormDisabled(false)} />
               ) : (
