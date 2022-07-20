@@ -7,3 +7,4 @@ export { default as OrganizationEventGeneral } from './OrganizationEventGeneral'
 export { default as OrganizationEventImageUpload } from './OrganizationEventImageUpload';
 export { default as OrganizationTicketTierList } from './OrganizationTicketTierList';
 export { default as OrganizationEventsView } from './OrganizationEventsView';
+export { default as OrganizationEventDetails } from './OrganizationEventDetails';

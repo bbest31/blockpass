@@ -5,22 +5,22 @@ import PropTypes from 'prop-types';
 // @mui
 import { Container, Tab, Box, Tabs } from '@mui/material';
 // routes
-import { PATH_APP } from '../../routes/paths';
+import { PATH_APP } from '../../../../routes/paths';
 // hooks
-import useTabs from '../../hooks/useTabs';
-import useSettings from '../../hooks/useSettings';
+import useTabs from '../../../../hooks/useTabs';
+import useSettings from '../../../../hooks/useSettings';
 // _mock_
-import { _userWallets } from '../../_mock';
+import { _userWallets } from '../../../../_mock';
 // components
-import Page from '../../components/Page';
-import Iconify from '../../components/Iconify';
-import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
+import Page from '../../../../components/Page';
+import Iconify from '../../../../components/Iconify';
+import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 // sections
 import {
   OrganizationEventGeneral,
   OrganizationEventImageUpload,
   OrganizationTicketTierList,
-} from '../../sections/@dashboard/user/organization';
+} from './index';
 
 // ----------------------------------------------------------------------
 
