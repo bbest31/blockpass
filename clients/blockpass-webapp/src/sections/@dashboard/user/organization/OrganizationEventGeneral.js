@@ -10,6 +10,7 @@ import { LoadingButton } from '@mui/lab';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
+import { fDateYearMonthDay, fTimeHourMinute } from '../../../../utils/formatTime';
 // import axiosInstance from '../../../../utils/axios';
 // _mock
 // import { countries } from '../../../../_mock';
@@ -39,10 +40,10 @@ export default function OrganizationEventGeneral({ eventItem }) {
 
   const [eventName, setEventName] = useState(event?.name ? event.name : '');
   const [location, setLocation] = useState(event?.location ? event.location : '');
-  const [startDate, setStartDate] = useState(event?.startDate ? event.startDate : '');
-  const [startTime, setStartTime] = useState(event?.startTime ? event.startTime : '');
-  const [endDate, setEndDate] = useState(event?.endDate ? event.endDate : '');
-  const [endTime, setEndTime] = useState(event?.endTime ? event.endTime : '');
+  const [startDate, setStartDate] = useState(event?.startDate ? fDateYearMonthDay(event.startDate) : '');
+  const [startTime, setStartTime] = useState(event?.startDate ? fTimeHourMinute(event.startDate) : '');
+  const [endDate, setEndDate] = useState(event?.endDate ? fDateYearMonthDay(event.endDate) : '');
+  const [endTime, setEndTime] = useState(event?.endDate ? fTimeHourMinute(event.endDate) : '');
   const [website, setWebsite] = useState(event?.website ? event.website : '');
   const [description, setDescription] = useState(event?.description ? event.description : '');
   const [formDisabled, setFormDisabled] = useState(true);
@@ -145,12 +146,12 @@ export default function OrganizationEventGeneral({ eventItem }) {
                 Location & Time
               </Typography>
               <RHFTextField name="location" label="Location" sx={singleColumn} disabled={formDisabled} />
-              <RHFTextField name="startDate" label="Start Date" disabled={formDisabled} />
-              <RHFTextField name="startTime" label="Start Time" disabled={formDisabled} />
+              <RHFTextField name="startDate" label="Start Date" type="date" disabled={formDisabled} />
+              <RHFTextField name="startTime" label="Start Time" type="time" disabled={formDisabled} />
               {displayEndDate && (
                 <>
-                  <RHFTextField name="endDate" label="End Date" disabled={formDisabled} />
-                  <RHFTextField name="endTime" label="End Time" disabled={formDisabled} />
+                  <RHFTextField name="endDate" label="End Date" type="date" disabled={formDisabled} />
+                  <RHFTextField name="endTime" label="End Time" type="time" disabled={formDisabled} />
                 </>
               )}
               <Box>

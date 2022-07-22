@@ -20,6 +20,14 @@ export function fDateTimeSuffix(date) {
 
 export function fToNow(date) {
   return formatDistanceToNow(new Date(date), {
-    addSuffix: true
+    addSuffix: true,
   });
+}
+
+export function fDateYearMonthDay(date) {
+  return format(new Date(date), 'yyyy-MM-dd');
+}
+
+export function fTimeHourMinute(date) {
+  return format(new Date(date), 'HH:mm');
 }
