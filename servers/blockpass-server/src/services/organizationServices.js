@@ -4,11 +4,28 @@ const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
+const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description'];
+
+// Events
 
 async function getOrganizationEvents(orgId) {
   const events = await Event.find({ orgId: orgId }).exec();
   return events;
 }
+
+async function patchOrganizationEvents(eventId, payload) {
+  Object.keys(payload).forEach((key) => {
+    if (!EVENT_ATTRIBUTES.includes(key)) {
+      throw new Error('event attribute not allowed to be updated');
+    }
+  });
+
+  const event = await Event.findByIdAndUpdate(eventId, payload, { new: true }).exec();
+
+  return event;
+}
+
+// Organizations
 
 async function getOrganization(orgId) {
   const org = await managementAPI.organizations.getByID({ id: orgId }).catch((err) => {
@@ -42,4 +59,5 @@ module.exports = {
   getOrganization,
   patchOrganization,
   getOrganizationEvents,
+  patchOrganizationEvents,
 };

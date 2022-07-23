@@ -11,9 +11,7 @@ import { LoadingButton } from '@mui/lab';
 import useAuth from '../../../../hooks/useAuth';
 // utils
 import { fDateYearMonthDay, fTimeHourMinute } from '../../../../utils/formatTime';
-// import axiosInstance from '../../../../utils/axios';
-// _mock
-// import { countries } from '../../../../_mock';
+import axiosInstance from '../../../../utils/axios';
 // components
 import { FormProvider, RHFEditor, RHFTextField } from '../../../../components/hook-form';
 
@@ -22,9 +20,9 @@ import { FormProvider, RHFEditor, RHFTextField } from '../../../../components/ho
 const singleColumn = { gridColumn: '1 / span 2' };
 
 export default function OrganizationEventGeneral({ eventItem }) {
-  // const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
+  const { organization, getAccessToken } = useAuth();
 
-  // const { user, getAccessToken, refreshUser } = useAuth();
   const event = { ...eventItem };
 
   const UpdateEventSchema = Yup.object().shape({
@@ -77,55 +75,73 @@ export default function OrganizationEventGeneral({ eventItem }) {
     setDisplayEndDate(!displayEndDate);
   };
 
-  const saveChanges = (data) => {
+  const saveChanges = async (data) => {
     try {
       let updateEvent = false;
-      const newUserData = {};
+      const newEventData = {};
 
       if (eventName !== data.eventName) {
         updateEvent = true;
-        newUserData.eventName = data.eventName;
+        newEventData.eventName = data.eventName;
       }
 
       if (location !== data.location) {
         updateEvent = true;
-        newUserData.location = data.location;
+        newEventData.location = data.location;
       }
 
-      if (startDate !== data.startDate) {
+      if (startDate !== data.startDate || startTime !== data.startTime) {
         updateEvent = true;
-        newUserData.startDate = data.startDate;
+        newEventData.startDate = new Date(`${data.startDate} ${data.startTime}`);
       }
 
-      if (startTime !== data.startTime) {
+      if (endDate !== data.endDate || endTime !== data.endTime) {
         updateEvent = true;
-        newUserData.startTime = data.startTime;
-      }
-
-      if (endDate !== data.endDate) {
-        updateEvent = true;
-        newUserData.endDate = data.endDate;
-      }
-
-      if (endTime !== data.endTime) {
-        updateEvent = true;
-        newUserData.endTime = data.endTime;
+        newEventData.endDate = new Date(`${data.endDate} ${data.endTime}`);
       }
 
       if (website !== data.website) {
         updateEvent = true;
-        newUserData.website = data.website;
+        newEventData.website = data.website;
       }
 
       if (description !== data.description) {
         updateEvent = true;
-        newUserData.description = data.description;
+        newEventData.description = data.description;
       }
 
-      console.table(newUserData);
+      if (updateEvent) {
+        setEventName(data.eventName);
+        const token = await getAccessToken();
+        axiosInstance
+          .patch(`/organizations/${organization.id}/events/${event._id}`, newEventData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then(() => {
+            enqueueSnackbar('Event info updated!');
+            updateEventState(data);
+          })
+          .catch((err) => {
+            enqueueSnackbar('Something went wrong', { variant: 'error' });
+            throw err;
+          });
+      }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const updateEventState = (data) => {
+    setEventName(data.eventName);
+    setLocation(data.location);
+    setStartDate(data.startDate);
+    setStartTime(data.startTime);
+    setEndDate(data.endDate);
+    setEndTime(data.endTime);
+    setWebsite(data.website);
+    setDescription(data.description);
   };
 
   return (
