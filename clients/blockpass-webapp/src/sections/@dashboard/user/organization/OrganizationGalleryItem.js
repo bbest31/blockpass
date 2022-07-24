@@ -38,9 +38,6 @@ export default function OrganizationGalleryItem({ event, onClickHandler }) {
             {fDateTimeSuffix(startDate)}
           </Typography>
         </div>
-        <IconButton color="inherit">
-          <Iconify icon={'eva:more-vertical-fill'} width={20} height={20} />
-        </IconButton>
       </CaptionStyle>
     </Card>
   );
