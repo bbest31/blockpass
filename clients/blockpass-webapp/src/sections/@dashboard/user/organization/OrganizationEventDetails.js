@@ -57,7 +57,7 @@ export default function OrganizationEventDetails({ eventItem }) {
         links={[
           { name: 'Dashboard', href: PATH_APP.general.dashboard },
           { name: 'Events', href: PATH_APP.general.events },
-          { name: 'Event Name' },
+          { name: eventItem.name },
         ]}
       />
 
