@@ -157,22 +157,31 @@ export default function OrganizationEventGeneral({ eventItem }) {
                 gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
               }}
             >
-              <RHFTextField name="eventName" label="Event Name" sx={singleColumn} disabled={formDisabled} />
+              <RHFTextField
+                name="eventName"
+                label="Event Name"
+                sx={singleColumn}
+                InputProps={{ readOnly: formDisabled }}
+              />
               <Typography variant="h5" sx={singleColumn}>
                 Location & Time
               </Typography>
-              <RHFTextField name="location" label="Location" sx={singleColumn} disabled={formDisabled} />
-              <RHFTextField name="startDate" label="Start Date" type="date" disabled={formDisabled} />
-              <RHFTextField name="startTime" label="Start Time" type="time" disabled={formDisabled} />
+              <RHFTextField
+                name="location"
+                label="Location"
+                sx={singleColumn}
+                InputProps={{ readOnly: formDisabled }}
+              />
+              <RHFTextField name="startDate" label="Start Date" type="date" InputProps={{ readOnly: formDisabled }} />
+              <RHFTextField name="startTime" label="Start Time" type="time" InputProps={{ readOnly: formDisabled }} />
               {displayEndDate && (
                 <>
-                  <RHFTextField name="endDate" label="End Date" type="date" disabled={formDisabled} />
-                  <RHFTextField name="endTime" label="End Time" type="time" disabled={formDisabled} />
+                  <RHFTextField name="endDate" label="End Date" type="date" InputProps={{ readOnly: formDisabled }} />
+                  <RHFTextField name="endTime" label="End Time" type="time" InputProps={{ readOnly: formDisabled }} />
                 </>
               )}
               <Box>
                 <FormControlLabel
-                  // value="start"
                   control={<Switch />}
                   label="End Date"
                   labelPlacement="start"
@@ -181,7 +190,12 @@ export default function OrganizationEventGeneral({ eventItem }) {
                   onChange={endDateSwitchHandler}
                 />
               </Box>
-              <RHFTextField name="website" label="Website (optional)" sx={singleColumn} disabled={formDisabled} />
+              <RHFTextField
+                name="website"
+                label="Website (optional)"
+                sx={singleColumn}
+                InputProps={{ readOnly: formDisabled }}
+              />
               <Typography variant="h5" sx={singleColumn}>
                 Description
               </Typography>
