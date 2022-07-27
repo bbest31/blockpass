@@ -1,7 +1,7 @@
 import { capitalCase } from 'change-case';
+import { useMixpanel } from 'react-mixpanel-browser';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-// import { useMixpanel } from 'react-mixpanel-browser';
-// import { useEffect } from 'react';
 // @mui
 import { Tab, Box, Tabs } from '@mui/material';
 // routes
@@ -16,6 +16,8 @@ import Iconify from '../../../../components/Iconify';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 // sections
 import { OrganizationEventGeneral, OrganizationEventImageUpload, OrganizationTicketTierList } from './index';
+// utils
+import { trackEvent } from '../../../../utils/mixpanelUtils';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +29,12 @@ export default function OrganizationEventDetails({ eventItem }) {
   const { themeStretch } = useSettings();
 
   const { currentTab, onChangeTab } = useTabs('basic_info');
+
+  const mixpanel = useMixpanel();
+
+  useEffect(() => {
+    trackEvent(mixpanel, 'Navigate', { page: `Event Details ${eventItem._id}`, tab: 'basic_info' });
+  }, []);
 
   const EVENT_TABS = [
     {
@@ -48,6 +56,7 @@ export default function OrganizationEventDetails({ eventItem }) {
 
   const handleChangeTab = (event, value) => {
     onChangeTab(event, value);
+    trackEvent(mixpanel, 'Navigate', { page: `EventDetails ${eventItem._id}`, tab: value });
   };
 
   return (
