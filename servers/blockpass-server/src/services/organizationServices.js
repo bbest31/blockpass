@@ -1,10 +1,12 @@
 'use strict';
+const mongoose = require('mongoose');
+
 const Event = require('../models/Events.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
-const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description'];
+const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
 
 // Events
 
@@ -20,14 +22,13 @@ async function patchOrganizationEvents(eventId, payload) {
     }
   });
 
-  let updateFields = {};
-
-  if (payload?.endDate === '') {
-    updateFields.$unset = 'something';
+  // Remove endDate as a field from the document then payload
+  if (payload?.removeEndDate) {
+    await Event.findByIdAndUpdate(eventId, { $unset: { endDate: 1 } });
+    delete payload.removeEndDate;
   }
-  console.log(updateFields);
 
-  const event = await Event.findByIdAndUpdate(eventId, { payload }, { new: true }).exec();
+  const event = await Event.findByIdAndUpdate(eventId, { ...mongoose.sanitizeFilter(payload) }, { new: true });
   return event;
 }
 

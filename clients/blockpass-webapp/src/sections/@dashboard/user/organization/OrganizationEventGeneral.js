@@ -46,6 +46,7 @@ export default function OrganizationEventGeneral({ eventItem }) {
   const [description, setDescription] = useState(event?.description ? event.description : '');
   const [formDisabled, setFormDisabled] = useState(true);
   const [displayEndDate, setDisplayEndDate] = useState(endDate !== '');
+  const [removeEndDate, setRemoveEndDate] = useState(false);
 
   const methods = useForm({
     resolver: yupResolver(UpdateEventSchema),
@@ -63,6 +64,7 @@ export default function OrganizationEventGeneral({ eventItem }) {
 
   const {
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = methods;
 
@@ -72,6 +74,13 @@ export default function OrganizationEventGeneral({ eventItem }) {
   };
 
   const endDateSwitchHandler = () => {
+    if (displayEndDate) {
+      setEndDate('');
+      setEndTime('');
+      setValue('endDate', '');
+      setValue('endTime', '');
+      setRemoveEndDate(true);
+    }
     setDisplayEndDate(!displayEndDate);
   };
 
@@ -97,7 +106,11 @@ export default function OrganizationEventGeneral({ eventItem }) {
 
       if (endDate !== data.endDate || endTime !== data.endTime) {
         updateEvent = true;
-        newEventData.endDate = new Date(`${data.endDate} ${data.endTime}`);
+        const newEndDate = new Date(`${data.endDate} ${data.endTime}`);
+
+        if (Date.parse(newEndDate)) {
+          newEventData.endDate = newEndDate;
+        }
       }
 
       if (website !== data.website) {
@@ -108,6 +121,11 @@ export default function OrganizationEventGeneral({ eventItem }) {
       if (description !== data.description) {
         updateEvent = true;
         newEventData.description = data.description;
+      }
+
+      if (removeEndDate) {
+        updateEvent = true;
+        newEventData.removeEndDate = true;
       }
 
       if (updateEvent) {
@@ -142,6 +160,7 @@ export default function OrganizationEventGeneral({ eventItem }) {
     setEndTime(data.endTime);
     setWebsite(data.website);
     setDescription(data.description);
+    setRemoveEndDate(false);
   };
 
   return (
