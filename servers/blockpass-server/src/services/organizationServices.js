@@ -20,8 +20,14 @@ async function patchOrganizationEvents(eventId, payload) {
     }
   });
 
-  const event = await Event.findByIdAndUpdate(eventId, payload, { new: true }).exec();
+  let updateFields = {};
 
+  if (payload?.endDate === '') {
+    updateFields.$unset = 'something';
+  }
+  console.log(updateFields);
+
+  const event = await Event.findByIdAndUpdate(eventId, { payload }, { new: true }).exec();
   return event;
 }
 
