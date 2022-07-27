@@ -223,11 +223,12 @@ export default function OrganizationEventGeneral({ eventItem }) {
               </Box>
             </Box>
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              {formDisabled ? (
-                <EditButton onClickHandler={() => setFormDisabled(false)} />
-              ) : (
-                <SaveButton loading={isSubmitting} />
-              )}
+              {new Date(startDate) > Date.now() &&
+                (formDisabled ? (
+                  <EditButton onClickHandler={() => setFormDisabled(false)} />
+                ) : (
+                  <SaveButton loading={isSubmitting} />
+                ))}
             </Stack>
           </Card>
         </Grid>
