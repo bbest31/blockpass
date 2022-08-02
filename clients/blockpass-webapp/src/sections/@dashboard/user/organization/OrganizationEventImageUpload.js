@@ -8,10 +8,14 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Card, Stack, Typography } from '@mui/material';
+// hooks
+import useAuth from '../../../../hooks/useAuth';
 // routes
 import { PATH_DASHBOARD } from '../../../../routes/paths';
 // components
 import { FormProvider, RHFUploadMultiFile } from '../../../../components/hook-form';
+// utils
+import axiosInstance from '../../../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -20,12 +24,14 @@ OrganizationEventImageUpload.propTypes = {
   currentProduct: PropTypes.object,
 };
 
-export default function OrganizationEventImageUpload({ isEdit, currentProduct }) {
+export default function OrganizationEventImageUpload({ eventItem, isEdit, currentProduct }) {
   const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const NewProductSchema = Yup.object().shape({
+  const { organization, getAccessToken } = useAuth();
+
+  const EventImageSchema = Yup.object().shape({
     images: Yup.array().min(1, 'Images is required'),
   });
 
@@ -38,7 +44,7 @@ export default function OrganizationEventImageUpload({ isEdit, currentProduct })
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewProductSchema),
+    resolver: yupResolver(EventImageSchema),
     defaultValues,
   });
 
@@ -98,6 +104,43 @@ export default function OrganizationEventImageUpload({ isEdit, currentProduct })
     setValue('images', filteredItems);
   };
 
+  const handleUpload = async () => {
+    console.log('ON UPLOAD...');
+    // console.log(values.images[0]);
+    // try {
+    //   await new Promise((resolve) => setTimeout(resolve, 500));
+    //   // reset();
+    //   enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
+    //   // navigate(PATH_DASHBOARD.eCommerce.list);
+    // } catch (error) {
+    //   console.error(error);
+    // }
+    const imageData = new FormData();
+
+    values.images.forEach((image) => {
+      imageData.append('images', image);
+    });
+
+    console.log(imageData.getAll('images'));
+
+    const token = await getAccessToken();
+
+    axiosInstance
+      .post(`/organizations/${organization.id}/events/${eventItem._id}/images`, imageData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(() => {
+        enqueueSnackbar('Images successfully updated!');
+      })
+      .catch((err) => {
+        enqueueSnackbar('Something went wrong', { variant: 'error' });
+        throw err;
+      });
+  };
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Card sx={{ p: 3 }}>
@@ -111,7 +154,7 @@ export default function OrganizationEventImageUpload({ isEdit, currentProduct })
             onDrop={handleDrop}
             onRemove={handleRemove}
             onRemoveAll={handleRemoveAll}
-            onUpload={() => console.log('ON UPLOAD')}
+            onUpload={handleUpload}
           />
         </Stack>
       </Card>

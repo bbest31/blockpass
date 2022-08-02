@@ -32,6 +32,11 @@ async function patchOrganizationEvents(eventId, payload) {
   return event;
 }
 
+async function postOrganizationEventsImages(eventId, payload) {
+  // TODO: update events object with new images url array
+  return;
+}
+
 // Organizations
 
 async function getOrganization(orgId) {
@@ -67,4 +72,5 @@ module.exports = {
   patchOrganization,
   getOrganizationEvents,
   patchOrganizationEvents,
+  postOrganizationEventsImages,
 };

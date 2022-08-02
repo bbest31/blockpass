@@ -45,7 +45,7 @@ export default function OrganizationEventDetails({ eventItem }) {
     {
       value: 'details',
       icon: <Iconify icon={'ic:baseline-photo'} width={20} height={20} />,
-      component: <OrganizationEventImageUpload />,
+      component: <OrganizationEventImageUpload eventItem={eventItem} />,
     },
     {
       value: 'tickets',
