@@ -32,9 +32,9 @@ async function patchOrganizationEvents(eventId, payload) {
   return event;
 }
 
-async function postOrganizationEventsImages(eventId, payload) {
+async function postOrganizationEventsImages(eventId, imageUrls) {
   // TODO: update events object with new images url array
-  return;
+  return { imageUrls: imageUrls };
 }
 
 // Organizations

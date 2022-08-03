@@ -126,13 +126,13 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit, curren
     const token = await getAccessToken();
 
     axiosInstance
-      .post(`/organizations/${organization.id}/events/${eventItem._id}/images`, imageData, {
+      .patch(`/organizations/${organization.id}/events/${eventItem._id}/images`, imageData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       })
-      .then(() => {
+      .then((imageUrls) => {
         enqueueSnackbar('Images successfully updated!');
       })
       .catch((err) => {
