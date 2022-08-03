@@ -72,8 +72,8 @@ async function updateEventImages(req, res) {
   const newImageUrls = req.newImageUrls;
 
   await postOrganizationEventsImages(eventId, newImageUrls)
-    .then((imageUrls) => {
-      res.status(200).send(imageUrls);
+    .then((eventItem) => {
+      res.status(200).send(eventItem);
     })
     .catch((err) => {
       logger.error('error', err);

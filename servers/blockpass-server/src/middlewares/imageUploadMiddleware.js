@@ -51,7 +51,6 @@ const uploadImageToBucket = (req, res, next) => {
       if (uploadCounter >= req.files.length) {
         req.newImageUrls = imageUrls;
         next();
-        // res.status(200).send(imageUrls);
       }
     });
 

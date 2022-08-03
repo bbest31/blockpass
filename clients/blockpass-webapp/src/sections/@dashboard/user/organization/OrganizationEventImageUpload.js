@@ -105,16 +105,6 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit, curren
   };
 
   const handleUpload = async () => {
-    console.log('ON UPLOAD...');
-    // console.log(values.images[0]);
-    // try {
-    //   await new Promise((resolve) => setTimeout(resolve, 500));
-    //   // reset();
-    //   enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
-    //   // navigate(PATH_DASHBOARD.eCommerce.list);
-    // } catch (error) {
-    //   console.error(error);
-    // }
     const imageData = new FormData();
 
     values.images.forEach((image) => {
@@ -132,7 +122,7 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit, curren
           'Content-Type': 'multipart/form-data',
         },
       })
-      .then((imageUrls) => {
+      .then((eventItem) => {
         enqueueSnackbar('Images successfully updated!');
       })
       .catch((err) => {

@@ -33,8 +33,12 @@ async function patchOrganizationEvents(eventId, payload) {
 }
 
 async function postOrganizationEventsImages(eventId, imageUrls) {
-  // TODO: update events object with new images url array
-  return { imageUrls: imageUrls };
+  const event = await Event.findByIdAndUpdate(
+    eventId,
+    { $push: { images: { $each: mongoose.sanitizeFilter(imageUrls) } } },
+    { new: true }
+  );
+  return event;
 }
 
 // Organizations
