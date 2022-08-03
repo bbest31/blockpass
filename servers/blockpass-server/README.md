@@ -25,6 +25,12 @@ AUTH0_CLIENT_SECRET=
 
 #Winston
 LOG_LEVEL=debug
+
+#Google Cloud Platform
+GCLOUD_BUCKET_NAME=
+GCLOUD_PROJECT_ID=
+GCLOUD_CLIENT_EMAIL=
+GCLOUD_PRIVATE_KEY=
 ```
 
 ## 3. Start
@@ -43,6 +49,9 @@ npm run dev
 - helmet v5.1.0
 - auth0 v2.42.0
 - winston v3.7.2
+- multer v1.4.5-lts.1
+- @google-cloud/storage v6.3.0
+- mime-types v2.1.35
 
 ---
 ## Acknowledgements
@@ -55,3 +64,6 @@ npm run dev
 - [helmet](https://www.npmjs.com/package/helmet)
 - [node-auth0](https://auth0.github.io/node-auth0/)
 - [winston](https://github.com/winstonjs/winston/tree/2.x)
+- [multer](https://github.com/expressjs/multer)
+- [@google-cloud/storage](https://github.com/googleapis/nodejs-storage)
+- [mime-types](https://github.com/jshttp/mime-types)

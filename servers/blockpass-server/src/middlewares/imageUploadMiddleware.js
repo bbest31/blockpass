@@ -3,6 +3,8 @@ const { format } = require('util');
 const Multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
 const GCLOUD_CONFIG = require('../configs/gcloudConfig');
+const { v4: uuidv4 } = require('uuid');
+const mime = require('mime-types');
 const logger = require('../utils/logger');
 
 const storage = new Storage({
@@ -29,7 +31,10 @@ const uploadImageToBucket = (req, res, next) => {
   let imageUrls = [];
 
   req.files.forEach((image) => {
-    const blob = bucket.file(image.originalname);
+    const imageUuid = uuidv4();
+    const imageExtension = mime.extension(image.mimetype);
+
+    const blob = bucket.file(`${imageUuid}.${imageExtension}`);
     const blobStream = blob.createWriteStream();
 
     blobStream.on('error', (err) => {
