@@ -20,11 +20,11 @@ import axiosInstance from '../../../../utils/axios';
 // ----------------------------------------------------------------------
 
 OrganizationEventImageUpload.propTypes = {
+  eventItem: PropTypes.object,
   isEdit: PropTypes.bool,
-  currentProduct: PropTypes.object,
 };
 
-export default function OrganizationEventImageUpload({ eventItem, isEdit, currentProduct }) {
+export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
   const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -37,10 +37,10 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit, curren
 
   const defaultValues = useMemo(
     () => ({
-      images: currentProduct?.images || [],
+      images: eventItem?.images || [],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentProduct]
+    [eventItem]
   );
 
   const methods = useForm({
@@ -59,14 +59,14 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit, curren
   const values = watch();
 
   useEffect(() => {
-    if (isEdit && currentProduct) {
+    if (isEdit && eventItem) {
       reset(defaultValues);
     }
     if (!isEdit) {
       reset(defaultValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEdit, currentProduct]);
+  }, [isEdit, eventItem]);
 
   const onSubmit = async () => {
     try {
@@ -97,11 +97,13 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit, curren
 
   const handleRemoveAll = () => {
     setValue('images', []);
+    // TODO: Make a call to server to remove all images
   };
 
   const handleRemove = (file) => {
     const filteredItems = values.images?.filter((_file) => _file !== file);
     setValue('images', filteredItems);
+    // TODO: Make a call to server to remove selected image
   };
 
   const handleUpload = async () => {
@@ -110,8 +112,6 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit, curren
     values.images.forEach((image) => {
       imageData.append('images', image);
     });
-
-    console.log(imageData.getAll('images'));
 
     const token = await getAccessToken();
 
