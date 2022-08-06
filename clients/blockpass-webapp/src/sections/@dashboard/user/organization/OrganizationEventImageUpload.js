@@ -98,13 +98,27 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
   );
 
   const handleRemoveAll = () => {
+    values.images.forEach((image) => {
+      if (!(image instanceof File)) {
+        setRemovedImages((prevState) => [...prevState, image]);
+      }
+      const filteredItems = values.images?.filter((_image) => _image !== image);
+      setValue('images', filteredItems);
+    });
+
     setValue('images', []);
-    // TODO: Make a call to server to remove all images
+
+    handleUpload();
   };
 
   const handleRemove = (file) => {
+    if (values.images.length === 1) {
+      enqueueSnackbar('At least 1 image is required', { variant: 'warning' });
+      return;
+    }
+
     if (!(file instanceof File)) {
-      setRemovedImages([...removedImages, file]);
+      setRemovedImages((prevState) => [...prevState, file]);
     }
 
     const filteredItems = values.images?.filter((_file) => _file !== file);
