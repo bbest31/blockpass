@@ -97,18 +97,40 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
     [setValue, values.images]
   );
 
-  const handleRemoveAll = () => {
+  const handleRemoveAll = async () => {
+    const imageData = new FormData();
+
     values.images.forEach((image) => {
       if (!(image instanceof File)) {
-        setRemovedImages((prevState) => [...prevState, image]);
+        imageData.append('removedImages', image);
       }
-      const filteredItems = values.images?.filter((_image) => _image !== image);
-      setValue('images', filteredItems);
     });
 
     setValue('images', []);
 
-    handleUpload();
+    const token = await getAccessToken();
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/organizations/${organization.id}/events/${eventItem._id}/images`,
+        {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: imageData,
+        }
+      );
+
+      // TODO: update eventItem using Provider and Context
+      const resJson = await response.json();
+
+      setRemovedImages([]);
+      enqueueSnackbar('Images successfully removed!');
+    } catch (err) {
+      enqueueSnackbar('Something went wrong', { variant: 'error' });
+      throw err;
+    }
   };
 
   const handleRemove = (file) => {
@@ -165,24 +187,6 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
       enqueueSnackbar('Something went wrong', { variant: 'error' });
       throw err;
     }
-
-    // axiosInstance
-    //   .patch(`/organizations/${organization.id}/events/${eventItem._id}/images`, imageData, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //       'Content-Type': 'multipart/form-data',
-    //     },
-    //   })
-    //   .then(() => {
-    //     console.log(eventItem);
-    //     setRemovedImages([]);
-    //     enqueueSnackbar('Images successfully updated!');
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     enqueueSnackbar('Something went wrong', { variant: 'error' });
-    //     throw err;
-    //   });
   };
 
   return (
