@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Event = require('../models/Events.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
+const { remove } = require('../models/Events.js');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
@@ -32,12 +33,25 @@ async function patchOrganizationEvents(eventId, payload) {
   return event;
 }
 
-async function postOrganizationEventsImages(eventId, imageUrls) {
-  const event = await Event.findByIdAndUpdate(
-    eventId,
-    { $push: { images: { $each: mongoose.sanitizeFilter(imageUrls) } } },
-    { new: true }
-  );
+async function patchOrganizationEventsImages(eventId, imageUrls, removedImages) {
+  let event = await Event.findById(eventId);
+
+  if (imageUrls) {
+    event.images = [...event.images, ...imageUrls];
+  }
+
+  if (removedImages) {
+    removedImages.forEach((removedImage) => {
+      event.images = event.images.filter((image) => image !== removedImage);
+    });
+  }
+
+  await event.save().catch((err) => {
+    throw err;
+  });
+
+  event = await Event.findById(eventId);
+
   return event;
 }
 
@@ -76,5 +90,5 @@ module.exports = {
   patchOrganization,
   getOrganizationEvents,
   patchOrganizationEvents,
-  postOrganizationEventsImages,
+  patchOrganizationEventsImages,
 };

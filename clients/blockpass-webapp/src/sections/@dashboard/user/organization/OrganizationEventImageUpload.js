@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -30,6 +30,8 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { organization, getAccessToken } = useAuth();
+
+  const [removedImages, setRemovedImages] = useState([]);
 
   const EventImageSchema = Yup.object().shape({
     images: Yup.array().min(1, 'Images is required'),
@@ -101,34 +103,72 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
   };
 
   const handleRemove = (file) => {
+    if (!(file instanceof File)) {
+      setRemovedImages([...removedImages, file]);
+    }
+
     const filteredItems = values.images?.filter((_file) => _file !== file);
     setValue('images', filteredItems);
-    // TODO: Make a call to server to remove selected image
   };
 
   const handleUpload = async () => {
     const imageData = new FormData();
 
+    // only send newly uploaded images
     values.images.forEach((image) => {
-      imageData.append('images', image);
+      if (image instanceof File) imageData.append('images', image);
     });
+
+    removedImages.forEach((image) => {
+      imageData.append('removedImages', image);
+    });
+
+    if (imageData.getAll('images').length === 0 && imageData.getAll('removedImages').length === 0) {
+      enqueueSnackbar('No changes to images detected', { variant: 'warning' });
+      return;
+    }
 
     const token = await getAccessToken();
 
-    axiosInstance
-      .patch(`/organizations/${organization.id}/events/${eventItem._id}/images`, imageData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      .then((eventItem) => {
-        enqueueSnackbar('Images successfully updated!');
-      })
-      .catch((err) => {
-        enqueueSnackbar('Something went wrong', { variant: 'error' });
-        throw err;
-      });
+    try {
+      const response = await fetch(
+        `http://localhost:8000/organizations/${organization.id}/events/${eventItem._id}/images`,
+        {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: imageData,
+        }
+      );
+
+      // TODO: update eventItem using Provider and Context
+      const resJson = await response.json();
+
+      setRemovedImages([]);
+      enqueueSnackbar('Images successfully updated!');
+    } catch (err) {
+      enqueueSnackbar('Something went wrong', { variant: 'error' });
+      throw err;
+    }
+
+    // axiosInstance
+    //   .patch(`/organizations/${organization.id}/events/${eventItem._id}/images`, imageData, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //       'Content-Type': 'multipart/form-data',
+    //     },
+    //   })
+    //   .then(() => {
+    //     console.log(eventItem);
+    //     setRemovedImages([]);
+    //     enqueueSnackbar('Images successfully updated!');
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     enqueueSnackbar('Something went wrong', { variant: 'error' });
+    //     throw err;
+    //   });
   };
 
   return (

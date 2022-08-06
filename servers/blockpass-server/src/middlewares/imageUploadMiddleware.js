@@ -22,9 +22,8 @@ const multer = Multer({
 const bucket = storage.bucket(GCLOUD_CONFIG.BUCKET_NAME);
 
 const uploadImageToBucket = (req, res, next) => {
-  if (!req.files) {
-    res.status(400).send('No file uploaded.');
-    return;
+  if (req.files.length === 0) {
+    next();
   }
 
   let uploadCounter = 0;
@@ -58,4 +57,39 @@ const uploadImageToBucket = (req, res, next) => {
   });
 };
 
-module.exports = { multer, uploadImageToBucket };
+const removeImageFromBucket = async (req, res, next) => {
+  const removedImages = [];
+
+  if (!req.body.removedImages) {
+    req.body.removedImages = removedImages;
+    return next();
+  }
+
+  if (typeof req.body.removedImages === 'string') {
+    const imageName = req.body.removedImages.replace(`https://storage.googleapis.com/${bucket.name}/`, '');
+    try {
+      await storage.bucket(bucket.name).file(imageName).delete();
+      removedImages.push(req.body.removedImages);
+    } catch (err) {
+      logger.error('Unable to remove image from bucket', err);
+    }
+
+    req.body.removedImages = removedImages;
+    return next();
+  }
+
+  for (const image of req.body.removedImages) {
+    const imageName = image.replace(`https://storage.googleapis.com/${bucket.name}/`, '');
+
+    try {
+      await storage.bucket(bucket.name).file(imageName).delete();
+      removedImages.push(image);
+    } catch (err) {
+      logger.error('Unable to remove image from bucket', err);
+    }
+  }
+  req.body.removedImages = removedImages;
+  return next();
+};
+
+module.exports = { multer, uploadImageToBucket, removeImageFromBucket };

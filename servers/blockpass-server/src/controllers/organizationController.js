@@ -4,7 +4,7 @@ const {
   patchOrganizationEvents,
   getOrganization,
   patchOrganization,
-  postOrganizationEventsImages,
+  patchOrganizationEventsImages,
 } = require('../services/organizationServices.js');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 const logger = require('../utils/logger');
@@ -70,10 +70,11 @@ async function updateEvents(req, res) {
 async function updateEventImages(req, res) {
   const { eventId } = req.params;
   const newImageUrls = req.newImageUrls;
+  const removedImages = req.body.removedImages;
 
-  await postOrganizationEventsImages(eventId, newImageUrls)
+  await patchOrganizationEventsImages(eventId, newImageUrls, removedImages)
     .then((eventItem) => {
-      res.status(200).send(eventItem);
+      res.status(200).json(eventItem);
     })
     .catch((err) => {
       logger.error('error', err);
