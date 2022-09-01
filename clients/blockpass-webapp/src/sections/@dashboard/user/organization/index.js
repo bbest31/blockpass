@@ -8,3 +8,5 @@ export { default as OrganizationEventImageUpload } from './OrganizationEventImag
 export { default as OrganizationTicketTierList } from './OrganizationTicketTierList';
 export { default as OrganizationEventsView } from './OrganizationEventsView';
 export { default as OrganizationEventDetails } from './OrganizationEventDetails';
+export { default as OrganizationEventTableRow } from './OrganizationEventTableRow';
+export { default as OrganizationTicketTierSummary } from './OrganizationTicketTierSummary';

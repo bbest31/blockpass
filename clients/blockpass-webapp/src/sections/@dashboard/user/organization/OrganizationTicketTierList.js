@@ -38,7 +38,7 @@ import {
   TableSelectedActions,
 } from '../../../../components/table';
 // sections
-import { ProductTableRow } from '../../e-commerce/product-list';
+import { OrganizationEventTableRow } from '.';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +49,11 @@ const TABLE_HEAD = [
   { id: 'price', label: 'Price', align: 'right' },
 ];
 
+const TICKET_TIERS = [
+  { tier: 'Early Bird Special', owners: 25, status: 'active', price: '$23.42' },
+  { tier: 'General Admission', owners: 48, status: 'closed', price: '$23.42' },
+  { tier: 'VIP Access', owners: 15, status: 'paused', price: '$23.42' },
+];
 // ----------------------------------------------------------------------
 
 export default function OrganizationTicketTierList() {
@@ -79,7 +84,8 @@ export default function OrganizationTicketTierList() {
 
   // const dispatch = useDispatch();
 
-  const { products, isLoading } = useSelector((state) => state.product);
+  // const { products, isLoading } = useSelector((state) => state.product);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [tableData, setTableData] = useState([]);
 
@@ -87,11 +93,11 @@ export default function OrganizationTicketTierList() {
   //   dispatch(getProducts());
   // }, [dispatch]);
 
-  useEffect(() => {
-    if (products.length) {
-      setTableData(products);
-    }
-  }, [products]);
+  // useEffect(() => {
+  //   if (products.length) {
+  //     setTableData(products);
+  //   }
+  // }, [products]);
 
   // TODO: turn to 'Close' row
   const handleDeleteRow = (id) => {
@@ -120,7 +126,8 @@ export default function OrganizationTicketTierList() {
   // const denseHeight = dense ? 60 : 80;
   const denseHeight = 80;
 
-  const isNotFound = !dataFiltered.length || !isLoading;
+  // const isNotFound = !dataFiltered.length || !isLoading;
+  const isNotFound = !TICKET_TIERS.length || !isLoading;
 
   return (
     <Card>
@@ -168,22 +175,25 @@ export default function OrganizationTicketTierList() {
             />
 
             <TableBody>
-              {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
+              {TICKET_TIERS.map(() => (
+                <OrganizationEventTableRow />
+              ))}
+              {/* {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) =>
                   row ? (
-                    <ProductTableRow
+                    <OrganizationEventTableRow
                       key={row.id}
                       row={row}
-                      selected={selected.includes(row.id)}
-                      onSelectRow={() => onSelectRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                      onEditRow={() => handleEditRow(row.name)}
+                      // selected={selected.includes(row.id)}
+                      // onSelectRow={() => onSelectRow(row.id)}
+                      // onDeleteRow={() => handleDeleteRow(row.id)}
+                      // onEditRow={() => handleEditRow(row.name)}
                     />
                   ) : (
                     !isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />
                   )
-                )}
+                )} */}
 
               <TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
 
