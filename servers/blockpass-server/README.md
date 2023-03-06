@@ -31,6 +31,9 @@ GCLOUD_BUCKET_NAME=
 GCLOUD_PROJECT_ID=
 GCLOUD_CLIENT_EMAIL=
 GCLOUD_PRIVATE_KEY=
+
+#Moralis
+MORALIS_API_KEY=
 ```
 
 ## 3. Start
@@ -52,6 +55,8 @@ npm run dev
 - multer v1.4.5-lts.1
 - @google-cloud/storage v6.3.0
 - mime-types v2.1.35
+- fs v0.0.1-security
+- web3 v1.8.2
 
 ---
 ## Acknowledgements
@@ -67,3 +72,5 @@ npm run dev
 - [multer](https://github.com/expressjs/multer)
 - [@google-cloud/storage](https://github.com/googleapis/nodejs-storage)
 - [mime-types](https://github.com/jshttp/mime-types)
+- [fs](https://www.npmjs.com/package/fs)
+- [web3](https://www.npmjs.com/package/web3)

@@ -5,6 +5,7 @@ const {
   getOrganization,
   patchOrganization,
   patchOrganizationEventsImages,
+  getEventTicketTiers
 } = require('../services/organizationServices.js');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 const logger = require('../utils/logger');
@@ -82,4 +83,17 @@ async function updateEventImages(req, res) {
     });
 }
 
-module.exports = { readEvents, updateOrganization, readOrganization, updateEvents, updateEventImages };
+async function getOrganizationEventTicketTiers(req, res) {
+  const { eventId } = req.params;
+
+  await getEventTicketTiers(eventId)
+    .then((ticketTiers) => {
+      res.status(200).json(ticketTiers);
+    })
+    .catch((err) => {
+      logger.error('error', err);
+      res.status(500).send(httpResponseMessage[500]);
+    });
+}
+
+module.exports = { readEvents, updateOrganization, readOrganization, updateEvents, updateEventImages, getOrganizationEventTicketTiers };
