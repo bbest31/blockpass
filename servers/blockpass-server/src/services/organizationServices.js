@@ -23,26 +23,39 @@ async function getEventTicketTiers(eventId) {
   const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/TicketExample.json')).abi;
 
   const event = await Event.find({ _id: eventId }).exec();
-
   const contractAddresses = event[0].contracts;
 
-  let response = {};
-  
-  // collect all necessary data and create a response for each ticket tier
-  contractAddresses.forEach((contractAddress) => {
-    const contract = new web3.eth.Contract(ticketContractAbi, contractAddress);
-    console.log(contract.methods);
+  let response = { ticketTiers: [] };
 
-    contract.methods.getTotalTicketsForSale.call((err, res) => {
-      if (err) {
-        console.log('err', err);
-      } else {
-        console.log('res ', res);
-      }
-    });
-  });
+  for (let i = 0; i < contractAddresses.length; i++) {
+    const contract = new web3.eth.Contract(ticketContractAbi, contractAddresses[i]).methods;
 
-  return event;
+    const tokenURI = await contract._tokenURI().call();
+    const name = await contract.name().call();
+    const supply = await contract.supply().call();
+    const symbol = await contract.symbol().call();
+    const totalTickets = await contract.getTotalTicketsForSale().call();
+    const primarySalePrice = await contract.primarySalePrice().call();
+    const liveDate = await contract.liveDate().call();
+    const closeDate = await contract.closeDate().call();
+    const eventEndDate = await contract.eventEndDate().call();
+
+    const ticketData = {
+      tokenURI: tokenURI,
+      name: name,
+      supply: supply,
+      symbol: symbol,
+      totalTickets: totalTickets,
+      primarySalePrice: primarySalePrice,
+      liveDate: convertEpochToDate(liveDate),
+      closeDate: convertEpochToDate(closeDate),
+      eventEndDate: convertEpochToDate(eventEndDate),
+    };
+
+    response.ticketTiers = [...response.ticketTiers, ticketData];
+  }
+
+  return response;
 }
 
 async function patchOrganizationEvents(eventId, payload) {
@@ -112,6 +125,12 @@ async function patchOrganization(orgId, payload) {
     });
 
   return org;
+}
+
+function convertEpochToDate(UTCSeconds) {
+  const date = new Date(0);
+  date.setUTCSeconds(UTCSeconds);
+  return date;
 }
 
 module.exports = {

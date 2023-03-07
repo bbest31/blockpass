@@ -25,6 +25,6 @@ router.patch(
   removeImageFromBucket,
   updateEventImages
 );
-router.get('/:id/events/:eventId/contracts', checkOrganizationId, checkReadPermission('organizations'), getOrganizationEventTicketTiers);
+router.get('/:id/events/:eventId/ticket-tiers', checkOrganizationId, checkReadPermission('organizations'), getOrganizationEventTicketTiers);
 
 module.exports = router;
