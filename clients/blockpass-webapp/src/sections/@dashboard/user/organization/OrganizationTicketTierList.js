@@ -1,5 +1,6 @@
 import { paramCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import { useSnackbar } from 'notistack';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 // @mui
 import {
@@ -25,6 +26,7 @@ import { getProducts } from '../../../../redux/slices/product';
 import { PATH_DASHBOARD } from '../../../../routes/paths';
 // hooks
 import useSettings from '../../../../hooks/useSettings';
+import useAuth from '../../../../hooks/useAuth';
 import useTable, { getComparator, emptyRows } from '../../../../hooks/useTable';
 // components
 import Page from '../../../../components/Page';
@@ -39,6 +41,9 @@ import {
 } from '../../../../components/table';
 // sections
 import { OrganizationEventTableRow } from '.';
+// utils
+import axiosInstance from '../../../../utils/axios';
+import { trackEvent } from '../../../../utils/mixpanelUtils';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +52,7 @@ const TABLE_HEAD = [
   { id: 'owners', label: 'Owners', align: 'left' },
   { id: 'status', label: 'Status', align: 'center', width: 180 },
   { id: 'price', label: 'Price', align: 'right' },
+  { id: 'options', label: '', align: 'right' },
 ];
 
 const TICKET_TIERS = [
@@ -56,7 +62,7 @@ const TICKET_TIERS = [
 ];
 // ----------------------------------------------------------------------
 
-export default function OrganizationTicketTierList() {
+export default function OrganizationTicketTierList({ eventItem }) {
   const {
     // dense,
     page,
@@ -78,7 +84,11 @@ export default function OrganizationTicketTierList() {
     defaultOrderBy: 'createdAt',
   });
 
+  const _eventId = eventItem._id;
+
   const { themeStretch } = useSettings();
+  const { organization, getAccessToken } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
 
@@ -86,8 +96,39 @@ export default function OrganizationTicketTierList() {
 
   // const { products, isLoading } = useSelector((state) => state.product);
   const [isLoading, setIsLoading] = useState(true);
-
   const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getEvents(controller);
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  const getEvents = async (controller) => {
+    const token = await getAccessToken();
+
+    axiosInstance
+      .get(`/organizations/${organization.id}/events/${_eventId}/ticket-tiers`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        signal: controller.signal,
+      })
+      .then((res) => {
+        console.log(res);
+        setTableData(res.data.ticketTiers);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
+        }
+      });
+  };
+  // useEffect(() => {
+
+  // }, []);
 
   // useEffect(() => {
   //   dispatch(getProducts());
@@ -175,8 +216,8 @@ export default function OrganizationTicketTierList() {
             />
 
             <TableBody>
-              {TICKET_TIERS.map(() => (
-                <OrganizationEventTableRow />
+              {tableData.map((data) => (
+                <OrganizationEventTableRow key={_eventId} row={data}/>
               ))}
               {/* {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

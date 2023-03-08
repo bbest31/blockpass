@@ -50,7 +50,7 @@ export default function OrganizationEventDetails({ eventItem }) {
     {
       value: 'tickets',
       icon: <Iconify icon={'ic:round-receipt'} width={20} height={20} />,
-      component: <OrganizationTicketTierList />,
+      component: <OrganizationTicketTierList eventItem={eventItem}/>,
     },
   ];
 
