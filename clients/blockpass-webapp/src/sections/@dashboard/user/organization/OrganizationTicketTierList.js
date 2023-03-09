@@ -119,6 +119,7 @@ export default function OrganizationTicketTierList({ eventItem }) {
       .then((res) => {
         console.log(res);
         setTableData(res.data.ticketTiers);
+        setIsLoading(false)
       })
       .catch(() => {
         if (!controller.signal.aborted) {
@@ -126,10 +127,6 @@ export default function OrganizationTicketTierList({ eventItem }) {
         }
       });
   };
-  // useEffect(() => {
-
-  // }, []);
-
   // useEffect(() => {
   //   dispatch(getProducts());
   // }, [dispatch]);
@@ -168,7 +165,7 @@ export default function OrganizationTicketTierList({ eventItem }) {
   const denseHeight = 80;
 
   // const isNotFound = !dataFiltered.length || !isLoading;
-  const isNotFound = !TICKET_TIERS.length || !isLoading;
+  const isNotFound = !tableData.length || !isLoading;
 
   return (
     <Card>
@@ -216,10 +213,11 @@ export default function OrganizationTicketTierList({ eventItem }) {
             />
 
             <TableBody>
-              {tableData.map((data) => (
+              {/* {tableData.map((data) => (
                 <OrganizationEventTableRow key={_eventId} row={data}/>
-              ))}
-              {/* {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
+              ))} */}
+
+              {(isLoading ? [...Array(rowsPerPage)] : tableData)
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) =>
                   row ? (
@@ -234,11 +232,11 @@ export default function OrganizationTicketTierList({ eventItem }) {
                   ) : (
                     !isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />
                   )
-                )} */}
+                )}
 
               <TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
 
-              <TableNoData isNotFound={isNotFound} />
+              <TableNoData isNotFound={!isNotFound} />
             </TableBody>
           </Table>
         </TableContainer>

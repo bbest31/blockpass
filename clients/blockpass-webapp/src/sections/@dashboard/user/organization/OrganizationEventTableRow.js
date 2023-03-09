@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { sentenceCase } from 'change-case';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { TableRow, Checkbox, TableCell, Typography, MenuItem } from '@mui/material';
+import { TableRow, Checkbox, TableCell, Typography, MenuItem, Box } from '@mui/material';
 // utils
 import { fDate } from '../../../../utils/formatTime';
 import { fCurrency } from '../../../../utils/formatNumber';
@@ -26,7 +26,6 @@ OrganizationEventTableRow.propTypes = {
 export default function OrganizationEventTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const theme = useTheme();
 
-  // const { name, cover, createdAt, inventoryType, price } = row;
   const { name, primarySalePrice, supply, totalTickets, tokenURI } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
@@ -48,15 +47,20 @@ export default function OrganizationEventTableRow({ row, selected, onEditRow, on
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Image disabledEffect alt={name} src={tokenURI} sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }} />
+        <Box sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}>
+          <img
+            alt={name}
+            src={tokenURI}
+            style={{ width: 48, height: 48, 'object-fit': 'contain' }}
+          />
+        </Box>
+
         <Typography variant="subtitle2" noWrap>
           {name}
         </Typography>
       </TableCell>
 
-      <TableCell>
-        {totalTickets - supply}
-      </TableCell>
+      <TableCell>{totalTickets - supply}</TableCell>
 
       <TableCell align="center">
         <Label
@@ -72,9 +76,7 @@ export default function OrganizationEventTableRow({ row, selected, onEditRow, on
         </Label>
       </TableCell>
 
-      <TableCell align="right">
-        {primarySalePrice}
-      </TableCell>
+      <TableCell align="right">{primarySalePrice}</TableCell>
 
       <TableCell align="right">
         <TableMoreMenu

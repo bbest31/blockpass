@@ -20,7 +20,8 @@ async function getOrganizationEvents(orgId) {
 }
 
 async function getEventTicketTiers(eventId) {
-  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/TicketExample.json')).abi;
+  // const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/TicketExample.json')).abi;
+  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json')).abi;
 
   const event = await Event.find({ _id: eventId }).exec();
   const contractAddresses = event[0].contracts;
@@ -28,31 +29,35 @@ async function getEventTicketTiers(eventId) {
   let response = { ticketTiers: [] };
 
   for (let i = 0; i < contractAddresses.length; i++) {
-    const contract = new web3.eth.Contract(ticketContractAbi, contractAddresses[i]).methods;
+    try {
+      const contract = new web3.eth.Contract(ticketContractAbi, contractAddresses[i]).methods;
 
-    const tokenURI = await contract._tokenURI().call();
-    const name = await contract.name().call();
-    const supply = await contract.supply().call();
-    const symbol = await contract.symbol().call();
-    const totalTickets = await contract.getTotalTicketsForSale().call();
-    const primarySalePrice = await contract.primarySalePrice().call();
-    const liveDate = await contract.liveDate().call();
-    const closeDate = await contract.closeDate().call();
-    const eventEndDate = await contract.eventEndDate().call();
+      const tokenURI = await contract._tokenURI().call();
+      const name = await contract.name().call();
+      const supply = await contract.supply().call();
+      const symbol = await contract.symbol().call();
+      const totalTickets = await contract.getTotalTicketsForSale().call();
+      const primarySalePrice = await contract.primarySalePrice().call();
+      const liveDate = await contract.liveDate().call();
+      const closeDate = await contract.closeDate().call();
+      const eventEndDate = await contract.eventEndDate().call();
 
-    const ticketData = {
-      tokenURI: tokenURI,
-      name: name,
-      supply: supply,
-      symbol: symbol,
-      totalTickets: totalTickets,
-      primarySalePrice: primarySalePrice,
-      liveDate: convertEpochToDate(liveDate),
-      closeDate: convertEpochToDate(closeDate),
-      eventEndDate: convertEpochToDate(eventEndDate),
-    };
+      const ticketData = {
+        tokenURI: tokenURI,
+        name: name,
+        supply: supply,
+        symbol: symbol,
+        totalTickets: totalTickets,
+        primarySalePrice: primarySalePrice,
+        liveDate: convertEpochToDate(liveDate),
+        closeDate: convertEpochToDate(closeDate),
+        eventEndDate: convertEpochToDate(eventEndDate),
+      };
 
-    response.ticketTiers = [...response.ticketTiers, ticketData];
+      response.ticketTiers = [...response.ticketTiers, ticketData];
+    } catch (error) {
+      logger.log('error', `Could not retrieve contract at address '${contractAddresses[i]}'`);
+    }
   }
 
   return response;
