@@ -17,13 +17,12 @@ const eventsSchema = new mongoose.Schema(
     },
     endDate: {
       type: Date,
-      required: true,
     },
     description: {
       type: String,
     },
-    img: {
-      type: String,
+    images: {
+      type: [String],
     },
     location: {
       type: String,

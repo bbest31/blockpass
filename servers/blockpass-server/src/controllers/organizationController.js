@@ -1,5 +1,12 @@
 'use strict';
-const { getOrganizationEvents, getOrganization, patchOrganization } = require('../services/organizationServices.js');
+const {
+  getOrganizationEvents,
+  patchOrganizationEvents,
+  getOrganization,
+  patchOrganization,
+  patchOrganizationEventsImages,
+  getEventTicketTiers
+} = require('../services/organizationServices.js');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 const logger = require('../utils/logger');
 
@@ -47,4 +54,46 @@ async function readEvents(req, res) {
     });
 }
 
-module.exports = { readEvents, updateOrganization, readOrganization };
+async function updateEvents(req, res) {
+  const { eventId } = req.params;
+  const body = req.body;
+
+  await patchOrganizationEvents(eventId, body)
+    .then((eventItem) => {
+      res.status(200).send(eventItem);
+    })
+    .catch((err) => {
+      logger.error('error', err);
+      res.status(500).send(httpResponseMessage[500]);
+    });
+}
+
+async function updateEventImages(req, res) {
+  const { eventId } = req.params;
+  const newImageUrls = req.newImageUrls;
+  const removedImages = req.body.removedImages;
+
+  await patchOrganizationEventsImages(eventId, newImageUrls, removedImages)
+    .then((eventItem) => {
+      res.status(200).json(eventItem);
+    })
+    .catch((err) => {
+      logger.error('error', err);
+      res.status(500).send(httpResponseMessage[500]);
+    });
+}
+
+async function getOrganizationEventTicketTiers(req, res) {
+  const { eventId } = req.params;
+
+  await getEventTicketTiers(eventId)
+    .then((ticketTiers) => {
+      res.status(200).json(ticketTiers);
+    })
+    .catch((err) => {
+      logger.error('error', err);
+      res.status(500).send(httpResponseMessage[500]);
+    });
+}
+
+module.exports = { readEvents, updateOrganization, readOrganization, updateEvents, updateEventImages, getOrganizationEventTicketTiers };
