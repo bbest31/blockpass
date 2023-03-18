@@ -50,13 +50,7 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
     defaultValues,
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, setValue, handleSubmit } = methods;
 
   const values = watch();
 
@@ -75,7 +69,6 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
       enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
-      navigate(PATH_DASHBOARD.eCommerce.list);
     } catch (error) {
       console.error(error);
     }
@@ -109,28 +102,25 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
     setValue('images', []);
 
     const token = await getAccessToken();
+    const controller = new AbortController();
 
-    try {
-      const response = await fetch(
-        `http://localhost:8000/organizations/${organization.id}/events/${eventItem._id}/images`,
-        {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: imageData,
+    axiosInstance
+      .patch(`/organizations/${organization.id}/events/${eventItem._id}/images`, imageData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        signal: controller.signal,
+      })
+      .then(() => {
+        setRemovedImages([]);
+        enqueueSnackbar('Images successfully removed!');
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted) {
+          enqueueSnackbar('Something went wrong', { variant: 'error' });
+          throw err;
         }
-      );
-
-      // TODO: update eventItem using Provider and Context
-      const resJson = await response.json();
-
-      setRemovedImages([]);
-      enqueueSnackbar('Images successfully removed!');
-    } catch (err) {
-      enqueueSnackbar('Something went wrong', { variant: 'error' });
-      throw err;
-    }
+      });
   };
 
   const handleRemove = (file) => {
@@ -165,28 +155,25 @@ export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
     }
 
     const token = await getAccessToken();
+    const controller = new AbortController();
 
-    try {
-      const response = await fetch(
-        `http://localhost:8000/organizations/${organization.id}/events/${eventItem._id}/images`,
-        {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: imageData,
+    axiosInstance
+      .patch(`/organizations/${organization.id}/events/${eventItem._id}/images`, imageData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        signal: controller.signal,
+      })
+      .then(() => {
+        setRemovedImages([]);
+        enqueueSnackbar('Images successfully updated!');
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted) {
+          enqueueSnackbar('Something went wrong', { variant: 'error' });
+          throw err;
         }
-      );
-
-      // TODO: update eventItem using Provider and Context
-      const resJson = await response.json();
-
-      setRemovedImages([]);
-      enqueueSnackbar('Images successfully updated!');
-    } catch (err) {
-      enqueueSnackbar('Something went wrong', { variant: 'error' });
-      throw err;
-    }
+      });
   };
 
   return (

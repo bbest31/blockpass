@@ -6,6 +6,7 @@ const Web3 = require('web3');
 const Event = require('../models/Events.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
+const DateTime = require('../utils/datetime.js');
 const { remove } = require('../models/Events.js');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
@@ -49,9 +50,9 @@ async function getEventTicketTiers(eventId) {
         symbol: symbol,
         totalTickets: totalTickets,
         primarySalePrice: primarySalePrice,
-        liveDate: convertEpochToDate(liveDate),
-        closeDate: convertEpochToDate(closeDate),
-        eventEndDate: convertEpochToDate(eventEndDate),
+        liveDate: DateTime.convertEpochToDate(liveDate),
+        closeDate: DateTime.convertEpochToDate(closeDate),
+        eventEndDate: DateTime.convertEpochToDate(eventEndDate),
       };
 
       response.ticketTiers = [...response.ticketTiers, ticketData];
@@ -130,12 +131,6 @@ async function patchOrganization(orgId, payload) {
     });
 
   return org;
-}
-
-function convertEpochToDate(UTCSeconds) {
-  const date = new Date(0);
-  date.setUTCSeconds(UTCSeconds);
-  return date;
 }
 
 module.exports = {
