@@ -6,12 +6,10 @@ const Web3 = require('web3');
 const Event = require('../models/Events.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
-const DateTime = require('../utils/datetime.js');
-const { remove } = require('../models/Events.js');
+const { getTicketTierDetails } = require('../utils/web3Utils');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
-const web3 = new Web3(new Web3.providers.HttpProvider(process.env.PROVIDER));
 
 // Events
 
@@ -19,6 +17,8 @@ async function getOrganizationEvents(orgId) {
   const events = await Event.find({ orgId: orgId }).exec();
   return events;
 }
+
+// Ticket Tiers
 
 async function getEventTicketTiers(eventId) {
   // const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/TicketExample.json')).abi;
@@ -30,36 +30,32 @@ async function getEventTicketTiers(eventId) {
   let response = { ticketTiers: [] };
 
   for (let i = 0; i < contractAddresses.length; i++) {
-    try {
-      const contract = new web3.eth.Contract(ticketContractAbi, contractAddresses[i]).methods;
+    const ticketData = await getTicketTierDetails(contractAddresses[i]).catch((err) => {
+      throw err;
+    });
 
-      const tokenURI = await contract._tokenURI().call();
-      const name = await contract.name().call();
-      const supply = await contract.supply().call();
-      const symbol = await contract.symbol().call();
-      const totalTickets = await contract.getTotalTicketsForSale().call();
-      const primarySalePrice = await contract.primarySalePrice().call();
-      const liveDate = await contract.liveDate().call();
-      const closeDate = await contract.closeDate().call();
-      const eventEndDate = await contract.eventEndDate().call();
-
-      const ticketData = {
-        tokenURI: tokenURI,
-        name: name,
-        supply: supply,
-        symbol: symbol,
-        totalTickets: totalTickets,
-        primarySalePrice: primarySalePrice,
-        liveDate: DateTime.convertEpochToDate(liveDate),
-        closeDate: DateTime.convertEpochToDate(closeDate),
-        eventEndDate: DateTime.convertEpochToDate(eventEndDate),
-      };
-
-      response.ticketTiers = [...response.ticketTiers, ticketData];
-    } catch (error) {
-      logger.log('error', `Could not retrieve contract at address '${contractAddresses[i]}'`);
-    }
+    response.ticketTiers = [...response.ticketTiers, ticketData];
   }
+
+  return response;
+}
+
+/**
+ * Retrieves all information about a ticket tier given it's contract address.
+ * @param {string} contractId
+ * @returns
+ */
+async function getTicketTier(contractId) {
+  let response;
+
+  const ticketData = await getTicketTierDetails(contractId).catch((err) => {
+    throw err;
+  });
+
+  // TODO:get and append ticket tier description
+  let description = '';
+
+  response = { ...ticketData, description: description };
 
   return response;
 }
@@ -140,4 +136,5 @@ module.exports = {
   patchOrganizationEvents,
   patchOrganizationEventsImages,
   getEventTicketTiers,
+  getTicketTier,
 };

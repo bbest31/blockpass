@@ -6,7 +6,8 @@ const {
   readOrganization,
   updateEvents,
   updateEventImages,
-  getOrganizationEventTicketTiers
+  readOrganizationEventTicketTiers,
+  readTicketTier
 } = require('../controllers/organizationController.js');
 const { checkOrganizationId } = require('../middlewares/organizationMiddlewares.js');
 const { checkReadPermission, checkUpdatePermission } = require('../middlewares/permissionMiddleware.js');
@@ -25,6 +26,8 @@ router.patch(
   removeImageFromBucket,
   updateEventImages
 );
-router.get('/:id/events/:eventId/ticket-tiers', checkOrganizationId, checkReadPermission('organizations'), getOrganizationEventTicketTiers);
+
+router.get('/:id/events/:eventId/ticket-tiers', checkOrganizationId, checkReadPermission('organizations'), readOrganizationEventTicketTiers);
+router.get('/:id/events/:eventId/ticket-tiers/:contractId', checkOrganizationId, checkReadPermission('organizations'), readTicketTier);
 
 module.exports = router;
