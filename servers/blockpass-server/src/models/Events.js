@@ -1,7 +1,9 @@
 'use strict';
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
-const eventsSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
   {
     orgId: {
       type: String,
@@ -31,13 +33,13 @@ const eventsSchema = new mongoose.Schema(
     website: {
       type: String,
     },
-    contracts: {
-      type: [String],
+    ticketTiers: {
+      type: [ObjectId],
     },
   },
   { timestamps: true }
 );
 
-const eventsModel = mongoose.model('Events', eventsSchema);
+const eventsModel = mongoose.model('Event', schema);
 
 module.exports = eventsModel;

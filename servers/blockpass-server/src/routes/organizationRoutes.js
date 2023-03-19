@@ -28,6 +28,6 @@ router.patch(
 );
 
 router.get('/:id/events/:eventId/ticket-tiers', checkOrganizationId, checkReadPermission('organizations'), readOrganizationEventTicketTiers);
-router.get('/:id/events/:eventId/ticket-tiers/:contractId', checkOrganizationId, checkReadPermission('organizations'), readTicketTier);
+router.get('/:id/events/:eventId/ticket-tiers/:ticketTierId', checkOrganizationId, checkReadPermission('organizations'), readTicketTier);
 
 module.exports = router;

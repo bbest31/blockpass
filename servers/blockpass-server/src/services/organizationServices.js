@@ -4,12 +4,14 @@ const fs = require('fs');
 const Web3 = require('web3');
 
 const Event = require('../models/Events.js');
+const TicketTier = require('../models/TicketTiers.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
 const { getTicketTierDetails } = require('../utils/web3Utils');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
+const TICKET_TIER_ATTRIBUTES = ['displayName', 'description'];
 
 // Events
 
@@ -20,42 +22,51 @@ async function getOrganizationEvents(orgId) {
 
 // Ticket Tiers
 
+/**
+ * Get all ticket tiers given an event id.
+ * @param {string} eventId 
+ * @returns 
+ */
 async function getEventTicketTiers(eventId) {
-  // const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/TicketExample.json')).abi;
-  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json')).abi;
 
-  const event = await Event.find({ _id: eventId }).exec();
-  const contractAddresses = event[0].contracts;
+  const event = await Event.findById(eventId).exec();
+  if (event === null) {
+    return [];
+  }
+  const ticketTiers = event.ticketTiers;
 
   let response = { ticketTiers: [] };
 
-  for (let i = 0; i < contractAddresses.length; i++) {
-    const ticketData = await getTicketTierDetails(contractAddresses[i]).catch((err) => {
+  for (let i = 0; i < ticketTiers.length; i++) {
+    const tier = await getTicketTier(ticketTiers[i]).catch((err) => {
       throw err;
     });
 
-    response.ticketTiers = [...response.ticketTiers, ticketData];
+    response.ticketTiers = [...response.ticketTiers, tier];
   }
 
   return response;
 }
 
 /**
- * Retrieves all information about a ticket tier given it's contract address.
- * @param {string} contractId
+ * Retrieves all information about a ticket tier given it's id.
+ * @param {string} ticketTierId
  * @returns
  */
-async function getTicketTier(contractId) {
-  let response;
+async function getTicketTier(ticketTierId) {
+  // get ticket tier db data
+  const ticketTier = await TicketTier.findById(ticketTierId).exec();
+  if (!ticketTier) {
+    return {};
+  }
 
-  const ticketData = await getTicketTierDetails(contractId).catch((err) => {
+  let tierData = ticketTier._doc;
+  // get ticket tier smart contract data
+  const contractData = await getTicketTierDetails(ticketTier.contract).catch((err) => {
     throw err;
   });
 
-  // TODO:get and append ticket tier description
-  let description = '';
-
-  response = { ...ticketData, description: description };
+  let response = { ...contractData, ...tierData };
 
   return response;
 }
@@ -127,6 +138,13 @@ async function patchOrganization(orgId, payload) {
     });
 
   return org;
+}
+
+function queryCallback(err, result) {
+  if (err) {
+    logger.log('error', err);
+    throw err;
+  }
 }
 
 module.exports = {

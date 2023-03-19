@@ -100,8 +100,8 @@ async function readOrganizationEventTicketTiers(req, res) {
 }
 
 async function readTicketTier(req, res) {
-  const { contractId } = req.params;
-  await getTicketTier(contractId)
+  const { ticketTierId } = req.params;
+  await getTicketTier(ticketTierId)
     .then((ticketTier) => {
       res.status(200).json(ticketTier);
     })
