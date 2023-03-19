@@ -7,7 +7,7 @@ const {
   updateEvents,
   updateEventImages,
   readOrganizationEventTicketTiers,
-  readTicketTier
+  readTicketTier,
 } = require('../controllers/organizationController.js');
 const { checkOrganizationId } = require('../middlewares/organizationMiddlewares.js');
 const { checkReadPermission, checkUpdatePermission } = require('../middlewares/permissionMiddleware.js');
@@ -27,7 +27,17 @@ router.patch(
   updateEventImages
 );
 
-router.get('/:id/events/:eventId/ticket-tiers', checkOrganizationId, checkReadPermission('organizations'), readOrganizationEventTicketTiers);
-router.get('/:id/events/:eventId/ticket-tiers/:ticketTierId', checkOrganizationId, checkReadPermission('organizations'), readTicketTier);
+router.get(
+  '/:id/events/:eventId/ticket-tiers',
+  checkOrganizationId,
+  checkReadPermission('organizations'),
+  readOrganizationEventTicketTiers
+);
+router.get(
+  '/:id/events/:eventId/ticket-tiers/:ticketTierId',
+  checkOrganizationId,
+  checkReadPermission('organizations'),
+  readTicketTier
+);
 
 module.exports = router;

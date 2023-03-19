@@ -8,6 +8,7 @@ const TicketTier = require('../models/TicketTiers.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
 const { getTicketTierDetails } = require('../utils/web3Utils');
+const { mongoQueryCallback } = require('../utils/errorHandling');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
@@ -24,12 +25,11 @@ async function getOrganizationEvents(orgId) {
 
 /**
  * Get all ticket tiers given an event id.
- * @param {string} eventId 
- * @returns 
+ * @param {string} eventId
+ * @returns
  */
 async function getEventTicketTiers(eventId) {
-
-  const event = await Event.findById(eventId).exec();
+  const event = await Event.findById(eventId).exec(mongoQueryCallback);
   if (event === null) {
     return [];
   }
@@ -55,7 +55,7 @@ async function getEventTicketTiers(eventId) {
  */
 async function getTicketTier(ticketTierId) {
   // get ticket tier db data
-  const ticketTier = await TicketTier.findById(ticketTierId).exec();
+  const ticketTier = await TicketTier.findById(ticketTierId).exec(mongoQueryCallback);
   if (!ticketTier) {
     return {};
   }
@@ -138,13 +138,6 @@ async function patchOrganization(orgId, payload) {
     });
 
   return org;
-}
-
-function queryCallback(err, result) {
-  if (err) {
-    logger.log('error', err);
-    throw err;
-  }
 }
 
 module.exports = {
