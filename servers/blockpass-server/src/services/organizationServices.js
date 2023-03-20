@@ -1,14 +1,11 @@
 'use strict';
 const mongoose = require('mongoose');
-const fs = require('fs');
-const Web3 = require('web3');
 
 const Event = require('../models/Events.js');
 const TicketTier = require('../models/TicketTiers.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
 const { getTicketTierDetails } = require('../utils/web3Utils');
-const { mongoQueryCallback } = require('../utils/errorHandling');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
@@ -29,7 +26,11 @@ async function getOrganizationEvents(orgId) {
  * @returns
  */
 async function getEventTicketTiers(eventId) {
-  const event = await Event.findById(eventId).exec(mongoQueryCallback);
+  const event = await Event.findById(eventId)
+    .exec()
+    .catch((err) => {
+      throw err;
+    });
   if (event === null) {
     return [];
   }
@@ -39,7 +40,10 @@ async function getEventTicketTiers(eventId) {
 
   for (let i = 0; i < ticketTiers.length; i++) {
     const tier = await getTicketTier(ticketTiers[i]).catch((err) => {
-      throw err;
+      logger.log('error', err);
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
     });
 
     response.ticketTiers = [...response.ticketTiers, tier];
@@ -55,7 +59,14 @@ async function getEventTicketTiers(eventId) {
  */
 async function getTicketTier(ticketTierId) {
   // get ticket tier db data
-  const ticketTier = await TicketTier.findById(ticketTierId).exec(mongoQueryCallback);
+  const ticketTier = await TicketTier.findById(ticketTierId)
+    .exec()
+    .catch((err) => {
+      logger.log('error', err);
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
+    });
   if (!ticketTier) {
     return {};
   }
