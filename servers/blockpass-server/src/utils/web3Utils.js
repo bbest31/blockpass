@@ -4,8 +4,6 @@ const logger = require('./logger');
 const DateTime = require('./datetime');
 const { EvmChain } = require('@moralisweb3/common-evm-utils');
 
-const web3 = new Web3(new Web3.providers.HttpProvider(process.env.PROVIDER));
-
 /**
  * Retrieves all details about a smart contract implementing the IBlockPassTicket interface.
  * @param {string} contractAddress
@@ -15,6 +13,11 @@ const getTicketTierDetails = async (contractAddress) => {
   const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json')).abi;
 
   try {
+    const web3 = new Web3(process.env.PROVIDER);
+    if (web3.currentProvider === null) {
+      console.log(web3.currentProvider);
+      throw new Error('Unable to connect to web3 connection provider.');
+    }
     const contract = new web3.eth.Contract(ticketContractAbi, contractAddress).methods;
 
     const tokenURI = await contract._tokenURI().call(contractCallCallback);
@@ -88,8 +91,8 @@ const getEvmChain = () => {
     }
   } else {
     switch (chain) {
-      case 'MUMBAI':
-        return EvmChain.MUMBAI;
+      case 'SEPOLIA':
+        return EvmChain.SEPOLIA;
       case 'BSC_TESTNET':
         return EvmChain.BSC_TESTNET;
       case 'FUJI':
@@ -97,12 +100,12 @@ const getEvmChain = () => {
       case 'CRONOS_TESTNET':
         return EvmChain.CRONOS_TESTNET;
       default:
-        return EvmChain.GOERLI;
+        return EvmChain.MUMBAI;
     }
   }
 };
 
 module.exports = {
   getTicketTierDetails,
-  getEvmChain
+  getEvmChain,
 };

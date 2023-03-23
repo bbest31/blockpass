@@ -42,6 +42,8 @@ EVM_CHAIN=
 ```
 
 ## 3. Start
+### Faucets
+- Mumbai https://mumbaifaucet.com/ | https://faucet.polygon.technology/
 ### Run as dev using nodemon
 ```sh
 npm run dev
