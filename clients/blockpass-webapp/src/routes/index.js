@@ -20,7 +20,7 @@ const Loadable = (Component) => (props) => {
   const { pathname } = useLocation();
 
   return (
-    <Suspense fallback={<LoadingScreen isDashboard={pathname.includes('/dashboard')} />}>
+    <Suspense fallback={<LoadingScreen isDashboard />}>
       <Component {...props} />
     </Suspense>
   );
@@ -47,11 +47,28 @@ export default function Router() {
             </GuestGuard>
           ),
         },
-        { path: 'login-unprotected', element: <Login /> },
-        { path: 'register-unprotected', element: <Register /> },
-        { path: 'reset-password', element: <ResetPassword /> },
-        { path: 'new-password', element: <NewPassword /> },
-        { path: 'verify', element: <VerifyCode /> },
+        // { path: 'login-unprotected', element: <Login /> },
+        // { path: 'register-unprotected', element: <Register /> },
+        // { path: 'reset-password', element: <ResetPassword /> },
+        // { path: 'new-password', element: <NewPassword /> },
+        // { path: 'verify', element: <VerifyCode /> },
+      ],
+    },
+
+    // App Routes
+    {
+      path: '',
+      element: (
+        <AuthGuard>
+          <DashboardLayout />
+        </AuthGuard>
+      ),
+      children: [
+        { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
+        { path: 'dashboard', element: <GeneralApp /> },
+        { path: 'events', element: <Events /> },
+        { path: 'analytics', element: <GeneralAnalytics /> },
+        { path: 'account', element: <UserAccount /> },
       ],
     },
 
@@ -64,10 +81,7 @@ export default function Router() {
         </AuthGuard>
       ),
       children: [
-        { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
-        { path: 'app', element: <GeneralApp /> },
         { path: 'ecommerce', element: <GeneralEcommerce /> },
-        { path: 'analytics', element: <GeneralAnalytics /> },
         { path: 'banking', element: <GeneralBanking /> },
         { path: 'booking', element: <GeneralBooking /> },
 
@@ -207,6 +221,9 @@ const UserCards = Loadable(lazy(() => import('../pages/dashboard/UserCards')));
 const UserList = Loadable(lazy(() => import('../pages/dashboard/UserList')));
 const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')));
 const UserCreate = Loadable(lazy(() => import('../pages/dashboard/UserCreate')));
+
+// EVENTS
+const Events = Loadable(lazy(() => import('../pages/dashboard/OrganizationEvents')));
 
 // APP
 const Chat = Loadable(lazy(() => import('../pages/dashboard/Chat')));

@@ -31,9 +31,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/lib/integration/react';
+import { MixpanelProvider } from 'react-mixpanel-browser';
+import { MoralisProvider } from 'react-moralis';
 // @mui
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { MIXPANEL_API, MORALIS_API } from './config';
 // redux
 import { store, persistor } from './redux/store';
 // contexts
@@ -53,23 +56,27 @@ import reportWebVitals from './reportWebVitals';
 // ----------------------------------------------------------------------
 
 ReactDOM.render(
-  <AuthProvider>
-    <HelmetProvider>
-      <ReduxProvider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <SettingsProvider>
-              <CollapseDrawerProvider>
-                <BrowserRouter>
-                  <App />
-                </BrowserRouter>
-              </CollapseDrawerProvider>
-            </SettingsProvider>
-          </LocalizationProvider>
-        </PersistGate>
-      </ReduxProvider>
-    </HelmetProvider>
-  </AuthProvider>,
+  <MixpanelProvider config={{ ...MIXPANEL_API }}>
+    <MoralisProvider serverUrl={MORALIS_API.SERVER_URL} appId={MORALIS_API.APP_ID}>
+      <AuthProvider>
+        <HelmetProvider>
+          <ReduxProvider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <SettingsProvider>
+                  <CollapseDrawerProvider>
+                    <BrowserRouter>
+                      <App />
+                    </BrowserRouter>
+                  </CollapseDrawerProvider>
+                </SettingsProvider>
+              </LocalizationProvider>
+            </PersistGate>
+          </ReduxProvider>
+        </HelmetProvider>
+      </AuthProvider>
+    </MoralisProvider>
+  </MixpanelProvider>,
   document.getElementById('root')
 );
 

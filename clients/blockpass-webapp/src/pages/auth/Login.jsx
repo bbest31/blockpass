@@ -103,7 +103,7 @@ export default function Login() {
                 <Typography variant="h4" gutterBottom>
                   Sign in to BlockPass
                 </Typography>
-                <Typography sx={{ color: 'text.secondary' }}>Enter your details below.</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>Click the button below to sign in.</Typography>
               </Box>
 
               <Tooltip title={capitalCase(method)} placement="right">
@@ -113,7 +113,7 @@ export default function Login() {
               </Tooltip>
             </Stack>
 
-            <AuthSocial />
+            {/* <AuthSocial /> */}
             <LoginForm />
 
             {/* Uncomment below code when we add self-registration */}

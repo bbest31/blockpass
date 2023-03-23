@@ -2,6 +2,7 @@
 import { useTheme } from '@mui/material/styles';
 import { Container, Grid, Stack, Button } from '@mui/material';
 // hooks
+import { useMixpanel } from 'react-mixpanel-browser';
 import useAuth from '../../hooks/useAuth';
 import useSettings from '../../hooks/useSettings';
 // _mock_
@@ -23,11 +24,16 @@ import {
 } from '../../sections/@dashboard/general/app';
 // assets
 import { SeoIllustration } from '../../assets';
+// utils
+import { trackEvent } from '../../utils/mixpanelUtils';
 
 // ----------------------------------------------------------------------
 
 export default function GeneralApp() {
   const { user } = useAuth();
+  const mixpanel = useMixpanel();
+
+  trackEvent(mixpanel, 'Navigate', { page: 'Dashboard' });
 
   const theme = useTheme();
 
@@ -39,7 +45,7 @@ export default function GeneralApp() {
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <AppWelcome
-              title={`Welcome back! \n ${user?.displayName}`}
+              title={`Welcome back! \n ${user?.name}`}
               description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
               img={
                 <SeoIllustration

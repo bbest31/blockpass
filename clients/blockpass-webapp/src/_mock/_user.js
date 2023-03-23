@@ -100,6 +100,12 @@ export const _userPayment = [...Array(2)].map((_, index) => ({
   cardType: ['master_card', 'visa', 'master_card'][index],
 }));
 
+export const _userWallets = [...Array(2)].map((_, index) => ({
+  id: _mock.id(index),
+  walletAddress: ['0xeb3444e97c31D2612316b799A7468C883ee2cE8d', '0xAE55eee4553fA1a53B3b00b8Fb29A094bfc9A44E'][index],
+  walletNetwork: ['matic_mainnet', 'matic_mainnet'][index],
+}));
+
 export const _userAddressBook = [...Array(4)].map((_, index) => ({
   id: _mock.id(index),
   name: _mock.name.fullName(index),

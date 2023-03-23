@@ -15,11 +15,19 @@ export function fTimestamp(date) {
 }
 
 export function fDateTimeSuffix(date) {
-  return format(new Date(date), 'dd/MM/yyyy hh:mm p');
+  return format(new Date(date), 'dd MMM yyyy, p');
 }
 
 export function fToNow(date) {
   return formatDistanceToNow(new Date(date), {
-    addSuffix: true
+    addSuffix: true,
   });
+}
+
+export function fDateYearMonthDay(date) {
+  return format(new Date(date), 'yyyy-MM-dd');
+}
+
+export function fTimeHourMinute(date) {
+  return format(new Date(date), 'HH:mm');
 }

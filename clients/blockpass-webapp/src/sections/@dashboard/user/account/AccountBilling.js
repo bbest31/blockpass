@@ -1,28 +1,25 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
-import { Box, Grid, Card, Button, Typography, Stack } from '@mui/material';
+import { Grid, Stack } from '@mui/material';
 //
-import AccountBillingAddressBook from './AccountBillingAddressBook';
 import AccountBillingPaymentMethod from './AccountBillingPaymentMethod';
-import AccountBillingInvoiceHistory from './AccountBillingInvoiceHistory';
+// import AccountBillingInvoiceHistory from './AccountBillingInvoiceHistory';
 
 // ----------------------------------------------------------------------
 
 AccountBilling.propTypes = {
-  addressBook: PropTypes.array,
-  cards: PropTypes.array,
-  invoices: PropTypes.array,
+  metadata: PropTypes.object,
 };
 
-export default function AccountBilling({ cards, addressBook, invoices }) {
+export default function AccountBilling({ metadata }) {
   const [open, setOpen] = useState(false);
 
   return (
     <Grid container spacing={5}>
       <Grid item xs={12} md={8}>
         <Stack spacing={3}>
-          <Card sx={{ p: 3 }}>
+          {/* <Card sx={{ p: 3 }}>
             <Typography variant="overline" sx={{ mb: 3, display: 'block', color: 'text.secondary' }}>
               Your Plan
             </Typography>
@@ -42,22 +39,20 @@ export default function AccountBilling({ cards, addressBook, invoices }) {
                 Upgrade plan
               </Button>
             </Box>
-          </Card>
+          </Card> */}
 
           <AccountBillingPaymentMethod
-            cards={cards}
+            metadata={metadata}
             isOpen={open}
             onOpen={() => setOpen(!open)}
             onCancel={() => setOpen(false)}
           />
-
-          <AccountBillingAddressBook addressBook={addressBook} />
         </Stack>
       </Grid>
 
-      <Grid item xs={12} md={4}>
-        <AccountBillingInvoiceHistory invoices={invoices} />
-      </Grid>
+      {/* <Grid item xs={12} md={4}>
+        <AccountBillingInvoiceHistory invoices={payouts} />
+      </Grid> */}
     </Grid>
   );
 }

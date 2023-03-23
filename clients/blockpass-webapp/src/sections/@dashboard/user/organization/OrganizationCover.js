@@ -1,0 +1,71 @@
+// @mui
+import { styled } from '@mui/material/styles';
+import { Box, Typography } from '@mui/material';
+// utils
+import cssStyles from '../../../../utils/cssStyles';
+// hooks
+import useAuth from '../../../../hooks/useAuth';
+// sections
+// import OrganizationAvatar from './OrganizationAvatar';
+
+// ----------------------------------------------------------------------
+
+const RootStyle = styled('div')(({ theme }) => ({
+  '&:before': {
+    ...cssStyles().bgBlur({ blur: 2, color: theme.palette.primary.darker }),
+    top: 0,
+    zIndex: 9,
+    content: "''",
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
+}));
+
+const InfoStyle = styled('div')(({ theme }) => ({
+  left: 0,
+  right: 0,
+  zIndex: 99,
+  position: 'absolute',
+  marginTop: theme.spacing(11),
+  [theme.breakpoints.up('md')]: {
+    right: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    bottom: theme.spacing(7),
+  },
+}));
+
+// ----------------------------------------------------------------------
+
+export default function OrganizationCover() {
+  const { organization } = useAuth();
+  
+  return (
+    <RootStyle>
+      <InfoStyle>
+        {/* <OrganizationAvatar
+          sx={{
+            mx: 'auto',
+            borderWidth: 2,
+            borderStyle: 'solid',
+            borderColor: 'common.white',
+            backgroundColor: 'common.white',
+            width: { xs: 80, md: 128 },
+            height: { xs: 80, md: 128 },
+          }}
+        /> */}
+        <Box
+          sx={{
+            ml: { md: 3 },
+            mt: { xs: 1, md: 0 },
+            color: 'common.white',
+            textAlign: { xs: 'center', md: 'left' },
+          }}
+        >
+          <Typography variant="h4">{organization?.display_name}</Typography>
+        </Box>
+      </InfoStyle>
+    </RootStyle>
+  );
+}
