@@ -1,11 +1,12 @@
 'use strict';
 const mongoose = require('mongoose');
+const Moralis = require('moralis').default;
 
 const Event = require('../models/Events.js');
 const TicketTier = require('../models/TicketTiers.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
-const { getTicketTierDetails } = require('../utils/web3Utils');
+const { getTicketTierDetails, getEvmChain } = require('../utils/web3Utils');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
@@ -80,6 +81,40 @@ async function getTicketTier(ticketTierId) {
   let response = { ...contractData, ...tierData };
 
   return response;
+}
+
+/**
+ * Reads all owners of an NFT by contract address.
+ * @param {*} ticketTierId
+ * @param {*} cursor
+ * @returns
+ */
+async function getTicketTierOwners(ticketTierId, cursor) {
+  // get ticket tier db data
+  const ticketTier = await TicketTier.findById(ticketTierId)
+    .exec()
+    .catch((err) => {
+      logger.log('error', err);
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
+    });
+  if (!ticketTier) {
+    return {};
+  }
+
+  const address = ticketTier.contract;
+  const chain = getEvmChain();
+
+  if (!chain) {
+    let err = new Error('Can not determine EVM Chain.');
+    logger.log('error', err);
+    throw err;
+  }
+
+  const response = await Moralis.EvmApi.nft.getNFTOwners({ address, chain, limit: 50, cursor: cursor });
+
+  return response.toJSON();
 }
 
 async function patchOrganizationEvents(eventId, payload) {
@@ -159,4 +194,5 @@ module.exports = {
   patchOrganizationEventsImages,
   getEventTicketTiers,
   getTicketTier,
+  getTicketTierOwners,
 };

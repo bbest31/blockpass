@@ -2,6 +2,7 @@ const Web3 = require('web3');
 const fs = require('fs');
 const logger = require('./logger');
 const DateTime = require('./datetime');
+const { EvmChain } = require('@moralisweb3/common-evm-utils');
 
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.PROVIDER));
 
@@ -62,6 +63,46 @@ const contractCallCallback = (err, result) => {
   }
 };
 
+/**
+ * Returns the Moralis object indicating the EVM chain the server is operating on.
+ * @returns {Evm.Chain}
+ */
+const getEvmChain = () => {
+  const chain = process.env.EVM_CHAIN;
+  if (chain === undefined) {
+    return null;
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    switch (chain) {
+      case 'POLYGON':
+        return EvmChain.POLYGON;
+      case 'BSC':
+        return EvmChain.BSC;
+      case 'AVALANCHE':
+        return EvmChain.AVALANCHE;
+      case 'CRONOS':
+        return EvmChain.CRONOS;
+      default:
+        return EvmChain.ETHEREUM;
+    }
+  } else {
+    switch (chain) {
+      case 'MUMBAI':
+        return EvmChain.MUMBAI;
+      case 'BSC_TESTNET':
+        return EvmChain.BSC_TESTNET;
+      case 'FUJI':
+        return EvmChain.FUJI;
+      case 'CRONOS_TESTNET':
+        return EvmChain.CRONOS_TESTNET;
+      default:
+        return EvmChain.GOERLI;
+    }
+  }
+};
+
 module.exports = {
   getTicketTierDetails,
+  getEvmChain
 };
