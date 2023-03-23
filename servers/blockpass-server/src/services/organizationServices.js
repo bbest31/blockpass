@@ -1,17 +1,15 @@
 'use strict';
 const mongoose = require('mongoose');
-const fs = require('fs');
-const Web3 = require('web3');
 
 const Event = require('../models/Events.js');
+const TicketTier = require('../models/TicketTiers.js');
 const { managementAPI } = require('../apis/auth0Api.js');
 const logger = require('../utils/logger');
-const DateTime = require('../utils/datetime.js');
-const { remove } = require('../models/Events.js');
+const { getTicketTierDetails } = require('../utils/web3Utils');
 
 const ORGANIZATION_ATTRIBUTES = ['display_name', 'metadata'];
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
-const web3 = new Web3(new Web3.providers.HttpProvider(process.env.PROVIDER));
+const TICKET_TIER_ATTRIBUTES = ['displayName', 'description'];
 
 // Events
 
@@ -20,46 +18,66 @@ async function getOrganizationEvents(orgId) {
   return events;
 }
 
-async function getEventTicketTiers(eventId) {
-  // const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/TicketExample.json')).abi;
-  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json')).abi;
+// Ticket Tiers
 
-  const event = await Event.find({ _id: eventId }).exec();
-  const contractAddresses = event[0].contracts;
+/**
+ * Get all ticket tiers given an event id.
+ * @param {string} eventId
+ * @returns
+ */
+async function getEventTicketTiers(eventId) {
+  const event = await Event.findById(eventId)
+    .exec()
+    .catch((err) => {
+      throw err;
+    });
+  if (event === null) {
+    return [];
+  }
+  const ticketTiers = event.ticketTiers;
 
   let response = { ticketTiers: [] };
 
-  for (let i = 0; i < contractAddresses.length; i++) {
-    try {
-      const contract = new web3.eth.Contract(ticketContractAbi, contractAddresses[i]).methods;
+  for (let i = 0; i < ticketTiers.length; i++) {
+    const tier = await getTicketTier(ticketTiers[i]).catch((err) => {
+      logger.log('error', err);
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
+    });
 
-      const tokenURI = await contract._tokenURI().call();
-      const name = await contract.name().call();
-      const supply = await contract.supply().call();
-      const symbol = await contract.symbol().call();
-      const totalTickets = await contract.getTotalTicketsForSale().call();
-      const primarySalePrice = await contract.primarySalePrice().call();
-      const liveDate = await contract.liveDate().call();
-      const closeDate = await contract.closeDate().call();
-      const eventEndDate = await contract.eventEndDate().call();
-
-      const ticketData = {
-        tokenURI: tokenURI,
-        name: name,
-        supply: supply,
-        symbol: symbol,
-        totalTickets: totalTickets,
-        primarySalePrice: primarySalePrice,
-        liveDate: DateTime.convertEpochToDate(liveDate),
-        closeDate: DateTime.convertEpochToDate(closeDate),
-        eventEndDate: DateTime.convertEpochToDate(eventEndDate),
-      };
-
-      response.ticketTiers = [...response.ticketTiers, ticketData];
-    } catch (error) {
-      logger.log('error', `Could not retrieve contract at address '${contractAddresses[i]}'`);
-    }
+    response.ticketTiers = [...response.ticketTiers, tier];
   }
+
+  return response;
+}
+
+/**
+ * Retrieves all information about a ticket tier given it's id.
+ * @param {string} ticketTierId
+ * @returns
+ */
+async function getTicketTier(ticketTierId) {
+  // get ticket tier db data
+  const ticketTier = await TicketTier.findById(ticketTierId)
+    .exec()
+    .catch((err) => {
+      logger.log('error', err);
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
+    });
+  if (!ticketTier) {
+    return {};
+  }
+
+  let tierData = ticketTier._doc;
+  // get ticket tier smart contract data
+  const contractData = await getTicketTierDetails(ticketTier.contract).catch((err) => {
+    throw err;
+  });
+
+  let response = { ...contractData, ...tierData };
 
   return response;
 }
@@ -140,4 +158,5 @@ module.exports = {
   patchOrganizationEvents,
   patchOrganizationEventsImages,
   getEventTicketTiers,
+  getTicketTier,
 };

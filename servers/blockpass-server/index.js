@@ -25,7 +25,7 @@ app.use(helmet());
 app.use(checkJwt);
 
 async function main() {
-  await mongoose.connect('mongodb://localhost:27017/Blockpass');
+  await mongoose.connect(process.env.MONGODB_CONNECT);
 }
 main().catch((err) => console.log(err));
 
