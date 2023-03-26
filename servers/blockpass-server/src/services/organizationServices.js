@@ -61,6 +61,7 @@ async function getEventTicketTiers(eventId) {
 async function getTicketTier(ticketTierId) {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
+    .populate('enhancements')
     .exec()
     .catch((err) => {
       logger.log('error', err);
