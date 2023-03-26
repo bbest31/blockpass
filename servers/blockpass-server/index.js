@@ -2,6 +2,7 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+const Moralis = require('moralis').default;
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -26,6 +27,9 @@ app.use(checkJwt);
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_CONNECT);
+  await Moralis.start({
+    apiKey: process.env.MORALIS_API_KEY,
+  });
 }
 main().catch((err) => console.log(err));
 

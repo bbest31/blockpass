@@ -7,6 +7,7 @@ const {
   patchOrganizationEventsImages,
   getEventTicketTiers,
   getTicketTier,
+  getTicketTierOwners,
 } = require('../services/organizationServices.js');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 const logger = require('../utils/logger');
@@ -111,6 +112,25 @@ async function readTicketTier(req, res) {
     });
 }
 
+/**
+ *
+ * @param {*} req
+ * @param {*} res
+ */
+async function readTicketTierOwners(req, res) {
+  const { ticketTierId } = req.params;
+  const { cursor } = req.query;
+
+  await getTicketTierOwners(ticketTierId, cursor)
+    .then((owners) => {
+      res.status(200).json(owners);
+    })
+    .catch((err) => {
+      logger.error('error', err);
+      res.status(500).send(httpResponseMessage[500]);
+    });
+}
+
 module.exports = {
   readEvents,
   updateOrganization,
@@ -119,4 +139,5 @@ module.exports = {
   updateEventImages,
   readOrganizationEventTicketTiers,
   readTicketTier,
+  readTicketTierOwners,
 };

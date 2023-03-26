@@ -8,6 +8,7 @@ const {
   updateEventImages,
   readOrganizationEventTicketTiers,
   readTicketTier,
+  readTicketTierOwners,
 } = require('../controllers/organizationController.js');
 const {
   readEnhancements,
@@ -36,6 +37,7 @@ router.patch(
 );
 
 // Ticket Tiers
+
 router.get(
   '/:id/events/:eventId/ticket-tiers',
   checkOrganizationId,
@@ -47,6 +49,13 @@ router.get(
   checkOrganizationId,
   checkReadPermission('organizations'),
   readTicketTier
+);
+
+router.get(
+  '/:id/events/:eventId/ticket-tiers/:ticketTierId/owners',
+  checkOrganizationId,
+  checkReadPermission('organizations'),
+  readTicketTierOwners
 );
 
 // Enhancements
