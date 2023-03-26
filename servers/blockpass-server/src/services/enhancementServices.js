@@ -33,6 +33,11 @@ async function getEnhancements(ticketTierId) {
   return response;
 }
 
+/**
+ * 
+ * @param {*} id 
+ * @returns 
+ */
 async function getEnhancementById(id) {
   const enhancement = await Enhancement.findById(id)
     .exec()
@@ -49,22 +54,41 @@ async function getEnhancementById(id) {
   return data;
 }
 
-async function postEnhancement(newEnhancement) {
-
+/**
+ * 
+ * @param {*} tierId 
+ * @param {*} newEnhancement 
+ * @returns 
+ */
+async function postEnhancement(tierId, newEnhancement) {
   const session = await Enhancement.startSession();
   session.startTransaction();
+  let result = {};
   try {
     const opts = { session };
     const enhancement = await Enhancement.create([newEnhancement], opts);
+    result = enhancement[0];
+
+    // push new enhancement id into the ticket tier enhancements array.
+    await TicketTier.findByIdAndUpdate(
+      tierId,
+      { $push: { enhancements: result._id.toString() } },
+      { new: true, upsert: true }
+    )
+      .exec()
+      .catch((err) => {
+        throw err;
+      });
+
     await session.commitTransaction();
     session.endSession();
   } catch (err) {
-    console.error(err);
+    logger.log('error', err);
     await session.abortTransaction();
     session.endSession();
   }
 
-  return {};
+  return result;
 }
 
 async function patchEnhancement(id, newEnhancement) {}

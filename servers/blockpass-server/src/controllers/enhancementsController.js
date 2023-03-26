@@ -39,7 +39,7 @@ async function createEnhancement(req, res) {
   const { ticketTierId } = req.params;
   const body = req.body;
 
-  await postEnhancement(body)
+  await postEnhancement(ticketTierId, body)
     .then((enhancement) => {
       res.status(200).send(enhancement);
     })
