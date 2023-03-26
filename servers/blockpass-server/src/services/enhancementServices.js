@@ -34,9 +34,9 @@ async function getEnhancements(ticketTierId) {
 }
 
 /**
- * 
- * @param {*} id 
- * @returns 
+ *
+ * @param {*} id
+ * @returns
  */
 async function getEnhancementById(id) {
   const enhancement = await Enhancement.findById(id)
@@ -55,10 +55,10 @@ async function getEnhancementById(id) {
 }
 
 /**
- * 
- * @param {*} tierId 
- * @param {*} newEnhancement 
- * @returns 
+ *
+ * @param {*} tierId
+ * @param {*} newEnhancement
+ * @returns
  */
 async function postEnhancement(tierId, newEnhancement) {
   const session = await Enhancement.startSession();
@@ -83,9 +83,9 @@ async function postEnhancement(tierId, newEnhancement) {
     await session.commitTransaction();
     session.endSession();
   } catch (err) {
-    logger.log('error', err);
     await session.abortTransaction();
     session.endSession();
+    throw err;
   }
 
   return result;
