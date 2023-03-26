@@ -10,6 +10,12 @@ const {
   readTicketTier,
   readTicketTierOwners,
 } = require('../controllers/organizationController.js');
+const {
+  readEnhancements,
+  createEnhancement,
+  updateEnhancement,
+  removeEnhancement,
+} = require('../controllers/enhancementsController');
 const { checkOrganizationId } = require('../middlewares/organizationMiddlewares.js');
 const { checkReadPermission, checkUpdatePermission } = require('../middlewares/permissionMiddleware.js');
 const { multer, uploadImageToBucket, removeImageFromBucket } = require('../middlewares/imageUploadMiddleware');
@@ -30,7 +36,8 @@ router.patch(
   updateEventImages
 );
 
-// Ticket tiers
+// Ticket Tiers
+
 router.get(
   '/:id/events/:eventId/ticket-tiers',
   checkOrganizationId,
@@ -49,6 +56,35 @@ router.get(
   checkOrganizationId,
   checkReadPermission('organizations'),
   readTicketTierOwners
+);
+
+// Enhancements
+router.get(
+  '/:id/events/:eventId/ticket-tiers/:ticketTierId/enhancements',
+  checkOrganizationId,
+  checkReadPermission('organizations'),
+  readEnhancements
+);
+
+router.post(
+  '/:id/events/:eventId/ticket-tiers/:ticketTierId/enhancements',
+  checkOrganizationId,
+  checkReadPermission('organizations'),
+  createEnhancement
+);
+
+router.patch(
+  '/:id/events/:eventId/ticket-tiers/:ticketTierId/enhancements/:enhancementId',
+  checkOrganizationId,
+  checkReadPermission('organizations'),
+  updateEnhancement
+);
+
+router.delete(
+  '/:id/events/:eventId/ticket-tiers/:ticketTierId/enhancements/:enhancementId',
+  checkOrganizationId,
+  checkReadPermission('organizations'),
+  removeEnhancement
 );
 
 module.exports = router;

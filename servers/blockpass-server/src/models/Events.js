@@ -7,15 +7,27 @@ const schema = new mongoose.Schema(
   {
     orgId: {
       type: String,
-      required: true,
+      required: [true, 'Organization id is required'],
+      validate: {
+        validator: function (v) {
+          return String(v).trim().length > 0;
+        },
+        message: (props) => `${props.value} can not be empty!`,
+      },
     },
     name: {
       type: String,
-      required: true,
+      required: [true, 'Event name is required'],
+      validate: {
+        validator: function (v) {
+          return String(v).trim().length > 0;
+        },
+        message: (props) => `${props.value} can not be empty!`,
+      },
     },
     startDate: {
       type: Date,
-      required: true,
+      required: [true, 'Event start date is required'],
     },
     endDate: {
       type: Date,
@@ -28,7 +40,6 @@ const schema = new mongoose.Schema(
     },
     location: {
       type: String,
-      required: true,
     },
     website: {
       type: String,
