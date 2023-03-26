@@ -49,7 +49,23 @@ async function getEnhancementById(id) {
   return data;
 }
 
-async function postEnhancement(newEnhancement) {}
+async function postEnhancement(newEnhancement) {
+
+  const session = await Enhancement.startSession();
+  session.startTransaction();
+  try {
+    const opts = { session };
+    const enhancement = await Enhancement.create([newEnhancement], opts);
+    await session.commitTransaction();
+    session.endSession();
+  } catch (err) {
+    console.error(err);
+    await session.abortTransaction();
+    session.endSession();
+  }
+
+  return {};
+}
 
 async function patchEnhancement(id, newEnhancement) {}
 

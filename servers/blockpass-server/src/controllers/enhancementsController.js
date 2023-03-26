@@ -36,7 +36,6 @@ async function updateEnhancement(req, res) {
 }
 
 async function createEnhancement(req, res) {
-  //TODO update ticket tier enhancement list
   const { ticketTierId } = req.params;
   const body = req.body;
 
@@ -52,7 +51,6 @@ async function createEnhancement(req, res) {
 
 async function removeEnhancement(req, res) {
   const { enhancementId } = req.params;
-  //TODO update ticket tier enhancement list?
 
   await deleteEnhancement(enhancementId)
     .then((enhancement) => {
