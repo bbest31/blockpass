@@ -26,6 +26,7 @@ app.use(helmet());
 app.use(checkJwt);
 
 async function main() {
+  mongoose.set('strictQuery', true);
   await mongoose.connect(process.env.MONGODB_CONNECT);
   await Moralis.start({
     apiKey: process.env.MORALIS_API_KEY,
