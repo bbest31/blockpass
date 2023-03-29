@@ -1,15 +1,12 @@
 'use strict';
 const router = require('express').Router();
+const { updateOrganization, readOrganization } = require('../controllers/organizationController.js');
+const { readEvents, updateEvents, updateEventImages } = require('../controllers/eventController');
 const {
-  readEvents,
-  updateOrganization,
-  readOrganization,
-  updateEvents,
-  updateEventImages,
-  readOrganizationEventTicketTiers,
+  readTicketTiers,
   readTicketTier,
   readTicketTierOwners,
-} = require('../controllers/organizationController.js');
+} = require('../controllers/ticketTierController');
 const {
   readEnhancements,
   createEnhancement,
@@ -42,7 +39,7 @@ router.get(
   '/:id/events/:eventId/ticket-tiers',
   checkOrganizationId,
   checkReadPermission('organizations'),
-  readOrganizationEventTicketTiers
+  readTicketTiers
 );
 router.get(
   '/:id/events/:eventId/ticket-tiers/:ticketTierId',
