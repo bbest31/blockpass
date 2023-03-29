@@ -1,18 +1,11 @@
 'use strict';
 const {
-  getOrganizationEvents,
-  patchOrganizationEvents,
   getOrganization,
   patchOrganization,
-  patchOrganizationEventsImages,
-  getEventTicketTiers,
-  getTicketTier,
-  getTicketTierOwners,
 } = require('../services/organizationServices.js');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 const logger = require('../utils/logger');
 
-// Organizations
 
 async function readOrganization(req, res) {
   const { id } = req.params;
@@ -41,103 +34,8 @@ async function updateOrganization(req, res) {
     });
 }
 
-// Events
-
-async function readEvents(req, res) {
-  const { id } = req.params;
-
-  await getOrganizationEvents(id)
-    .then((events) => {
-      res.status(200).send(events);
-    })
-    .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
-    });
-}
-
-async function updateEvents(req, res) {
-  const { eventId } = req.params;
-  const body = req.body;
-
-  await patchOrganizationEvents(eventId, body)
-    .then((eventItem) => {
-      res.status(200).send(eventItem);
-    })
-    .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
-    });
-}
-
-async function updateEventImages(req, res) {
-  const { eventId } = req.params;
-  const newImageUrls = req.newImageUrls;
-  const removedImages = req.body.removedImages;
-
-  await patchOrganizationEventsImages(eventId, newImageUrls, removedImages)
-    .then((eventItem) => {
-      res.status(200).json(eventItem);
-    })
-    .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
-    });
-}
-
-// Ticket Tiers
-
-async function readOrganizationEventTicketTiers(req, res) {
-  const { eventId } = req.params;
-
-  await getEventTicketTiers(eventId)
-    .then((ticketTiers) => {
-      res.status(200).json(ticketTiers);
-    })
-    .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
-    });
-}
-
-async function readTicketTier(req, res) {
-  const { ticketTierId } = req.params;
-  await getTicketTier(ticketTierId)
-    .then((ticketTier) => {
-      res.status(200).json(ticketTier);
-    })
-    .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
-    });
-}
-
-/**
- *
- * @param {*} req
- * @param {*} res
- */
-async function readTicketTierOwners(req, res) {
-  const { ticketTierId } = req.params;
-  const { cursor } = req.query;
-
-  await getTicketTierOwners(ticketTierId, cursor)
-    .then((owners) => {
-      res.status(200).json(owners);
-    })
-    .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
-    });
-}
 
 module.exports = {
-  readEvents,
   updateOrganization,
   readOrganization,
-  updateEvents,
-  updateEventImages,
-  readOrganizationEventTicketTiers,
-  readTicketTier,
-  readTicketTierOwners,
 };
