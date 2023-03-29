@@ -3,7 +3,7 @@ const {
   getOrganizationEvents,
   patchOrganizationEvents,
   patchOrganizationEventsImages,
-} = require('../services/organizationServices.js');
+} = require('../services/eventServices');
 
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 const logger = require('../utils/logger');

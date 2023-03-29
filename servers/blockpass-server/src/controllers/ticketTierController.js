@@ -1,16 +1,16 @@
 'use strict';
 const {
-  getEventTicketTiers,
+  getTicketTiers,
   getTicketTier,
   getTicketTierOwners,
-} = require('../services/organizationServices.js');
+} = require('../services/ticketTierServices');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 const logger = require('../utils/logger');
 
-async function readOrganizationEventTicketTiers(req, res) {
+async function readTicketTiers(req, res) {
   const { eventId } = req.params;
 
-  await getEventTicketTiers(eventId)
+  await getTicketTiers(eventId)
     .then((ticketTiers) => {
       res.status(200).json(ticketTiers);
     })
@@ -52,7 +52,7 @@ async function readTicketTierOwners(req, res) {
 }
 
 module.exports = {
-  readOrganizationEventTicketTiers,
+  readTicketTiers,
   readTicketTier,
   readTicketTierOwners,
 };
