@@ -29,7 +29,7 @@ const schema = new Schema(
       },
     },
     enhancements: {
-      type: [ObjectId],
+      type: [{ type: ObjectId, ref: 'Enhancement' }],
     },
   },
   {
