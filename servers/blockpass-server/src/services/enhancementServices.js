@@ -91,9 +91,51 @@ async function postEnhancement(tierId, newEnhancement) {
   return result;
 }
 
-async function patchEnhancement(id, newEnhancement) {}
+/**
+ * Updates the enhancement with the given id
+ * @param {string} id
+ * @param {Object} newEnhancement
+ * @returns
+ */
+async function patchEnhancement(id, newEnhancement) {
+  const enhancement = await Enhancement.findByIdAndUpdate(id, newEnhancement, {
+    returnDocument: 'after',
+    runValidators: true,
+  })
+    .exec()
+    .catch((err) => {
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
+    });
+  if (!enhancement) {
+    return {};
+  }
 
-async function deleteEnhancement(enhancementId) {}
+  let data = enhancement._doc;
+  return data;
+}
+
+/**
+ * Deletes an Enhancement given an id
+ * @param {string} enhancementId
+ * @returns
+ */
+async function deleteEnhancement(enhancementId) {
+  const enhancement = await Enhancement.findOneAndRemove({ _id: enhancementId })
+    .exec()
+    .catch((err) => {
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
+    });
+  if (!enhancement) {
+    return {};
+  }
+
+  let data = enhancement._doc;
+  return data;
+}
 
 module.exports = {
   getEnhancements,
