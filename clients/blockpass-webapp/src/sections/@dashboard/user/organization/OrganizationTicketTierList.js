@@ -123,7 +123,7 @@ export default function OrganizationTicketTierList({ eventItem }) {
       })
       .catch(() => {
         if (!controller.signal.aborted) {
-          enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
+          enqueueSnackbar(`Unable to retrieve ticket tiers.`, { variant: 'error' });
         }
       });
   };
