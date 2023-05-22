@@ -6,7 +6,7 @@ import { SERVER_API } from '../config';
 
 const axiosInstance = axios.create({
   baseURL: SERVER_API,
-  timeout: 5000,
+  timeout: 30000,
 });
 
 // interceptor to globally handle error responses for requests

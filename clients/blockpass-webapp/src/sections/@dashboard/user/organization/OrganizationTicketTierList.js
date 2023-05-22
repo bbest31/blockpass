@@ -7,9 +7,6 @@ import {
   Box,
   Card,
   Table,
-  // Button,
-  // Stack,
-  // Switch,
   Tooltip,
   TableBody,
   Container,
@@ -62,22 +59,18 @@ const TICKET_TIERS = [
 ];
 // ----------------------------------------------------------------------
 
-export default function OrganizationTicketTierList({ eventItem }) {
+export default function OrganizationTicketTierList({ eventItem, onClickHandler }) {
   const {
-    // dense,
     page,
     order,
     orderBy,
     rowsPerPage,
     setPage,
-    //
     selected,
     setSelected,
     onSelectRow,
     onSelectAllRows,
-    //
     onSort,
-    // onChangeDense,
     onChangePage,
     onChangeRowsPerPage,
   } = useTable({
@@ -92,9 +85,6 @@ export default function OrganizationTicketTierList({ eventItem }) {
 
   const navigate = useNavigate();
 
-  // const dispatch = useDispatch();
-
-  // const { products, isLoading } = useSelector((state) => state.product);
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState([]);
 
@@ -108,7 +98,6 @@ export default function OrganizationTicketTierList({ eventItem }) {
 
   const getEvents = async (controller) => {
     const token = await getAccessToken();
-
     axiosInstance
       .get(`/organizations/${organization.id}/events/${_eventId}/ticket-tiers`, {
         headers: {
@@ -117,41 +106,29 @@ export default function OrganizationTicketTierList({ eventItem }) {
         signal: controller.signal,
       })
       .then((res) => {
-        console.log(res);
-        setTableData(res.data.ticketTiers);
-        setIsLoading(false)
+        setTableData([...res.data.ticketTiers]);
+        setIsLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
         if (!controller.signal.aborted) {
           enqueueSnackbar(`Unable to retrieve ticket tiers.`, { variant: 'error' });
         }
+        setIsLoading(false);
       });
   };
-  // useEffect(() => {
-  //   dispatch(getProducts());
-  // }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (products.length) {
-  //     setTableData(products);
-  //   }
-  // }, [products]);
-
-  // TODO: turn to 'Close' row
   const handleDeleteRow = (id) => {
     const deleteRow = tableData.filter((row) => row.id !== id);
     setSelected([]);
     setTableData(deleteRow);
   };
 
-  // TODO: turn to 'Close' rows
   const handleDeleteRows = (selected) => {
     const deleteRows = tableData.filter((row) => !selected.includes(row.id));
     setSelected([]);
     setTableData(deleteRows);
   };
 
-  // TODO: turn to 'View' row
   const handleEditRow = (id) => {
     navigate(PATH_DASHBOARD.eCommerce.edit(paramCase(id)));
   };
@@ -161,11 +138,9 @@ export default function OrganizationTicketTierList({ eventItem }) {
     comparator: getComparator(order, orderBy),
   });
 
-  // const denseHeight = dense ? 60 : 80;
   const denseHeight = 80;
 
-  // const isNotFound = !dataFiltered.length || !isLoading;
-  const isNotFound = !tableData.length || !isLoading;
+  const isNotFound = !tableData.length && !isLoading;
 
   return (
     <Card>
@@ -177,7 +152,6 @@ export default function OrganizationTicketTierList({ eventItem }) {
         <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
           {selected.length > 0 && (
             <TableSelectedActions
-              // dense={dense}
               numSelected={selected.length}
               rowCount={tableData.length}
               onSelectAllRows={(checked) =>
@@ -204,39 +178,27 @@ export default function OrganizationTicketTierList({ eventItem }) {
               rowCount={tableData.length}
               numSelected={selected.length}
               onSort={onSort}
-              onSelectAllRows={(checked) =>
-                onSelectAllRows(
-                  checked,
-                  tableData.map((row) => row.id)
-                )
-              }
             />
 
             <TableBody>
-              {/* {tableData.map((data) => (
-                <OrganizationEventTableRow key={_eventId} row={data}/>
-              ))} */}
-
               {(isLoading ? [...Array(rowsPerPage)] : tableData)
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) =>
                   row ? (
                     <OrganizationEventTableRow
-                      key={row.id}
+                      key={index}
                       row={row}
-                      // selected={selected.includes(row.id)}
-                      // onSelectRow={() => onSelectRow(row.id)}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.name)}
+                      eventId={_eventId}
+                      onClickHandler={onClickHandler}
                     />
                   ) : (
-                    !isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                    isLoading && <TableSkeleton key={index} sx={{ height: denseHeight }} />
                   )
                 )}
 
               <TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
 
-              <TableNoData isNotFound={!isNotFound} />
+              <TableNoData isNotFound={isNotFound} />
             </TableBody>
           </Table>
         </TableContainer>

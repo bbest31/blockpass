@@ -1,6 +1,6 @@
 import { capitalCase } from 'change-case';
 import { useMixpanel } from 'react-mixpanel-browser';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 // @mui
 import { Tab, Box, Tabs } from '@mui/material';
@@ -15,7 +15,12 @@ import { _userWallets } from '../../../../_mock';
 import Iconify from '../../../../components/Iconify';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 // sections
-import { OrganizationEventGeneral, OrganizationEventImageUpload, OrganizationTicketTierList } from './index';
+import {
+  OrganizationEventGeneral,
+  OrganizationEventImageUpload,
+  OrganizationTicketTierDetail,
+  OrganizationTicketTierList,
+} from './index';
 // utils
 import { trackEvent } from '../../../../utils/mixpanelUtils';
 
@@ -29,12 +34,17 @@ export default function OrganizationEventDetails({ eventItem }) {
   const { themeStretch } = useSettings();
 
   const { currentTab, onChangeTab } = useTabs('basic_info');
+  const [selectedTicketTier, setSelectedTicketTier] = useState(null);
 
   const mixpanel = useMixpanel();
 
   useEffect(() => {
     trackEvent(mixpanel, 'Navigate', { page: `Event Details ${eventItem._id}`, tab: 'basic_info' });
   }, []);
+
+  const onTicketTierSelectedHandler = (ticketTier) => {
+    setSelectedTicketTier(ticketTier);
+  };
 
   const EVENT_TABS = [
     {
@@ -50,7 +60,7 @@ export default function OrganizationEventDetails({ eventItem }) {
     {
       value: 'tickets',
       icon: <Iconify icon={'ic:round-receipt'} width={20} height={20} />,
-      component: <OrganizationTicketTierList eventItem={eventItem}/>,
+      component: <OrganizationTicketTierList eventItem={eventItem} onClickHandler={onTicketTierSelectedHandler} />,
     },
   ];
 
@@ -59,7 +69,12 @@ export default function OrganizationEventDetails({ eventItem }) {
     trackEvent(mixpanel, 'Navigate', { page: `EventDetails ${eventItem._id}`, tab: value });
   };
 
-  return (
+  return selectedTicketTier ? (
+    <OrganizationTicketTierDetail
+      details={selectedTicketTier}
+      event={{ id: eventItem._id, name: eventItem.name }}
+    />
+  ) : (
     <>
       <HeaderBreadcrumbs
         heading="Events"

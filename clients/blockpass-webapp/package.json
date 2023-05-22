@@ -108,6 +108,7 @@
     "stylis-plugin-rtl": "^2.1.1",
     "util": "^0.12.4",
     "web-vitals": "^2.1.4",
+    "web3": "^1.10.0",
     "worker-loader": "^3.0.8",
     "yup": "^0.32.11"
   },
