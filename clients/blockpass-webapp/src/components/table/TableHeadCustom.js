@@ -38,6 +38,7 @@ export default function TableHeadCustom({
   onSort,
   onSelectAllRows,
   sx,
+  headerSx,
 }) {
   return (
     <TableHead sx={sx}>
@@ -57,7 +58,7 @@ export default function TableHeadCustom({
             key={headCell.id}
             align={headCell.align || 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ width: headCell.width, minWidth: headCell.minWidth }}
+            sx={{ width: headCell.width, minWidth: headCell.minWidth, ...headerSx }}
           >
             {onSort ? (
               <TableSortLabel

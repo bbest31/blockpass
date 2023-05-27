@@ -10,3 +10,6 @@ export { default as OrganizationEventsView } from './OrganizationEventsView';
 export { default as OrganizationEventDetails } from './OrganizationEventDetails';
 export { default as OrganizationEventTableRow } from './OrganizationEventTableRow';
 export { default as OrganizationTicketTierSummary } from './OrganizationTicketTierSummary';
+export { default as OrganizationTicketTierDetail } from './OrganizationTicketTierDetail';
+export { default as OrganizationTicketTierOwnersList } from './OrganizationTicketTierOwnersList';
+export { default as TransactionDialog } from './TransactionDialog';
