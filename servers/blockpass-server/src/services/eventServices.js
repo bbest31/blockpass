@@ -1,14 +1,27 @@
 'use strict';
+const { gcpStorage } = require('../apis/gCloudApi');
 const mongoose = require('mongoose');
 
 const Event = require('../models/Events.js');
 
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
 
-
 async function getOrganizationEvents(orgId) {
   const events = await Event.find({ orgId: orgId }).exec();
   return events;
+}
+
+async function postOrganizationEvent(orgId, payload) {
+  const { images, name, endDate, location, startDate, website, description } = payload;
+  // TODO: upload images to Google Cloud
+
+  // TODO: save to mongodb
+  // const event = await Event.create({ orgId, ...payload });
+  // await event.save().catch((err) => {
+  //   throw err;
+  // });
+
+  // return event;
 }
 
 async function patchOrganizationEvents(eventId, payload) {
@@ -41,6 +54,8 @@ async function patchOrganizationEventsImages(eventId, imageUrls, removedImages) 
     });
   }
 
+  // TODO: remove/add images from GCloud
+
   await event.save().catch((err) => {
     throw err;
   });
@@ -52,6 +67,7 @@ async function patchOrganizationEventsImages(eventId, imageUrls, removedImages) 
 
 module.exports = {
   getOrganizationEvents,
+  postOrganizationEvent,
   patchOrganizationEvents,
   patchOrganizationEventsImages,
 };

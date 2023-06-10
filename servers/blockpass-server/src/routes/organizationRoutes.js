@@ -1,12 +1,8 @@
 'use strict';
 const router = require('express').Router();
 const { updateOrganization, readOrganization } = require('../controllers/organizationController.js');
-const { readEvents, updateEvents, updateEventImages } = require('../controllers/eventController');
-const {
-  readTicketTiers,
-  readTicketTier,
-  readTicketTierOwners,
-} = require('../controllers/ticketTierController');
+const { readEvents, updateEvents, updateEventImages, createEvent } = require('../controllers/eventController');
+const { readTicketTiers, readTicketTier, readTicketTierOwners } = require('../controllers/ticketTierController');
 const {
   readEnhancements,
   createEnhancement,
@@ -14,7 +10,11 @@ const {
   removeEnhancement,
 } = require('../controllers/enhancementsController');
 const { checkOrganizationId } = require('../middlewares/organizationMiddlewares.js');
-const { checkReadPermission, checkUpdatePermission } = require('../middlewares/permissionMiddleware.js');
+const {
+  checkReadPermission,
+  checkUpdatePermission,
+  checkCreatePermission,
+} = require('../middlewares/permissionMiddleware.js');
 const { multer, uploadImageToBucket, removeImageFromBucket } = require('../middlewares/imageUploadMiddleware');
 
 router.get('/:id', checkOrganizationId, checkReadPermission('organizations'), readOrganization);
@@ -22,6 +22,7 @@ router.patch('/:id', checkOrganizationId, checkUpdatePermission('organizations')
 
 // Events
 router.get('/:id/events', checkOrganizationId, checkReadPermission('events'), readEvents);
+router.post('/:id/events', checkOrganizationId, checkCreatePermission('events'), createEvent);
 router.patch('/:id/events/:eventId', checkOrganizationId, checkUpdatePermission('events'), updateEvents);
 router.patch(
   '/:id/events/:eventId/images',
