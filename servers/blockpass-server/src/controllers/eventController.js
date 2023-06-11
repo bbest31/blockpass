@@ -26,6 +26,8 @@ async function readEvents(req, res) {
 async function createEvent(req, res) {
   const { id } = req.params;
   const body = req.body;
+  const images = req.newImageUrls;
+  body.images = images;
 
   await postOrganizationEvent(id, body)
     .then((eventItem) => {
