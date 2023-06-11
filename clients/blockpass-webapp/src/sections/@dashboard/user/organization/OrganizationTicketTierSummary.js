@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { sentenceCase } from 'change-case';
-import { useNavigate } from 'react-router-dom';
 // form
 import { Controller, useForm } from 'react-hook-form';
 // @mui
@@ -17,6 +16,8 @@ import SocialsButton from '../../../../components/SocialsButton';
 import { ColorSinglePicker } from '../../../../components/color-utils';
 import { FormProvider, RHFSelect } from '../../../../components/hook-form';
 
+import { fDate } from '../../../../utils/formatTime';
+
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
@@ -28,172 +29,158 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-ProductDetailsSummary.propTypes = {
-  cart: PropTypes.array,
-  onAddCart: PropTypes.func,
-  onGotoStep: PropTypes.func,
-  product: PropTypes.shape({
-    available: PropTypes.number,
-    colors: PropTypes.arrayOf(PropTypes.string),
-    cover: PropTypes.string,
-    id: PropTypes.string,
-    inventoryType: PropTypes.string,
+OrganizationTicketTierSummary.propTypes = {
+  ticketTierDetail: PropTypes.shape({
+    tokenURI: PropTypes.string,
     name: PropTypes.string,
-    price: PropTypes.number,
-    priceSale: PropTypes.number,
-    sizes: PropTypes.arrayOf(PropTypes.string),
-    status: PropTypes.string,
-    totalRating: PropTypes.number,
-    totalReview: PropTypes.number,
+    supply: PropTypes.string,
+    symbol: PropTypes.string,
+    marketplaceContract: PropTypes.string,
+    eventOrganizer: PropTypes.string,
+    totalTicketsForSale: PropTypes.string,
+    primarySalePrice: PropTypes.string,
+    secondaryMarkup: PropTypes.string,
+    liveDate: PropTypes.string,
+    closeDate: PropTypes.string,
+    eventEndDate: PropTypes.string,
+    paused: PropTypes.bool,
+    _id: PropTypes.string,
+    contract: PropTypes.string,
+    description: PropTypes.string,
+    displayName: PropTypes.string,
+    enhancements: PropTypes.arrayOf(PropTypes.string),
+    updatedAt: PropTypes.string,
   }),
+  isLoading: PropTypes.bool,
+  pauseTicketSaleHandler: PropTypes.func,
+  resumeTicketSaleHandler: PropTypes.func,
+  closeTicketSaleHandler: PropTypes.func,
+  isClosed: PropTypes.bool,
+  isPaused: PropTypes.bool,
 };
 
-export default function ProductDetailsSummary({ cart, product, onAddCart, onGotoStep, ...other }) {
+export default function OrganizationTicketTierSummary({
+  ticketTierDetail,
+  isLoading,
+  pauseTicketSaleHandler,
+  resumeTicketSaleHandler,
+  closeTicketSaleHandler,
+  isClosed,
+  isPaused,
+  ...other
+}) {
   const theme = useTheme();
 
-  const navigate = useNavigate();
+  const methods = useForm({});
 
-  const {
-    id,
-    name,
-    sizes,
-    price,
-    cover,
-    status,
-    colors,
-    available,
-    priceSale,
-    totalRating,
-    totalReview,
-    inventoryType,
-  } = product;
+  const contractMethods = {
+    pause: pauseTicketSaleHandler,
+    resume: resumeTicketSaleHandler,
+    close: closeTicketSaleHandler,
+  };
 
-  // const alreadyProduct = cart.map((item) => item.id).includes(id);
+  const displayContractState = () => {
+    let color = 'success';
+    let state = 'active';
 
-  // const isMaxQuantity = cart.filter((item) => item.id === id).map((item) => item.quantity)[0] >= available;
+    if (isClosed) {
+      color = 'error';
+      state = 'closed';
+    } else if (isPaused) {
+      color = 'warning';
+      state = 'paused';
+    }
 
-  // const defaultValues = {
-  //   id,
-  //   name,
-  //   cover,
-  //   available,
-  //   price,
-  //   color: colors[0],
-  //   size: sizes[4],
-  //   quantity: available < 1 ? 0 : 1,
-  // };
+    return (
+      <Label
+        variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
+        color={color}
+        sx={{ textTransform: 'uppercase' }}
+      >
+        {sentenceCase(state)}
+      </Label>
+    );
+  };
 
-  const methods = useForm({
-    // defaultValues,
-  });
+  const displayPauseButton = () => {
+    let buttonText = 'Pause';
+    let onClickHandler = pauseTicketSaleHandler;
+    let color = 'warning';
 
-  // const { watch, control, setValue, handleSubmit } = methods;
+    if (isPaused) {
+      buttonText = 'Resume';
+      onClickHandler = resumeTicketSaleHandler;
+      color = 'success';
+    }
 
-  // const values = watch();
-
-  // const onSubmit = async (data) => {
-  //   try {
-  //     if (!alreadyProduct) {
-  //       onAddCart({
-  //         ...data,
-  //         subtotal: data.price * data.quantity,
-  //       });
-  //     }
-  //     onGotoStep(0);
-  //     navigate(PATH_DASHBOARD.eCommerce.checkout);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+    return (
+      <Button fullWidth size="large" color={color} variant="contained" onClick={onClickHandler}>
+        {buttonText}
+      </Button>
+    );
+  };
 
   return (
     <RootStyle {...other}>
-      {/* <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}> */}
-      <FormProvider methods={methods}>
-        <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
-          <Typography variant="h5">
-            {name}&nbsp;
-          </Typography>
-          
-          <Label
-            variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-            // color={inventoryType === 'in_stock' ? 'success' : 'error'}
-            color="success"
-            sx={{ textTransform: 'uppercase' }}
-          >
-            {sentenceCase(inventoryType || '')}
-          </Label>
-        </Stack>
+      <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+        <Typography variant="h5">{ticketTierDetail.name}&nbsp;</Typography>
+        {displayContractState()}
+      </Stack>
 
-        <Typography variant="h4" sx={{ mb: 3 }}>
-          &nbsp;{fCurrency(price)}
+      <Typography variant="h4" sx={{ mb: 3 }}>
+        {ticketTierDetail.primarySalePrice} Wei
+      </Typography>
+
+      <Divider sx={{ borderStyle: 'dashed' }} />
+
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 3 }}>
+        <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+          Contract
         </Typography>
+        <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+          {ticketTierDetail.marketplaceContract.slice(0, 6)}...
+          {ticketTierDetail.marketplaceContract.substr(ticketTierDetail.marketplaceContract.length - 4)}
+        </Typography>
+      </Stack>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+      <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
+        <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+          No. of owners
+        </Typography>
+        <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+          {ticketTierDetail.totalTicketsForSale}/{ticketTierDetail.supply}
+        </Typography>
+      </Stack>
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 3 }}>
-          <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
-            Contract
-          </Typography>
-          <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
-            0x2953...4963
-          </Typography>
-        </Stack>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 3 }}>
+        <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+          Sale Starts
+        </Typography>
+        <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+          {fDate(ticketTierDetail.liveDate)}
+        </Typography>
+      </Stack>
 
-        <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
-          <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
-            No. of owners
-          </Typography>
-          <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
-            450/500
-          </Typography>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 3 }}>
+        <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+          Sale Ends
+        </Typography>
+        <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+          {fDate(ticketTierDetail.eventEndDate)}
+        </Typography>
+      </Stack>
 
-          {/* <RHFSelect
-            name="size"
-            size="small"
-            fullWidth={false}
-            FormHelperTextProps={{
-              sx: { textAlign: 'right', margin: 0, mt: 1 },
-            }}
-            helperText={
-              <Link underline="always" color="text.secondary">
-                Size Chart
-              </Link>
-            }
-          >
-            {sizes.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </RHFSelect> */}
-        </Stack>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
-          {/* <Button
-            fullWidth
-            disabled={isMaxQuantity}
-            size="large"
-            color="warning"
-            variant="contained"
-            startIcon={<Iconify icon={'ic:round-add-shopping-cart'} />}
-            onClick={handleAddCart}
-            sx={{ whiteSpace: 'nowrap' }}
-          >
-            Add to Cart
-          </Button> */}
-
-          <Button fullWidth size="large" color="warning" variant="contained">
-            Pause
-          </Button>
-
-          <Button fullWidth size="large" color="error" variant="contained">
-            Close
-          </Button>
-        </Stack>
-      </FormProvider>
+      {!isClosed && (
+        <>
+          <Divider sx={{ borderStyle: 'dashed' }} />
+          <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
+            {displayPauseButton()}
+            <Button fullWidth size="large" color="error" variant="contained" onClick={closeTicketSaleHandler}>
+              Close
+            </Button>
+          </Stack>
+        </>
+      )}
     </RootStyle>
   );
 }

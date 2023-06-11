@@ -1,5 +1,6 @@
 'use strict';
 const mongoose = require('mongoose');
+const TicketTier = require('./TicketTiers');
 
 const ENHANCEMENT_TYPES = ['Reward', 'Gift', 'Access', 'Discount'];
 
@@ -66,6 +67,12 @@ const schema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// post middleware to remove references to the removed enhancement from it's ticket tier.
+schema.post('findOneAndRemove', (doc) => {
+  // update ticket tier document by removing the enhancement from the enhancements array
+  TicketTier.updateOne({ enhancements: { $eq: doc._id } }, { $pull: { enhancements: doc._id.toString() } }).exec();
+});
 
 const enhancementsModel = mongoose.model('Enhancement', schema);
 
