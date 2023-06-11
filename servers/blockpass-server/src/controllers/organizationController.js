@@ -1,13 +1,7 @@
 'use strict';
-const {
-  getOrganization,
-  patchOrganization,
-} = require('../services/organizationServices.js');
-const { httpResponseMessage } = require('../utils/responseMessages.js');
-const logger = require('../utils/logger');
+const { getOrganization, patchOrganization } = require('../services/organizationServices.js');
 
-
-async function readOrganization(req, res) {
+async function readOrganization(req, res, next) {
   const { id } = req.params;
 
   await getOrganization(id)
@@ -15,12 +9,11 @@ async function readOrganization(req, res) {
       res.status(200).send(org);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function updateOrganization(req, res) {
+async function updateOrganization(req, res, next) {
   const { id } = req.params;
   const body = req.body;
 
@@ -29,11 +22,9 @@ async function updateOrganization(req, res) {
       res.status(200).send(org);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
-
 
 module.exports = {
   updateOrganization,

@@ -4,12 +4,9 @@ const {
   patchOrganizationEvents,
   patchOrganizationEventsImages,
 } = require('../services/eventServices');
-
-const { httpResponseMessage } = require('../utils/responseMessages.js');
-const logger = require('../utils/logger');
 // Events
 
-async function readEvents(req, res) {
+async function readEvents(req, res, next) {
   const { id } = req.params;
 
   await getOrganizationEvents(id)
@@ -17,12 +14,11 @@ async function readEvents(req, res) {
       res.status(200).send(events);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function updateEvents(req, res) {
+async function updateEvents(req, res, next) {
   const { eventId } = req.params;
   const body = req.body;
 
@@ -31,12 +27,11 @@ async function updateEvents(req, res) {
       res.status(200).send(eventItem);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function updateEventImages(req, res) {
+async function updateEventImages(req, res, next) {
   const { eventId } = req.params;
   const newImageUrls = req.newImageUrls;
   const removedImages = req.body.removedImages;
@@ -46,8 +41,7 @@ async function updateEventImages(req, res) {
       res.status(200).json(eventItem);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 

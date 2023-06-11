@@ -1,13 +1,7 @@
 'use strict';
-const {
-  getTicketTiers,
-  getTicketTier,
-  getTicketTierOwners,
-} = require('../services/ticketTierServices');
-const { httpResponseMessage } = require('../utils/responseMessages.js');
-const logger = require('../utils/logger');
+const { getTicketTiers, getTicketTier, getTicketTierOwners } = require('../services/ticketTierServices');
 
-async function readTicketTiers(req, res) {
+async function readTicketTiers(req, res, next) {
   const { eventId } = req.params;
 
   await getTicketTiers(eventId)
@@ -15,20 +9,18 @@ async function readTicketTiers(req, res) {
       res.status(200).json(ticketTiers);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function readTicketTier(req, res) {
+async function readTicketTier(req, res, next) {
   const { ticketTierId } = req.params;
   await getTicketTier(ticketTierId)
     .then((ticketTier) => {
       res.status(200).json(ticketTier);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
@@ -37,7 +29,7 @@ async function readTicketTier(req, res) {
  * @param {*} req
  * @param {*} res
  */
-async function readTicketTierOwners(req, res) {
+async function readTicketTierOwners(req, res, next) {
   const { ticketTierId } = req.params;
   const { cursor } = req.query;
 
@@ -46,8 +38,7 @@ async function readTicketTierOwners(req, res) {
       res.status(200).json(owners);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 

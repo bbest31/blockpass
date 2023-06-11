@@ -5,10 +5,8 @@ const {
   patchEnhancement,
   deleteEnhancement,
 } = require('../services/enhancementServices');
-const { httpResponseMessage } = require('../utils/responseMessages.js');
-const logger = require('../utils/logger');
 
-async function readEnhancements(req, res) {
+async function readEnhancements(req, res, next) {
   const { ticketTierId } = req.params;
 
   await getEnhancements(ticketTierId)
@@ -16,12 +14,11 @@ async function readEnhancements(req, res) {
       res.status(200).send(enhancements);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function updateEnhancement(req, res) {
+async function updateEnhancement(req, res, next) {
   const { enhancementId } = req.params;
   const body = req.body;
 
@@ -30,12 +27,11 @@ async function updateEnhancement(req, res) {
       res.status(200).send(enhancement);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function createEnhancement(req, res) {
+async function createEnhancement(req, res, next) {
   const { ticketTierId } = req.params;
   const body = req.body;
 
@@ -44,12 +40,11 @@ async function createEnhancement(req, res) {
       res.status(200).send(enhancement);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function removeEnhancement(req, res) {
+async function removeEnhancement(req, res, next) {
   const { enhancementId } = req.params;
 
   await deleteEnhancement(enhancementId)
@@ -57,8 +52,7 @@ async function removeEnhancement(req, res) {
       res.status(200).send(enhancement);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
