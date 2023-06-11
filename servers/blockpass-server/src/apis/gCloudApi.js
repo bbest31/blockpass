@@ -17,7 +17,7 @@ const gcpStorage = new Storage({
 
 /**
  * Upload multiple objects to a GCP bucket.
- * @param {Array} objects 
+ * @param {Array} objects
  */
 async function uploadObjects(objects) {
   let counter = 0;
@@ -35,19 +35,18 @@ async function uploadObjects(objects) {
       throw err;
     });
 
+    const objectUrl = format(`https://storage.googleapis.com/${bucketName}/${blob.name}`);
+    counter++;
+    objectUrls.push(objectUrl);
+
     blobStream.on('finish', () => {
-      const objectUrl = format(`https://storage.googleapis.com/${bucketName}/${blob.name}`);
-
-      counter++;
-      objectUrls.push(objectUrl);
-
-      if (counter >= objects.length) {
-        return objectUrls;
-      }
+      console.log(`${id}.${ext} uploaded to ${bucketName}`);
     });
 
     blobStream.end(obj.buffer);
   });
+
+  return objectUrls;
 }
 
 /**

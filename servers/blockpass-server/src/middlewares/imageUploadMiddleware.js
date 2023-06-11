@@ -15,9 +15,9 @@ const multer = Multer({
  * @param {*} res
  * @param {*} next
  */
-const uploadImagesToBucket = (req, res, next) => {
+const uploadImagesToBucket = async (req, res, next) => {
   if (req.files.length !== 0) {
-    req.newImageUrls = uploadObjects(req.files);
+    req.newImageUrls = await uploadObjects(req.files);
   }
   next();
 };

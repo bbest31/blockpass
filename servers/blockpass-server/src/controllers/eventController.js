@@ -23,6 +23,11 @@ async function readEvents(req, res) {
     });
 }
 
+/**
+ * Creates an event
+ * @param {Object} req
+ * @param {Object} res
+ */
 async function createEvent(req, res) {
   const { id } = req.params;
   const body = req.body;
