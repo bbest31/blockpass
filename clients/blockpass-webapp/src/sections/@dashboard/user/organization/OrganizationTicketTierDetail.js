@@ -2,7 +2,8 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 // @mui
-import { Box, Tab, Card, Grid, Divider, Container } from '@mui/material';
+import { alpha, styled } from '@mui/material/styles';
+import { Box, Tab, Card, Grid, Divider, Container, Typography, Button, Stack } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 // routes
 import { PATH_APP } from '../../../../routes/paths';
@@ -11,14 +12,61 @@ import useAuth from '../../../../hooks/useAuth';
 import useSettings from '../../../../hooks/useSettings';
 // components
 import Page from '../../../../components/Page';
+import Iconify from '../../../../components/Iconify';
 import Image from '../../../../components/Image';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 // sections
-import { OrganizationTicketTierSummary, OrganizationTicketTierOwnersList } from '.';
+import {
+  OrganizationTicketTierSummary,
+  OrganizationTicketTierOwnersList,
+  OrganizationTicketTierEnhancementDialog,
+  OrganizationTicketTierEnhancementItem,
+} from '.';
 import axiosInstance from '../../../../utils/axios';
 import { getWalletAddress, getSmartContract } from '../../../../utils/web3Client';
 
 // ----------------------------------------------------------------------
+
+const PRODUCT_DESCRIPTION = [
+  {
+    title: '100% Original',
+    description: 'Chocolate bar candy canes ice cream toffee cookie halvah.',
+    icon: 'ic:round-verified',
+  },
+  {
+    title: '10 Day Replacement',
+    description: 'Marshmallow biscuit donut dragée fruitcake wafer.',
+    icon: 'eva:clock-fill',
+  },
+  {
+    title: 'Year Warranty',
+    description: 'Cotton candy gingerbread cake I love sugar sweet.',
+    icon: 'ic:round-verified-user',
+  },
+  {
+    title: 'Year Warranty',
+    description: 'Cotton candy gingerbread cake I love sugar sweet.',
+    icon: 'ic:round-verified-user',
+  },
+  {
+    title: 'Year Warranty',
+    description: 'Cotton candy gingerbread cake I love sugar sweet.',
+    icon: 'ic:round-verified-user',
+  },
+];
+
+const IconWrapperStyle = styled('div')(({ theme }) => ({
+  margin: 'auto',
+  display: 'flex',
+  borderRadius: '50%',
+  alignItems: 'center',
+  width: theme.spacing(8),
+  justifyContent: 'center',
+  height: theme.spacing(8),
+  marginBottom: theme.spacing(3),
+  color: theme.palette.primary.main,
+  backgroundColor: `${alpha(theme.palette.primary.main, 0.08)}`,
+}));
 
 export default function OrganizationTicketTierDetail({ details = null, event }) {
   const { organization, getAccessToken } = useAuth();
@@ -33,8 +81,14 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [showDialog, setShowDialog] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [selectedEnhancement, setSelectedEnhancement] = useState({});
+
   const [walletAddress, setWalletAddress] = useState(null);
   const [contract, setContract] = useState(null);
+
+  const [enhancements, setEnhancements] = useState([]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -43,6 +97,16 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
       controller.abort();
     };
   }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getEnhancements(controller);
+    setIsUpdated(false);
+    setSelectedEnhancement({});
+    return () => {
+      controller.abort();
+    };
+  }, [isUpdated]);
 
   useEffect(() => {
     getWalletAddress(walletChangedHandler);
@@ -80,6 +144,95 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
       });
   };
 
+  const getEnhancements = async (controller) => {
+    const token = await getAccessToken();
+
+    axiosInstance
+      .get(`/organizations/${organization.id}/events/${event.id}/ticket-tiers/${ticketTierDetails._id}/enhancements`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        signal: controller.signal,
+      })
+      .then((res) => {
+        setEnhancements([...res.data.enhancements]);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          enqueueSnackbar(`Unable to retrieve enhancements.`, { variant: 'error' });
+        }
+      });
+  };
+
+  const createEnhancement = async (data) => {
+    const token = await getAccessToken();
+    axiosInstance
+      .post(
+        `/organizations/${organization.id}/events/${event.id}/ticket-tiers/${ticketTierDetails._id}/enhancements`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then(() => {
+        enqueueSnackbar('Enhancement successfully created!');
+        setShowDialog(false);
+        setIsUpdated(true);
+      })
+      .catch((err) => {
+        enqueueSnackbar('Unable to create enhancement', { variant: 'error' });
+        throw err;
+      });
+  };
+
+  const updateEnhancement = async (data) => {
+    const token = await getAccessToken();
+    axiosInstance
+      .patch(
+        `/organizations/${organization.id}/events/${event.id}/ticket-tiers/${ticketTierDetails._id}/enhancements/${selectedEnhancement._id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then(() => {
+        enqueueSnackbar('Enhancement info updated!');
+        setShowDialog(false);
+        setIsUpdated(true);
+      })
+      .catch((err) => {
+        enqueueSnackbar('Unable to update enhancement', { variant: 'error' });
+        throw err;
+      });
+  };
+
+  const deleteEnhancement = async () => {
+    const token = await getAccessToken();
+    axiosInstance
+      .delete(
+        `/organizations/${organization.id}/events/${event.id}/ticket-tiers/${ticketTierDetails._id}/enhancements/${selectedEnhancement._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then(() => {
+        enqueueSnackbar('Enhancement successfully deleted!');
+        setShowDialog(false);
+        setIsUpdated(true);
+      })
+      .catch((err) => {
+        enqueueSnackbar('Unable to delete enhancement', { variant: 'error' });
+        throw err;
+      });
+  };
+
   const walletChangedHandler = (walletAddress) => {
     setWalletAddress(walletAddress);
   };
@@ -100,7 +253,6 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
       .resumeTicketSale()
       .send({ from: walletAddress })
       .then((res) => {
-        console.log(res);
         setTicketTierDetails((prevState) => ({ ...prevState, paused: false }));
         enqueueSnackbar('Ticket contract has been resumed.', { variant: 'success' });
       })
@@ -119,11 +271,37 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
       .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
   };
 
+  const onShowDialogHandler = () => {
+    setShowDialog(!showDialog);
+  };
+
+  const onSaveDialogHandler = (enhancement) => {
+    setShowDialog(!showDialog);
+  };
+
+  const enhancementOnClickHandler = (enhancement) => {
+    setSelectedEnhancement(enhancement);
+    setShowDialog(!showDialog);
+  };
+
+  const addEnhancementButtonOnClick = () => {
+    setShowDialog(true);
+    setSelectedEnhancement({});
+  };
+
   return (
     <Page title="Events">
+      <OrganizationTicketTierEnhancementDialog
+        open={showDialog}
+        showHandler={onShowDialogHandler}
+        createHandler={createEnhancement}
+        updateHandler={updateEnhancement}
+        deleteHandler={deleteEnhancement}
+        enhancement={selectedEnhancement}
+      />
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Event Name"
+          heading={ticketTierDetails.name}
           links={[
             { name: 'Dashboard', href: PATH_APP.general.dashboard },
             {
@@ -168,6 +346,28 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
                 </Grid>
               </Grid>
             </Card>
+
+            {/* Add Enhancement section here */}
+            <Stack direction="row" spacing={2} flexWrap="wrap" justifyContent="space-between" sx={{ mt: 5 }}>
+              <Typography variant="h4" gutterBottom>
+                Enhancements
+              </Typography>
+              <Button size="large" color="info" variant="outlined" onClick={() => addEnhancementButtonOnClick()}>
+                Add Enhancement
+              </Button>
+            </Stack>
+            {enhancements.length !== 0 && (
+              <Grid container sx={{ my: 8 }}>
+                {enhancements.map((enhancement, index) => (
+                  <OrganizationTicketTierEnhancementItem
+                    key={enhancement._id}
+                    enhancement={enhancement}
+                    showDialogHandler={onShowDialogHandler}
+                    onClickHandler={enhancementOnClickHandler}
+                  />
+                ))}
+              </Grid>
+            )}
 
             <Card sx={{ mt: 7 }}>
               <TabContext value={value}>
