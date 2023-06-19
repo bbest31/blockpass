@@ -9,11 +9,49 @@ const { getTicketTierDetails, getEvmChain } = require('../utils/web3Utils');
 const TICKET_TIER_ATTRIBUTES = ['displayName', 'description'];
 
 /**
+ * Posts a new ticket tier to the database and adds the id to the corresponding event.
+ * @param {*} eventId
+ * @param {*} ticketTier
+ * @returns
+ */
+const postTicketTier = async (eventId, newticketTier) => {
+  // post ticket tier
+  const session = await TicketTier.startSession();
+  session.startTransaction();
+  let result = {};
+  try {
+    const opts = { session };
+    const ticketTier = await TicketTier.create([newticketTier], opts);
+    result = ticketTier[0];
+
+    // push new ticket tier id into the events ticket tiers array.
+    await Event.findByIdAndUpdate(
+      eventId,
+      { $push: { ticketTiers: result._id.toString() } },
+      { new: true, upsert: true }
+    )
+      .exec()
+      .catch((err) => {
+        throw err;
+      });
+
+    await session.commitTransaction();
+    session.endSession();
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    throw err;
+  }
+
+  return result;
+};
+
+/**
  * Get all ticket tiers given an event id.
  * @param {string} eventId
  * @returns
  */
-async function getTicketTiers(eventId) {
+const getTicketTiers = async (eventId) => {
   const event = await Event.findById(eventId)
     .exec()
     .catch((err) => {
@@ -44,7 +82,7 @@ async function getTicketTiers(eventId) {
  * @param {string} ticketTierId
  * @returns
  */
-async function getTicketTier(ticketTierId) {
+const getTicketTier = async (ticketTierId) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
     .exec()
@@ -74,7 +112,7 @@ async function getTicketTier(ticketTierId) {
  * @param {*} cursor
  * @returns
  */
-async function getTicketTierOwners(ticketTierId, cursor) {
+const getTicketTierOwners = async (ticketTierId, cursor) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
     .exec()
@@ -104,4 +142,5 @@ module.exports = {
   getTicketTiers,
   getTicketTier,
   getTicketTierOwners,
+  postTicketTier,
 };

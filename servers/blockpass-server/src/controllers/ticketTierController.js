@@ -1,7 +1,19 @@
 'use strict';
-const { getTicketTiers, getTicketTier, getTicketTierOwners } = require('../services/ticketTierServices');
+const {
+  getTicketTiers,
+  getTicketTier,
+  getTicketTierOwners,
+  postTicketTier,
+} = require('../services/ticketTierServices');
+const { httpResponseMessage } = require('../utils/responseMessages.js');
+const logger = require('../utils/logger');
 
-async function readTicketTiers(req, res, next) {
+/**
+ * Read all ticket tiers from a specific event.
+ * @param {*} req
+ * @param {*} res
+ */
+const readTicketTiers = async (req, res) => {
   const { eventId } = req.params;
 
   await getTicketTiers(eventId)
@@ -11,9 +23,14 @@ async function readTicketTiers(req, res, next) {
     .catch((err) => {
       next(err);
     });
-}
+};
 
-async function readTicketTier(req, res, next) {
+/**
+ * Read a specific ticket tier by id.
+ * @param {*} req
+ * @param {*} res
+ */
+const readTicketTier = async (req, res) => {
   const { ticketTierId } = req.params;
   await getTicketTier(ticketTierId)
     .then((ticketTier) => {
@@ -22,14 +39,14 @@ async function readTicketTier(req, res, next) {
     .catch((err) => {
       next(err);
     });
-}
+};
 
 /**
- *
+ * Read the owners of a specific ticket tier
  * @param {*} req
  * @param {*} res
  */
-async function readTicketTierOwners(req, res, next) {
+const readTicketTierOwners = async (req, res) => {
   const { ticketTierId } = req.params;
   const { cursor } = req.query;
 
@@ -40,10 +57,25 @@ async function readTicketTierOwners(req, res, next) {
     .catch((err) => {
       next(err);
     });
-}
+};
+
+const createTicketTier = async (req, res) => {
+  const { eventId } = req.params;
+  const body = req.body;
+
+  await postTicketTier(eventId, body)
+    .then((tier) => {
+      res.status(200).send(tier);
+    })
+    .catch((err) => {
+      logger.error('error', err);
+      res.status(500).send(httpResponseMessage[500]);
+    });
+};
 
 module.exports = {
   readTicketTiers,
   readTicketTier,
   readTicketTierOwners,
+  createTicketTier,
 };

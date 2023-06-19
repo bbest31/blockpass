@@ -2,6 +2,7 @@
 const {
   getOrganizationEvents,
   patchOrganizationEvents,
+  postOrganizationEvent,
   patchOrganizationEventsImages,
 } = require('../services/eventServices');
 // Events
@@ -18,7 +19,28 @@ async function readEvents(req, res, next) {
     });
 }
 
-async function updateEvents(req, res, next) {
+/**
+ * Creates an event
+ * @param {Object} req
+ * @param {Object} res
+ */
+async function createEvent(req, res) {
+  const { id } = req.params;
+  const body = req.body;
+  const images = req.newImageUrls;
+  body.images = images;
+
+  await postOrganizationEvent(id, body)
+    .then((eventItem) => {
+      res.status(200).send(eventItem);
+    })
+    .catch((err) => {
+      logger.error('error', err);
+      res.status(500).send(httpResponseMessage[500]);
+    });
+}
+
+async function updateEvents(req, res) {
   const { eventId } = req.params;
   const body = req.body;
 
@@ -47,6 +69,7 @@ async function updateEventImages(req, res, next) {
 
 module.exports = {
   readEvents,
+  createEvent,
   updateEvents,
   updateEventImages,
 };
