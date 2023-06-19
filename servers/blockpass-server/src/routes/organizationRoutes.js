@@ -19,23 +19,31 @@ const {
   checkReadPermission,
   checkUpdatePermission,
   checkCreatePermission,
+  checkDeletePermission,
 } = require('../middlewares/permissionMiddleware.js');
 const { multer, uploadImageToBucket, removeImageFromBucket } = require('../middlewares/imageUploadMiddleware');
-const { checkDeletePermission } = require('../middlewares/permissionMiddleware.js');
 
 router.get('/:id', checkOrganizationId, checkReadPermission('organizations'), readOrganization);
 router.patch('/:id', checkOrganizationId, checkUpdatePermission('organizations'), updateOrganization);
 
 // Events
 router.get('/:id/events', checkOrganizationId, checkReadPermission('events'), readEvents);
+router.post(
+  '/:id/events',
+  checkOrganizationId,
+  checkCreatePermission('events'),
+  multer.any('images'),
+  uploadImagesToBucket,
+  createEvent
+);
 router.patch('/:id/events/:eventId', checkOrganizationId, checkUpdatePermission('events'), updateEvents);
 router.patch(
   '/:id/events/:eventId/images',
   checkOrganizationId,
   checkUpdatePermission('events'),
   multer.any('images'),
-  uploadImageToBucket,
-  removeImageFromBucket,
+  uploadImagesToBucket,
+  removeImagesFromBucket,
   updateEventImages
 );
 

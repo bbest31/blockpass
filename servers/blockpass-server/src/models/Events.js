@@ -34,15 +34,18 @@ const schema = new mongoose.Schema(
     },
     description: {
       type: String,
+      required: [true, 'Event description is required.'],
     },
     images: {
       type: [String],
     },
     location: {
       type: String,
+      required: [true, 'Event location is required.'],
     },
     website: {
       type: String,
+      required: [true, 'Event website is required.'],
     },
     ticketTiers: {
       type: [ObjectId],
