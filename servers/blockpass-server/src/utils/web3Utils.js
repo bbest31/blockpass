@@ -2,7 +2,8 @@ const Web3 = require('web3');
 const fs = require('fs');
 const logger = require('./logger');
 const DateTime = require('./datetime');
-const { EvmChain } = require('@moralisweb3/common-evm-utils');
+const Moralis = require('moralis').default;
+const EvmChain = Moralis.EvmUtils.EvmChain;
 
 /**
  * Retrieves all details about a smart contract implementing the IBlockPassTicket interface.

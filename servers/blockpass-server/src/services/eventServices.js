@@ -5,10 +5,25 @@ const Event = require('../models/Events.js');
 
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
 
-
 async function getOrganizationEvents(orgId) {
   const events = await Event.find({ orgId: orgId }).exec();
   return events;
+}
+
+/**
+ * Creates an Event and persists it to the database.
+ * @param {string} orgId 
+ * @param {Object} payload 
+ * @returns {Object}
+ */
+async function postOrganizationEvent(orgId, payload) {
+  // save to event to database
+  const event = await Event.create({ orgId, ...payload });
+  await event.save().catch((err) => {
+    throw err;
+  });
+
+  return event;
 }
 
 async function patchOrganizationEvents(eventId, payload) {
@@ -52,6 +67,7 @@ async function patchOrganizationEventsImages(eventId, imageUrls, removedImages) 
 
 module.exports = {
   getOrganizationEvents,
+  postOrganizationEvent,
   patchOrganizationEvents,
   patchOrganizationEventsImages,
 };
