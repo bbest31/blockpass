@@ -4,7 +4,6 @@ const Moralis = require('moralis').default;
 
 const Event = require('../models/Events.js');
 const TicketTier = require('../models/TicketTiers.js');
-const logger = require('../utils/logger');
 const { getTicketTierDetails, getEvmChain } = require('../utils/web3Utils');
 
 const TICKET_TIER_ATTRIBUTES = ['displayName', 'description'];
@@ -67,7 +66,6 @@ const getTicketTiers = async (eventId) => {
 
   for (let i = 0; i < ticketTiers.length; i++) {
     const tier = await getTicketTier(ticketTiers[i]).catch((err) => {
-      logger.log('error', err);
       if (!(err instanceof mongoose.Error.CastError)) {
         throw err;
       }
@@ -89,7 +87,6 @@ const getTicketTier = async (ticketTierId) => {
   const ticketTier = await TicketTier.findById(ticketTierId)
     .exec()
     .catch((err) => {
-      logger.log('error', err);
       if (!(err instanceof mongoose.Error.CastError)) {
         throw err;
       }
@@ -120,7 +117,6 @@ const getTicketTierOwners = async (ticketTierId, cursor) => {
   const ticketTier = await TicketTier.findById(ticketTierId)
     .exec()
     .catch((err) => {
-      logger.log('error', err);
       if (!(err instanceof mongoose.Error.CastError)) {
         throw err;
       }
@@ -134,7 +130,6 @@ const getTicketTierOwners = async (ticketTierId, cursor) => {
 
   if (!chain) {
     let err = new Error('Can not determine EVM Chain.');
-    logger.log('error', err);
     throw err;
   }
 

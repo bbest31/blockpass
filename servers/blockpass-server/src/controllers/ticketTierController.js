@@ -21,8 +21,7 @@ const readTicketTiers = async (req, res) => {
       res.status(200).json(ticketTiers);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 };
 
@@ -38,8 +37,7 @@ const readTicketTier = async (req, res) => {
       res.status(200).json(ticketTier);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 };
 
@@ -57,8 +55,7 @@ const readTicketTierOwners = async (req, res) => {
       res.status(200).json(owners);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 };
 

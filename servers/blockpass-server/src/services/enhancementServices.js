@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 
 const Enhancement = require('../models/Enhancements');
 const TicketTier = require('../models/TicketTiers');
-const logger = require('../utils/logger');
 
 async function getEnhancements(ticketTierId) {
   const tier = await TicketTier.findById(ticketTierId)
@@ -21,7 +20,6 @@ async function getEnhancements(ticketTierId) {
 
   for (let i = 0; i < enhancementIds.length; i++) {
     const enhancement = await getEnhancementById(enhancementIds[i]).catch((err) => {
-      logger.log('error', err);
       if (!(err instanceof mongoose.Error.CastError)) {
         throw err;
       }

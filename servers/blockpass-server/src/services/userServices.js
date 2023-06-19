@@ -28,6 +28,7 @@ async function patchUser(userId, payload) {
           })
           .catch((err) => {
             logger.error('error', 'Error sending email verification email: ', err);
+            throw err;
           });
       }
     })
@@ -47,6 +48,7 @@ async function sendPasswordReset(payload) {
     })
     .catch((err) => {
       logger.error('error', 'Error sending password reset email: ', err);
+      throw err;
     });
 
   return result;

@@ -1,9 +1,7 @@
 'use strict';
 const { patchUser, sendPasswordReset } = require('../services/userServices.js');
-const { httpResponseMessage } = require('../utils/responseMessages.js');
-const logger = require('../utils/logger');
 
-async function updateUser(req, res) {
+async function updateUser(req, res, next) {
   const { id } = req.params;
   const body = req.body;
 
@@ -12,12 +10,11 @@ async function updateUser(req, res) {
       res.status(200).send(user);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function resetUserPassword(req, res) {
+async function resetUserPassword(req, res, next) {
   const body = req.body;
 
   await sendPasswordReset(body)
@@ -25,8 +22,7 @@ async function resetUserPassword(req, res) {
       res.status(200).send();
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
