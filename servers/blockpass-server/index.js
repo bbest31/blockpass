@@ -14,8 +14,7 @@ const sendErrorResponse = require('./src/middlewares/errorResponseMiddleware.js'
 const { httpResponseMessage } = require('./src/utils/responseMessages.js');
 
 //  ROUTES
-const organizationRoutes = require('./src/routes/organizationRoutes.js');
-const userRoutes = require('./src/routes/userRoutes');
+const routes = require('./src/routes/index.js');
 
 // APP SETUP
 const app = express();
@@ -37,8 +36,7 @@ main().catch((err) => console.log(err));
 // Parse incoming payloads as json
 app.use(express.json());
 
-app.use('/organizations', organizationRoutes);
-app.use('/users', userRoutes);
+app.use('', routes);
 
 app.get('*', (_, res) => {
   res.status(404).send(httpResponseMessage[404]);
