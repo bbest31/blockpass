@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Grid, Link, Typography } from '@mui/material';
@@ -26,6 +27,11 @@ const icons = {
   reward: "material-symbols:rewarded-ads"
 }
 
+OrganizationTickerTierEnhancementItem.propTypes = {
+  enhancement: PropTypes.object,
+  onClickHandler: PropTypes.func
+};
+
 export default function OrganizationTickerTierEnhancementItem({ enhancement, onClickHandler }) {
   return (
     <Grid item xs={12} md={4}>
@@ -34,7 +40,7 @@ export default function OrganizationTickerTierEnhancementItem({ enhancement, onC
           <Iconify icon={icons[enhancement.type.toLowerCase()]} width={36} height={36} />
         </IconWrapperStyle>
         <Typography variant="subtitle1" gutterBottom>
-          <Link onClick={() => onClickHandler(enhancement)} sx={{ cursor: 'pointer', color: '#008DF9' }}>
+          <Link onClick={() => onClickHandler(enhancement)} sx={{ cursor: 'pointer', color: 'info.main' }}>
             {enhancement.title}
           </Link>
         </Typography>

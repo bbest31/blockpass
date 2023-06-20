@@ -1,8 +1,7 @@
-import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 // @mui
-import { alpha, styled } from '@mui/material/styles';
 import { Box, Tab, Card, Grid, Divider, Container, Typography, Button, Stack } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 // routes
@@ -12,7 +11,6 @@ import useAuth from '../../../../hooks/useAuth';
 import useSettings from '../../../../hooks/useSettings';
 // components
 import Page from '../../../../components/Page';
-import Iconify from '../../../../components/Iconify';
 import Image from '../../../../components/Image';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 // sections
@@ -27,52 +25,15 @@ import { getWalletAddress, getSmartContract } from '../../../../utils/web3Client
 
 // ----------------------------------------------------------------------
 
-const PRODUCT_DESCRIPTION = [
-  {
-    title: '100% Original',
-    description: 'Chocolate bar candy canes ice cream toffee cookie halvah.',
-    icon: 'ic:round-verified',
-  },
-  {
-    title: '10 Day Replacement',
-    description: 'Marshmallow biscuit donut dragée fruitcake wafer.',
-    icon: 'eva:clock-fill',
-  },
-  {
-    title: 'Year Warranty',
-    description: 'Cotton candy gingerbread cake I love sugar sweet.',
-    icon: 'ic:round-verified-user',
-  },
-  {
-    title: 'Year Warranty',
-    description: 'Cotton candy gingerbread cake I love sugar sweet.',
-    icon: 'ic:round-verified-user',
-  },
-  {
-    title: 'Year Warranty',
-    description: 'Cotton candy gingerbread cake I love sugar sweet.',
-    icon: 'ic:round-verified-user',
-  },
-];
-
-const IconWrapperStyle = styled('div')(({ theme }) => ({
-  margin: 'auto',
-  display: 'flex',
-  borderRadius: '50%',
-  alignItems: 'center',
-  width: theme.spacing(8),
-  justifyContent: 'center',
-  height: theme.spacing(8),
-  marginBottom: theme.spacing(3),
-  color: theme.palette.primary.main,
-  backgroundColor: `${alpha(theme.palette.primary.main, 0.08)}`,
-}));
+OrganizationTicketTierDetail.propTypes = {
+  details: PropTypes.object,
+  event: PropTypes.object,
+};
 
 export default function OrganizationTicketTierDetail({ details = null, event }) {
   const { organization, getAccessToken } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { themeStretch } = useSettings();
-  const { ticketTierId = '', eventId = '' } = useParams();
 
   const [value, setValue] = useState('1');
   const [ticketTierDetails, setTicketTierDetails] = useState(details);
@@ -241,7 +202,7 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
     contract
       .pauseTicketSale()
       .send({ from: walletAddress })
-      .then((res) => {
+      .then(() => {
         setTicketTierDetails((prevState) => ({ ...prevState, paused: true }));
         enqueueSnackbar('Ticket contract has been paused.', { variant: 'success' });
       })
@@ -252,7 +213,7 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
     contract
       .resumeTicketSale()
       .send({ from: walletAddress })
-      .then((res) => {
+      .then(() => {
         setTicketTierDetails((prevState) => ({ ...prevState, paused: false }));
         enqueueSnackbar('Ticket contract has been resumed.', { variant: 'success' });
       })
@@ -264,7 +225,7 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
     contract
       .closeTicketSale()
       .send({ from: walletAddress })
-      .then((res) => {
+      .then(() => {
         setTicketTierDetails((prevState) => ({ ...prevState, closeDate: dateTimeCalled.toUTCString() }));
         enqueueSnackbar('Ticket contract has been closed.', { variant: 'success' });
       })
@@ -272,10 +233,6 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
   };
 
   const onShowDialogHandler = () => {
-    setShowDialog(!showDialog);
-  };
-
-  const onSaveDialogHandler = (enhancement) => {
     setShowDialog(!showDialog);
   };
 
@@ -347,18 +304,17 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
               </Grid>
             </Card>
 
-            {/* Add Enhancement section here */}
             <Stack direction="row" spacing={2} flexWrap="wrap" justifyContent="space-between" sx={{ mt: 5 }}>
               <Typography variant="h4" gutterBottom>
                 Enhancements
               </Typography>
-              <Button size="large" color="info" variant="outlined" onClick={() => addEnhancementButtonOnClick()}>
+              <Button size="large" color="info" variant="outlined" onClick={addEnhancementButtonOnClick}>
                 Add Enhancement
               </Button>
             </Stack>
             {enhancements.length !== 0 && (
               <Grid container sx={{ my: 8 }}>
-                {enhancements.map((enhancement, index) => (
+                {enhancements.map((enhancement) => (
                   <OrganizationTicketTierEnhancementItem
                     key={enhancement._id}
                     enhancement={enhancement}

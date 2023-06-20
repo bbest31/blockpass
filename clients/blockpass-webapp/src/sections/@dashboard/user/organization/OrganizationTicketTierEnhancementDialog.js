@@ -8,16 +8,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Box,
   Grid,
-  Card,
   Stack,
-  Avatar,
   Dialog,
   MenuItem,
-  TextField,
   Typography,
-  ListItemText,
-  ListItemAvatar,
-  InputAdornment,
   Switch,
   FormControlLabel,
   Checkbox,
@@ -27,13 +21,9 @@ import { LoadingButton } from '@mui/lab';
 // utils
 import { fDateYearMonthDay } from '../../../../utils/formatTime';
 // components
-import Iconify from '../../../../components/Iconify';
-import Scrollbar from '../../../../components/Scrollbar';
 import { FormProvider, RHFTextField } from '../../../../components/hook-form';
 
 // ----------------------------------------------------------------------
-
-const ITEM_HEIGHT = 64;
 
 const ENHANCEMENT_TYPES = ['Access', 'Discount', 'Gift', 'Reward'];
 const singleColumn = { gridColumn: '1 / span 2' };
@@ -43,6 +33,10 @@ const singleColumn = { gridColumn: '1 / span 2' };
 OrganizationTicketTierEnhancementDialog.propTypes = {
   open: PropTypes.bool,
   showHandler: PropTypes.func,
+  enhancement: PropTypes.object,
+  createHandler: PropTypes.func,
+  updateHandler: PropTypes.func,
+  deleteHandler: PropTypes.func
 };
 
 export default function OrganizationTicketTierEnhancementDialog({
@@ -90,38 +84,37 @@ export default function OrganizationTicketTierEnhancementDialog({
   const {
     handleSubmit,
     setValue,
-    reset,
     formState: { isSubmitting },
   } = methods;
 
   useEffect(() => {
-    const title = enhancement?.title ? enhancement.title : '';
+    const title = enhancement.title || '';
     setTitle(title);
     setValue('title', title);
 
-    const redemptionLimit = enhancement?.redemptionLimit ? enhancement.redemptionLimit : '';
+    const redemptionLimit = enhancement.redemptionLimit || '';
     setRedemptionLimit(redemptionLimit);
     setValue('redemptionLimit', redemptionLimit);
 
     setUnlimitedRedemption(false);
 
-    const type = enhancement?.type ? enhancement.type : '';
+    const type = enhancement.type || '';
     setType(type);
     setValue('type', type);
 
-    const expiry = enhancement?.expiry ? fDateYearMonthDay(enhancement.expiry) : '';
+    const expiry = enhancement.expiry ? fDateYearMonthDay(enhancement.expiry) : '';
     setExpiry(expiry);
     setValue('expiry', expiry);
 
-    const shortDesc = enhancement?.shortDesc ? enhancement.shortDesc : '';
+    const shortDesc = enhancement.shortDesc || '';
     setShortDesc(shortDesc);
     setValue('shortDesc', shortDesc);
 
-    const longDesc = enhancement?.longDesc ? enhancement.longDesc : '';
+    const longDesc = enhancement.longDesc || '';
     setLongDesc(longDesc);
     setValue('longDesc', longDesc);
 
-    const active = enhancement?.active ? enhancement.active : false;
+    const active = enhancement.active || false;
     setActive(active);
     setValue('active', active);
 
@@ -147,20 +140,7 @@ export default function OrganizationTicketTierEnhancementDialog({
     }
   };
 
-  const resetFields = () => {
-    setTitle('');
-    setRedemptionLimit('');
-    setUnlimitedRedemption(false);
-    setType('');
-    setExpiry('');
-    setShortDesc('');
-    setLongDesc('');
-    setActive(false);
-    reset();
-  };
-
   const onCloseHandler = () => {
-    resetFields();
     showHandler();
   };
 
@@ -327,18 +307,22 @@ export default function OrganizationTicketTierEnhancementDialog({
 
 // ----------------------------------------------------------------------
 
-const EditButton = ({ onClickHandler }) => {
-  return (
-    <LoadingButton variant="contained" onClick={onClickHandler}>
-      Edit Info
-    </LoadingButton>
-  );
+const EditButton = ({ onClickHandler }) => (
+  <LoadingButton variant="contained" onClick={onClickHandler}>
+    Edit Info
+  </LoadingButton>
+);
+
+EditButton.propTypes = {
+  onClickHandler: PropTypes.func
 };
 
-const SaveButton = ({ loading }) => {
-  return (
-    <LoadingButton type="submit" variant="contained" loading={loading}>
-      Save Changes
-    </LoadingButton>
-  );
+const SaveButton = ({ loading }) => (
+  <LoadingButton type="submit" variant="contained" loading={loading}>
+    Save Changes
+  </LoadingButton>
+);
+
+SaveButton.propTypes = {
+  loading: PropTypes.bool
 };
