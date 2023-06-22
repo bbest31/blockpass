@@ -9,6 +9,6 @@ router.get('/:id', checkOrganizationId, checkReadPermission('organizations'), re
 router.patch('/:id', checkOrganizationId, checkUpdatePermission('organizations'), updateOrganization);
 
 // Events
-router.use('/:id/events', eventRoutes);
+router.use('/:id/events', checkOrganizationId, eventRoutes);
 
 module.exports = router;
