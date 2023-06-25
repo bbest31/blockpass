@@ -59,6 +59,16 @@ const readTicketTierOwners = async (req, res, next) => {
     });
 };
 
+/**
+ * Read the statistics of a ticket tiers sales.
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {function} next 
+ */
+const readTicketTierStats = async (req, res, next) => {
+
+};
+
 const createTicketTier = async (req, res, next) => {
   const { eventId } = req.params;
   const body = req.body;
@@ -76,5 +86,6 @@ module.exports = {
   readTicketTiers,
   readTicketTier,
   readTicketTierOwners,
+  readTicketTierStats,
   createTicketTier,
 };

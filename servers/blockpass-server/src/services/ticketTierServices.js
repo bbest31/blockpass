@@ -4,7 +4,7 @@ const Moralis = require('moralis').default;
 
 const Event = require('../models/Events.js');
 const TicketTier = require('../models/TicketTiers.js');
-const { getTicketTierDetails, getEvmChain } = require('../utils/web3Utils');
+const { getTicketTierDetails, getEvmChain, getMarketplaceContract } = require('../utils/web3Utils');
 
 const TICKET_TIER_ATTRIBUTES = ['displayName', 'description'];
 
@@ -75,7 +75,7 @@ const getTicketTiers = async (eventId) => {
   }
 
   return response;
-}
+};
 
 /**
  * Retrieves all information about a ticket tier given it's id.
@@ -104,7 +104,7 @@ const getTicketTier = async (ticketTierId) => {
   let response = { ...contractData, ...tierData };
 
   return response;
-}
+};
 
 /**
  * Reads all owners of an NFT by contract address.
@@ -136,11 +136,61 @@ const getTicketTierOwners = async (ticketTierId, cursor) => {
   const response = await Moralis.EvmApi.nft.getNFTOwners({ address, chain, limit: 50, cursor: cursor });
 
   return response.toJSON();
-}
+};
+
+const getTicketTierStats = async (ticketTierId, cursor) => {
+  // get ticket tier db data
+  const ticketTier = await TicketTier.findById(ticketTierId)
+    .exec()
+    .catch((err) => {
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
+    });
+  if (!ticketTier) {
+    return {};
+  }
+
+  const address = ticketTier.contract;
+  const chain = getEvmChain();
+
+  if (!chain) {
+    let err = new Error('Can not determine EVM Chain.');
+    throw err;
+  }
+
+  // initialize output values to increment.
+  let stats = {
+    ticketsSold: 0,
+    secondarySales: 0,
+    revenue: 0,
+    volume: 0,
+    primaryRevenue: 0,
+    secondaryRevenue: 0,
+    primaryVolume: 0,
+    secondaryVolume: 0,
+  };
+
+  // get the marketplace contract address
+  const contractData = await getMarketplaceContract(address).catch((err) => {
+    throw err;
+  });
+
+  // get TicketSold ABI from marketplace ABI JSON.
+
+  // TODO get contract events and parse for ticket tier events.
+  const response = Moralis.EvmApi.events.getContractEvents({
+    address: contractData.marketplaceContract,
+    chain,
+    topic: '',
+    fromDate: contractData.liveDate,
+  });
+};
 
 module.exports = {
   getTicketTiers,
   getTicketTier,
   getTicketTierOwners,
+  getTicketTierStats,
   postTicketTier,
 };

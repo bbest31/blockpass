@@ -6,6 +6,40 @@ const Moralis = require('moralis').default;
 const EvmChain = Moralis.EvmUtils.EvmChain;
 
 /**
+ * Retrieves the contract address of the marketplace contract the ticket tier is associated with.
+ * @param {string} contractAddress
+ * @returns
+ */
+const getMarketplaceContract = async (contractAddress) => {
+  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json')).abi;
+
+  try {
+    const web3 = new Web3(process.env.PROVIDER);
+    if (web3.currentProvider === null) {
+      console.log(web3.currentProvider);
+      throw new Error('Unable to connect to web3 connection provider.');
+    }
+    const contract = new web3.eth.Contract(ticketContractAbi, contractAddress).methods;
+
+    const marketplaceContract = await contract.marketplaceContract().call(contractCallCallback);
+    return marketplaceContract;
+  } catch (err) {
+    logger.log('error', `Error retreiving smart contract ticket tier details for ${contractAddress}| ${err}`);
+    throw err;
+  }
+};
+
+/**
+ * Returns the JSON that represents the ABI for the TicketSold event from the BlockPass marketplace contract.
+ * @returns {Object} eventAbi
+ */
+const getTicketSoldEventAbi = () => {
+  const marketplaceAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPass.json')).abi;
+
+  // TODO: finish
+};
+
+/**
  * Retrieves all details about a smart contract implementing the IBlockPassTicket interface.
  * @param {string} contractAddress
  * @returns
@@ -109,4 +143,5 @@ const getEvmChain = () => {
 module.exports = {
   getTicketTierDetails,
   getEvmChain,
+  getMarketplaceContract,
 };
