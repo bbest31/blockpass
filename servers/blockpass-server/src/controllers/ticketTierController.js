@@ -13,7 +13,7 @@ const logger = require('../utils/logger');
  * @param {*} req
  * @param {*} res
  */
-const readTicketTiers = async (req, res) => {
+const readTicketTiers = async (req, res, next) => {
   const { eventId } = req.params;
 
   await getTicketTiers(eventId)
@@ -30,7 +30,7 @@ const readTicketTiers = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const readTicketTier = async (req, res) => {
+const readTicketTier = async (req, res, next) => {
   const { ticketTierId } = req.params;
   await getTicketTier(ticketTierId)
     .then((ticketTier) => {
@@ -46,7 +46,7 @@ const readTicketTier = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const readTicketTierOwners = async (req, res) => {
+const readTicketTierOwners = async (req, res, next) => {
   const { ticketTierId } = req.params;
   const { cursor } = req.query;
 
@@ -59,7 +59,7 @@ const readTicketTierOwners = async (req, res) => {
     });
 };
 
-const createTicketTier = async (req, res) => {
+const createTicketTier = async (req, res, next) => {
   const { eventId } = req.params;
   const body = req.body;
 
@@ -68,8 +68,7 @@ const createTicketTier = async (req, res) => {
       res.status(200).send(tier);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 };
 

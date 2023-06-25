@@ -24,7 +24,7 @@ async function readEvents(req, res, next) {
  * @param {Object} req
  * @param {Object} res
  */
-async function createEvent(req, res) {
+async function createEvent(req, res, next) {
   const { id } = req.params;
   const body = req.body;
   const images = req.newImageUrls;
@@ -35,12 +35,11 @@ async function createEvent(req, res) {
       res.status(200).send(eventItem);
     })
     .catch((err) => {
-      logger.error('error', err);
-      res.status(500).send(httpResponseMessage[500]);
+      next(err);
     });
 }
 
-async function updateEvents(req, res) {
+async function updateEvents(req, res, next) {
   const { eventId } = req.params;
   const body = req.body;
 

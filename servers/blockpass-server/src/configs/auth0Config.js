@@ -11,8 +11,8 @@ const AUTH0_AUTHENTICATION_API = {
 
 const AUTH0_MANAGEMENT_API = {
   domain: process.env.AUTH0_BASE_URL,
-  clientId: process.env.AUTH0_CLIENT_ID,
-  clientSecret: process.env.AUTH0_CLIENT_SECRET,
+  clientId: process.env.AUTH0_SERVER_ID,
+  clientSecret: process.env.AUTH0_SERVER_SECRET,
 };
 
 module.exports = { AUTH0_BLOCKPASS_API, AUTH0_AUTHENTICATION_API, AUTH0_MANAGEMENT_API };
