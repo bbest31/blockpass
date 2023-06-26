@@ -1,4 +1,4 @@
-const Web3 = require('web3');
+const web3 = require('../apis/web3Api');
 const fs = require('fs');
 const logger = require('./logger');
 const DateTime = require('./datetime');
@@ -11,14 +11,9 @@ const EvmChain = Moralis.EvmUtils.EvmChain;
  * @returns
  */
 const getMarketplaceContract = async (contractAddress) => {
-  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json')).abi;
+  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json'));
 
   try {
-    const web3 = new Web3(process.env.PROVIDER);
-    if (web3.currentProvider === null) {
-      console.log(web3.currentProvider);
-      throw new Error('Unable to connect to web3 connection provider.');
-    }
     const contract = new web3.eth.Contract(ticketContractAbi, contractAddress).methods;
 
     const marketplaceContract = await contract.marketplaceContract().call(contractCallCallback);
@@ -30,13 +25,17 @@ const getMarketplaceContract = async (contractAddress) => {
 };
 
 /**
- * Returns the JSON that represents the ABI for the TicketSold event from the BlockPass marketplace contract.
- * @returns {Object} eventAbi
+ * Returns the JSON that represents the contract ABI.
+ * @param {string} name - The name of the abi file.
+ * @returns {Array} result
  */
-const getTicketSoldEventAbi = () => {
-  const marketplaceAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPass.json')).abi;
+const getAbi = (name) => {
+  if (!name) {
+    return null;
+  }
+  const abi = JSON.parse(fs.readFileSync(`./contracts/artifacts/${name}.json`));
 
-  // TODO: finish
+  return abi;
 };
 
 /**
@@ -45,14 +44,9 @@ const getTicketSoldEventAbi = () => {
  * @returns
  */
 const getTicketTierDetails = async (contractAddress) => {
-  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json')).abi;
+  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json'));
 
   try {
-    const web3 = new Web3(process.env.PROVIDER);
-    if (web3.currentProvider === null) {
-      console.log(web3.currentProvider);
-      throw new Error('Unable to connect to web3 connection provider.');
-    }
     const contract = new web3.eth.Contract(ticketContractAbi, contractAddress).methods;
 
     const tokenURI = await contract._tokenURI().call(contractCallCallback);
@@ -144,4 +138,6 @@ module.exports = {
   getTicketTierDetails,
   getEvmChain,
   getMarketplaceContract,
+  getAbi,
+  contractCallCallback,
 };

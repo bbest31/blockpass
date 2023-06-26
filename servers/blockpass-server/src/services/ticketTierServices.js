@@ -4,7 +4,8 @@ const Moralis = require('moralis').default;
 
 const Event = require('../models/Events.js');
 const TicketTier = require('../models/TicketTiers.js');
-const { getTicketTierDetails, getEvmChain, getMarketplaceContract } = require('../utils/web3Utils');
+const { getTicketTierDetails, getEvmChain, getAbi, contractCallCallback } = require('../utils/web3Utils');
+const web3 = require('../apis/web3Api.js');
 
 const TICKET_TIER_ATTRIBUTES = ['displayName', 'description'];
 
@@ -110,7 +111,7 @@ const getTicketTier = async (ticketTierId) => {
  * Reads all owners of an NFT by contract address.
  * @param {*} ticketTierId
  * @param {*} cursor
- * @returns
+ * @returns {Object}
  */
 const getTicketTierOwners = async (ticketTierId, cursor) => {
   // get ticket tier db data
@@ -138,7 +139,12 @@ const getTicketTierOwners = async (ticketTierId, cursor) => {
   return response.toJSON();
 };
 
-const getTicketTierStats = async (ticketTierId, cursor) => {
+/**
+ * Retrieves the sales statistics for a ticket tier.
+ * @param {string} ticketTierId
+ * @returns {Object}
+ */
+const getTicketTierStats = async (ticketTierId) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
     .exec()
@@ -152,12 +158,6 @@ const getTicketTierStats = async (ticketTierId, cursor) => {
   }
 
   const address = ticketTier.contract;
-  const chain = getEvmChain();
-
-  if (!chain) {
-    let err = new Error('Can not determine EVM Chain.');
-    throw err;
-  }
 
   // initialize output values to increment.
   let stats = {
@@ -171,20 +171,52 @@ const getTicketTierStats = async (ticketTierId, cursor) => {
     secondaryVolume: 0,
   };
 
-  // get the marketplace contract address
-  const contractData = await getMarketplaceContract(address).catch((err) => {
+  // get the ticket contract data
+  const contractData = await getTicketTierDetails(address).catch((err) => {
     throw err;
   });
 
-  // get TicketSold ABI from marketplace ABI JSON.
+  // get ABI from marketplace ABI JSON.
+  const abi = getAbi('BlockPass');
 
-  // TODO get contract events and parse for ticket tier events.
-  const response = Moralis.EvmApi.events.getContractEvents({
-    address: contractData.marketplaceContract,
-    chain,
-    topic: '',
-    fromDate: contractData.liveDate,
+  // Get contract events and parse for ticket tier events.
+  const contract = new web3.eth.Contract(abi, contractData.marketplaceContract);
+
+  // get event organizer take rate
+  const marketplaceMethods = contract.methods;
+  const eventOrganizerTakeRate = (await marketplaceMethods.EO_TAKE().call(contractCallCallback)) / 100;
+
+  // TODO get ticket tier royalty fee
+
+  const royalty = 1000 / 10000; // event organizer royalty converted from basis points to a float
+
+  const events = await contract.getPastEvents('TicketSold', {
+    filter: { ticketContract: address },
+    fromBlock: 0,
+    toBlock: 'latest',
   });
+
+  events.forEach((event) => {
+    console.log(event);
+    const values = event.returnValues;
+    const price = parseInt(values.price);
+
+    if (values.isPrimary === true) {
+      stats.ticketsSold++;
+      stats.primaryRevenue += price * eventOrganizerTakeRate;
+      stats.primaryVolume += price;
+    } else {
+      stats.secondarySales++;
+      stats.secondaryRevenue += price * royalty;
+      stats.secondaryVolume += price;
+    }
+  });
+
+  stats.revenue = stats.secondaryRevenue + stats.primaryRevenue;
+  stats.volume = stats.secondaryVolume + stats.primaryVolume;
+
+  // TODO get block timestamp for each event
+  return { address, ...stats, events };
 };
 
 module.exports = {

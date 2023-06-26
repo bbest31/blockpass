@@ -4,6 +4,7 @@ const {
   getTicketTier,
   getTicketTierOwners,
   postTicketTier,
+  getTicketTierStats,
 } = require('../services/ticketTierServices');
 const { httpResponseMessage } = require('../utils/responseMessages.js');
 const logger = require('../utils/logger');
@@ -61,12 +62,19 @@ const readTicketTierOwners = async (req, res, next) => {
 
 /**
  * Read the statistics of a ticket tiers sales.
- * @param {Object} req 
- * @param {Object} res 
- * @param {function} next 
+ * @param {Object} req
+ * @param {Object} res
+ * @param {function} next
  */
 const readTicketTierStats = async (req, res, next) => {
-
+  const { ticketTierId } = req.params;
+  await getTicketTierStats(ticketTierId)
+    .then((stats) => {
+      res.status(200).json(stats);
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const createTicketTier = async (req, res, next) => {
