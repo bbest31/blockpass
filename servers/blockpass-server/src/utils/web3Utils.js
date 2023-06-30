@@ -6,25 +6,6 @@ const Moralis = require('moralis').default;
 const EvmChain = Moralis.EvmUtils.EvmChain;
 
 /**
- * Retrieves the contract address of the marketplace contract the ticket tier is associated with.
- * @param {string} contractAddress
- * @returns
- */
-const getMarketplaceContract = async (contractAddress) => {
-  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json'));
-
-  try {
-    const contract = new web3.eth.Contract(ticketContractAbi, contractAddress).methods;
-
-    const marketplaceContract = await contract.marketplaceContract().call(contractCallCallback);
-    return marketplaceContract;
-  } catch (err) {
-    logger.log('error', `Error retreiving smart contract ticket tier details for ${contractAddress}| ${err}`);
-    throw err;
-  }
-};
-
-/**
  * Returns the JSON that represents the contract ABI.
  * @param {string} name - The name of the abi file.
  * @returns {Array} result
@@ -36,6 +17,26 @@ const getAbi = (name) => {
   const abi = JSON.parse(fs.readFileSync(`./contracts/artifacts/${name}.json`));
 
   return abi;
+};
+
+/**
+ * Gets the amount payable in royalties to the contract owner based on the token sale price.
+ * @param {string} contractAddress
+ * @param {number} tokenId
+ * @param {number} salePrice
+ * @returns {number}
+ */
+const getRoyaltyInfo = async (contractAddress, tokenId, salePrice) => {
+  const abi = getAbi('BlockPassTicket');
+  try {
+    const contract = new web3.eth.Contract(abi, contractAddress).methods;
+
+    const royalty = await contract.royaltyInfo(tokenId, salePrice).call(contractCallCallback);
+    return parseInt(royalty['1']);
+  } catch (err) {
+    logger.log('error', `Error retreiving royalty info for ${contractAddress}| ${err}`);
+    throw err;
+  }
 };
 
 /**
@@ -137,7 +138,7 @@ const getEvmChain = () => {
 module.exports = {
   getTicketTierDetails,
   getEvmChain,
-  getMarketplaceContract,
+  getRoyaltyInfo,
   getAbi,
   contractCallCallback,
 };

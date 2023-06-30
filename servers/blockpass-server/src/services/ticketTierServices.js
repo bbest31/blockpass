@@ -4,7 +4,13 @@ const Moralis = require('moralis').default;
 
 const Event = require('../models/Events.js');
 const TicketTier = require('../models/TicketTiers.js');
-const { getTicketTierDetails, getEvmChain, getAbi, contractCallCallback } = require('../utils/web3Utils');
+const {
+  getTicketTierDetails,
+  getEvmChain,
+  getAbi,
+  contractCallCallback,
+  getRoyaltyInfo,
+} = require('../utils/web3Utils');
 const web3 = require('../apis/web3Api.js');
 
 const TICKET_TIER_ATTRIBUTES = ['displayName', 'description'];
@@ -177,46 +183,72 @@ const getTicketTierStats = async (ticketTierId) => {
   });
 
   // get ABI from marketplace ABI JSON.
-  const abi = getAbi('BlockPass');
+  const marketplaceAbi = getAbi('BlockPass');
 
   // Get contract events and parse for ticket tier events.
-  const contract = new web3.eth.Contract(abi, contractData.marketplaceContract);
+  const marketplaceContract = new web3.eth.Contract(marketplaceAbi, contractData.marketplaceContract);
 
   // get event organizer take rate
-  const marketplaceMethods = contract.methods;
+  const marketplaceMethods = marketplaceContract.methods;
   const eventOrganizerTakeRate = (await marketplaceMethods.EO_TAKE().call(contractCallCallback)) / 100;
 
-  // TODO get ticket tier royalty fee
-
-  const royalty = 1000 / 10000; // event organizer royalty converted from basis points to a float
-
-  const events = await contract.getPastEvents('TicketSold', {
+  const events = await marketplaceContract.getPastEvents('TicketSold', {
     filter: { ticketContract: address },
     fromBlock: 0,
     toBlock: 'latest',
   });
 
-  events.forEach((event) => {
-    console.log(event);
-    const values = event.returnValues;
-    const price = parseInt(values.price);
-
-    if (values.isPrimary === true) {
-      stats.ticketsSold++;
-      stats.primaryRevenue += price * eventOrganizerTakeRate;
-      stats.primaryVolume += price;
-    } else {
-      stats.secondarySales++;
-      stats.secondaryRevenue += price * royalty;
-      stats.secondaryVolume += price;
-    }
-  });
+  const processedEvents = await processEvents(events, stats, address, eventOrganizerTakeRate);
 
   stats.revenue = stats.secondaryRevenue + stats.primaryRevenue;
   stats.volume = stats.secondaryVolume + stats.primaryVolume;
 
-  // TODO get block timestamp for each event
-  return { address, ...stats, events };
+  return { address, ...stats, processedEvents };
+};
+
+/**
+ * For each ticket sold event in events update the sales stats for a ticket tier.
+ * @param {Array} events - An array of ticket sold contract events
+ * @param {Object} stats - the metrics being calculated for the ticket tier
+ * @param {string} contract - the smart contract address of the ticket tier
+ * @param {number} takeRate - the take rate of the marketplace contract.
+ * @returns {Array}
+ */
+const processEvents = async (events, stats, contract, takeRate) => {
+  const processedEvents = await Promise.all(
+    events.map(async (event) => {
+      return await processEventStats(event, stats, contract, takeRate);
+    })
+  );
+  return processedEvents;
+};
+
+/**
+ * Updates the ticket tier stats based on the ticket sold event, and returns the event with the block timestamp added.
+ * @param {Object} event - the object representing the tiket sold contract event
+ * @param {Object} stats - the metrics being calculated for the ticket tier
+ * @param {string} contract - the smart contract address of the ticket tier
+ * @param {number} takeRate - the take rate of the maerketplace contract
+ * @returns {Object}
+ */
+const processEventStats = async (event, stats, contract, takeRate) => {
+  // get block timestamp for event
+  const block = await web3.eth.getBlock(event?.blockNumber || event?.blockHash);
+  event.blockTimestamp = block.timestamp;
+  const values = event.returnValues;
+  const price = parseInt(values.price);
+
+  if (values.isPrimary === true) {
+    stats.ticketsSold++;
+    stats.primaryRevenue += price * takeRate;
+    stats.primaryVolume += price;
+  } else {
+    const royalty = await getRoyaltyInfo(contract, values.tokenId, price);
+    stats.secondarySales++;
+    stats.secondaryRevenue += royalty;
+    stats.secondaryVolume += price;
+  }
+  return event;
 };
 
 module.exports = {
