@@ -200,9 +200,6 @@ const getTicketTierStats = async (ticketTierId) => {
 
   const processedEvents = await processEvents(events, stats, address, eventOrganizerTakeRate);
 
-  stats.revenue = stats.secondaryRevenue + stats.primaryRevenue;
-  stats.volume = stats.secondaryVolume + stats.primaryVolume;
-
   return { address, ...stats, processedEvents };
 };
 
@@ -220,6 +217,10 @@ const processEvents = async (events, stats, contract, takeRate) => {
       return await processEventStats(event, stats, contract, takeRate);
     })
   );
+
+  stats.revenue = stats.secondaryRevenue + stats.primaryRevenue;
+  stats.volume = stats.secondaryVolume + stats.primaryVolume;
+
   return processedEvents;
 };
 
