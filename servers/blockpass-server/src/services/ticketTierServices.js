@@ -11,6 +11,7 @@ const {
   contractCallCallback,
   getRoyaltyInfo,
 } = require('../utils/web3Utils');
+const DateTime = require('../utils/datetime');
 const web3 = require('../apis/web3Api.js');
 
 const TICKET_TIER_ATTRIBUTES = ['displayName', 'description'];
@@ -235,7 +236,7 @@ const processEvents = async (events, stats, contract, takeRate) => {
 const processEventStats = async (event, stats, contract, takeRate) => {
   // get block timestamp for event
   const block = await web3.eth.getBlock(event?.blockNumber || event?.blockHash);
-  event.blockTimestamp = block.timestamp;
+  event.blockTimestamp = DateTime.convertEpochToDate(block.timestamp);
   const values = event.returnValues;
   const price = parseInt(values.price);
 
