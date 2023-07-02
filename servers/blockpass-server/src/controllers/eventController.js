@@ -1,5 +1,6 @@
 'use strict';
 const {
+  getEvents,
   getOrganizationEvents,
   patchOrganizationEvents,
   postOrganizationEvent,
@@ -7,7 +8,29 @@ const {
 } = require('../services/eventServices');
 // Events
 
-async function readEvents(req, res, next) {
+/**
+ * Get events.
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {function} next
+ */
+const readEvents = async (req, res, next) => {
+  const { skip, limit } = req.query;
+
+  await getEvents(skip || 0, limit || 12)
+    .then((events) => {
+      res.status(200).send(events);
+    })
+    .catch((err) => next(err));
+};
+
+/**
+ * Reads the events for an organization.
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {function} next
+ */
+const readOrganizationEvents = async (req, res, next) => {
   const { id } = req.params;
 
   await getOrganizationEvents(id)
@@ -17,14 +40,15 @@ async function readEvents(req, res, next) {
     .catch((err) => {
       next(err);
     });
-}
+};
 
 /**
  * Creates an event
- * @param {Object} req
- * @param {Object} res
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {function} next
  */
-async function createEvent(req, res, next) {
+const createEvent = async (req, res, next) => {
   const { id } = req.params;
   const body = req.body;
   const images = req.newImageUrls;
@@ -37,9 +61,15 @@ async function createEvent(req, res, next) {
     .catch((err) => {
       next(err);
     });
-}
+};
 
-async function updateEvents(req, res, next) {
+/**
+ * Update an event.
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {function} next
+ */
+const updateEvents = async (req, res, next) => {
   const { eventId } = req.params;
   const body = req.body;
 
@@ -50,9 +80,15 @@ async function updateEvents(req, res, next) {
     .catch((err) => {
       next(err);
     });
-}
+};
 
-async function updateEventImages(req, res, next) {
+/**
+ * Updates the images of an event.
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {function} next
+ */
+const updateEventImages = async (req, res, next) => {
   const { eventId } = req.params;
   const newImageUrls = req.newImageUrls;
   const removedImages = req.body.removedImages;
@@ -64,10 +100,11 @@ async function updateEventImages(req, res, next) {
     .catch((err) => {
       next(err);
     });
-}
+};
 
 module.exports = {
   readEvents,
+  readOrganizationEvents,
   createEvent,
   updateEvents,
   updateEventImages,
