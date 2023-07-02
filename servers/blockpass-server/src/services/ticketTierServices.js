@@ -93,6 +93,7 @@ const getTicketTiers = async (eventId) => {
 const getTicketTier = async (ticketTierId) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
+    .populate('enhancements')
     .exec()
     .catch((err) => {
       if (!(err instanceof mongoose.Error.CastError)) {
@@ -123,6 +124,7 @@ const getTicketTier = async (ticketTierId) => {
 const getTicketTierOwners = async (ticketTierId, cursor) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
+    .populate('enhancements')
     .exec()
     .catch((err) => {
       if (!(err instanceof mongoose.Error.CastError)) {
@@ -154,6 +156,7 @@ const getTicketTierOwners = async (ticketTierId, cursor) => {
 const getTicketTierStats = async (ticketTierId) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
+    .populate('enhancements')
     .exec()
     .catch((err) => {
       if (!(err instanceof mongoose.Error.CastError)) {

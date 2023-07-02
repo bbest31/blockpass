@@ -28,9 +28,11 @@ const schema = new mongoose.Schema(
     startDate: {
       type: Date,
       required: [true, 'Event start date is required'],
+      index: true,
     },
     endDate: {
       type: Date,
+      index: true,
     },
     description: {
       type: String,
@@ -48,7 +50,7 @@ const schema = new mongoose.Schema(
       required: [true, 'Event website is required.'],
     },
     ticketTiers: {
-      type: [ObjectId],
+      type: [{ type: ObjectId, ref: 'TicketTier' }],
     },
   },
   { timestamps: true }

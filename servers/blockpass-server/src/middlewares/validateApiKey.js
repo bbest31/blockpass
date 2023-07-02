@@ -21,3 +21,5 @@ const validateApiKey = (req, res, next) => {
   // Valid API key
   next();
 };
+
+module.exports = { validateApiKey };

@@ -5,18 +5,44 @@ const Event = require('../models/Events.js');
 
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
 
-async function getOrganizationEvents(orgId) {
-  const events = await Event.find({ orgId: orgId }).exec();
+/**
+ * Gets events
+ * @param {number} skip
+ * @param {number} limit
+ * @returns {Array<Object>}
+ */
+const getEvents = async (skip, limit) => {
+  const today = new Date().setHours(0, 0, 0, 0);
+  const events = await Event.find({ endDate: { $gte: today } })
+    .lean()
+    .sort({ endDate: 1 })
+    .skip(skip)
+    .limit(limit)
+    .populate({ path: 'ticketTiers', populate: { path: 'enhancements' } })
+    .exec();
+
   return events;
-}
+};
+
+/**
+ * Gets the events given an organization id.
+ * @param {string} orgId
+ * @returns
+ */
+const getOrganizationEvents = async (orgId) => {
+  const events = await Event.find({ orgId: orgId })
+    .populate({ path: 'ticketTiers', populate: { path: 'enhancements' } })
+    .exec();
+  return events;
+};
 
 /**
  * Creates an Event and persists it to the database.
- * @param {string} orgId 
- * @param {Object} payload 
+ * @param {string} orgId
+ * @param {Object} payload
  * @returns {Object}
  */
-async function postOrganizationEvent(orgId, payload) {
+const postOrganizationEvent = async (orgId, payload) => {
   // save to event to database
   const event = await Event.create({ orgId, ...payload });
   await event.save().catch((err) => {
@@ -24,9 +50,15 @@ async function postOrganizationEvent(orgId, payload) {
   });
 
   return event;
-}
+};
 
-async function patchOrganizationEvents(eventId, payload) {
+/**
+ * Updates an organizations event.
+ * @param {string} eventId
+ * @param {Object} payload
+ * @returns {Object}
+ */
+const patchOrganizationEvents = async (eventId, payload) => {
   Object.keys(payload).forEach((key) => {
     if (!EVENT_ATTRIBUTES.includes(key)) {
       throw new Error('event attribute not allowed to be updated');
@@ -39,11 +71,20 @@ async function patchOrganizationEvents(eventId, payload) {
     delete payload.removeEndDate;
   }
 
-  const event = await Event.findByIdAndUpdate(eventId, { ...mongoose.sanitizeFilter(payload) }, { new: true });
+  const event = await Event.findByIdAndUpdate(eventId, { ...mongoose.sanitizeFilter(payload) }, { new: true }).populate(
+    'ticketTiers'
+  );
   return event;
-}
+};
 
-async function patchOrganizationEventsImages(eventId, imageUrls, removedImages) {
+/**
+ * Updates the images for an event.
+ * @param {string} eventId
+ * @param {Array<string>} imageUrls
+ * @param {Array<string>} removedImages
+ * @returns {Object}
+ */
+const patchOrganizationEventsImages = async (eventId, imageUrls, removedImages) => {
   let event = await Event.findById(eventId);
 
   if (imageUrls) {
@@ -60,12 +101,13 @@ async function patchOrganizationEventsImages(eventId, imageUrls, removedImages) 
     throw err;
   });
 
-  event = await Event.findById(eventId);
+  event = await Event.findById(eventId).populate('ticketTiers');
 
   return event;
-}
+};
 
 module.exports = {
+  getEvents,
   getOrganizationEvents,
   postOrganizationEvent,
   patchOrganizationEvents,

@@ -1,5 +1,10 @@
 const router = require('express').Router();
-const { readEvents, updateEvents, updateEventImages, createEvent } = require('../controllers/eventController');
+const {
+  readOrganizationEvents,
+  updateEvents,
+  updateEventImages,
+  createEvent,
+} = require('../controllers/eventController');
 const {
   checkReadPermission,
   checkUpdatePermission,
@@ -8,7 +13,7 @@ const {
 const { multer, uploadImagesToBucket, removeImagesFromBucket } = require('../middlewares/imageUploadMiddleware');
 const ticketTierRoutes = require('./ticketTierRoutes');
 
-router.get('', checkReadPermission('events'), readEvents);
+router.get('', checkReadPermission('events'), readOrganizationEvents);
 
 router.post('', checkCreatePermission('events'), multer.any('images'), uploadImagesToBucket, createEvent);
 

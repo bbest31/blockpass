@@ -22,7 +22,7 @@ const port = process.env.PORT;
 
 app.use(cors());
 app.use(helmet());
-app.use(checkJwt);
+app.use('^(?!/events(?:/|$)).*$', checkJwt);
 
 async function main() {
   mongoose.set('strictQuery', true);
