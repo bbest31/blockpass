@@ -19,10 +19,11 @@ const routes = require('./src/routes/index.js');
 // APP SETUP
 const app = express();
 const port = process.env.PORT;
+const regex = /^\/(?!events(?:\/|$)).*$/;
 
 app.use(cors());
 app.use(helmet());
-app.use('^(?!/events(?:/|$)).*$', checkJwt);
+app.use(regex, checkJwt);
 
 async function main() {
   mongoose.set('strictQuery', true);
