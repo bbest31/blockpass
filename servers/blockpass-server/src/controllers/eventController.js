@@ -1,6 +1,7 @@
 'use strict';
 const {
   getEvents,
+  getEventById,
   getOrganizationEvents,
   patchOrganizationEvents,
   postOrganizationEvent,
@@ -18,6 +19,22 @@ const readEvents = async (req, res, next) => {
   const { skip, limit } = req.query;
 
   await getEvents(skip || 0, limit || 12)
+    .then((events) => {
+      res.status(200).send(events);
+    })
+    .catch((err) => next(err));
+};
+
+/**
+ * Get event by id.
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {function} next
+ */
+const readEventById = async (req, res, next) => {
+  const { id } = req.params;
+
+  await getEventById(id)
     .then((events) => {
       res.status(200).send(events);
     })
@@ -104,6 +121,7 @@ const updateEventImages = async (req, res, next) => {
 
 module.exports = {
   readEvents,
+  readEventById,
   readOrganizationEvents,
   createEvent,
   updateEvents,

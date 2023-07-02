@@ -25,6 +25,20 @@ const getEvents = async (skip, limit) => {
 };
 
 /**
+ * Gets an event by it's id.
+ * @param {string} id
+ * @returns {Object}
+ */
+const getEventById = async (id) => {
+  const event = await Event.findById(id)
+    .lean()
+    .populate({ path: 'ticketTiers', populate: { path: 'enhancements' } })
+    .exec();
+
+  return event;
+};
+
+/**
  * Gets the events given an organization id.
  * @param {string} orgId
  * @returns
@@ -108,6 +122,7 @@ const patchOrganizationEventsImages = async (eventId, imageUrls, removedImages) 
 
 module.exports = {
   getEvents,
+  getEventById,
   getOrganizationEvents,
   postOrganizationEvent,
   patchOrganizationEvents,
