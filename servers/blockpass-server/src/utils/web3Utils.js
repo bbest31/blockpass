@@ -1,4 +1,4 @@
-const Web3 = require('web3');
+const web3 = require('../apis/web3Api');
 const fs = require('fs');
 const logger = require('./logger');
 const DateTime = require('./datetime');
@@ -6,19 +6,48 @@ const Moralis = require('moralis').default;
 const EvmChain = Moralis.EvmUtils.EvmChain;
 
 /**
+ * Returns the JSON that represents the contract ABI.
+ * @param {string} name - The name of the abi file.
+ * @returns {Array} result
+ */
+const getAbi = (name) => {
+  if (!name) {
+    return null;
+  }
+  const abi = JSON.parse(fs.readFileSync(`./contracts/artifacts/${name}.json`));
+
+  return abi;
+};
+
+/**
+ * Gets the amount payable in royalties to the contract owner based on the token sale price.
+ * @param {string} contractAddress
+ * @param {number} tokenId
+ * @param {number} salePrice
+ * @returns {number}
+ */
+const getRoyaltyInfo = async (contractAddress, tokenId, salePrice) => {
+  const abi = getAbi('BlockPassTicket');
+  try {
+    const contract = new web3.eth.Contract(abi, contractAddress).methods;
+
+    const royalty = await contract.royaltyInfo(tokenId, salePrice).call(contractCallCallback);
+    return parseInt(royalty['1']);
+  } catch (err) {
+    logger.log('error', `Error retreiving royalty info for ${contractAddress}| ${err}`);
+    throw err;
+  }
+};
+
+/**
  * Retrieves all details about a smart contract implementing the IBlockPassTicket interface.
  * @param {string} contractAddress
  * @returns
  */
 const getTicketTierDetails = async (contractAddress) => {
-  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json')).abi;
+  const ticketContractAbi = JSON.parse(fs.readFileSync('./contracts/artifacts/BlockPassTicket.json'));
 
   try {
-    const web3 = new Web3(process.env.PROVIDER);
-    if (web3.currentProvider === null) {
-      console.log(web3.currentProvider);
-      throw new Error('Unable to connect to web3 connection provider.');
-    }
     const contract = new web3.eth.Contract(ticketContractAbi, contractAddress).methods;
 
     const tokenURI = await contract._tokenURI().call(contractCallCallback);
@@ -109,4 +138,7 @@ const getEvmChain = () => {
 module.exports = {
   getTicketTierDetails,
   getEvmChain,
+  getRoyaltyInfo,
+  getAbi,
+  contractCallCallback,
 };
