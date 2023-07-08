@@ -17,6 +17,9 @@ NODE_ENV=development
 PORT=8000
 
 API_KEY=
+APP_DOMAIN=
+CLIENT_URL=http://localhost:3000
+AUTH_SECRET=
 
 #AUTH0
 AUTH0_ISSUER_BASE_URL=
@@ -85,3 +88,4 @@ npm run dev
 - [mime-types](https://github.com/jshttp/mime-types)
 - [fs](https://www.npmjs.com/package/fs)
 - [web3](https://www.npmjs.com/package/web3)
+- [moralis](https://docs.moralis.io/authentication-api/evm/how-to-authenticate-users-with-metamask-using-react#server-setup)
