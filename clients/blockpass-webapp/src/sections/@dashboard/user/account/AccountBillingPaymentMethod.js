@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { useMoralis } from 'react-moralis';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { useMixpanel } from 'react-mixpanel-browser';
@@ -30,6 +29,9 @@ import { getNetworkIcon } from '../../../../utils/networks';
 import { trackEvent } from '../../../../utils/mixpanelUtils';
 // config
 import { MATIC_NETWORK } from '../../../../config';
+
+import { getWalletAddress, getCurrentChainIdHex } from '../../../../utils/web3Client';
+
 // ----------------------------------------------------------------------
 
 AccountBillingPaymentMethod.propTypes = {
@@ -39,16 +41,17 @@ AccountBillingPaymentMethod.propTypes = {
   onCancel: PropTypes.func,
 };
 
-export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, onCancel }) {
-  const { authenticate, isAuthenticated, user, logout, isWeb3Enabled, enableWeb3, chainId } = useMoralis();
+export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, onCancel }) {  
+
   const { enqueueSnackbar } = useSnackbar();
   const [wallets, setWallets] = useState(metadata);
   const { organization, getAccessToken, refreshOrg } = useAuth();
   const [anchorElement, setAnchorElement] = useState(null);
   const [openMenu, setOpenMenuActions] = useState(false);
-  const [isWalletConnected, setIsWalletConnected] = useState(isAuthenticated);
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [wrongNetwork, setWrongNetwork] = useState(false);
-
+  const [currentWallet, setCurrentWallet]  = useState('');
+  
   const mixpanel = useMixpanel();
 
   const handleClick = (event) => {
@@ -56,65 +59,42 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
     setOpenMenuActions(true);
   };
 
-  useEffect(() => {
-    if (!isWeb3Enabled) {
-      enableWeb3();
+  const connectWallet = async () => {
+    if (!isWalletConnected) {
+      getWalletAddress(walletChangedHandler);
+      getCurrentChainIdHex().then((chainIdHex) => {
+        if (chainIdHex.toString() !== `0x${MATIC_NETWORK.chainId.toString(16)}`) {
+          enqueueSnackbar('Connected to unsupported network!', { variant: 'warning' });
+          setWrongNetwork(true);
+        } else {
+          enqueueSnackbar('Wallet connected!');
+          setWrongNetwork(false);
+        }
+        setIsWalletConnected(true);
+        trackEvent(mixpanel, 'Connect Wallet', { success: true, network: chainIdHex.toString() });
+      });
     }
+  };
 
-    if (chainId?.toString() !== `0x${MATIC_NETWORK.chainId.toString(16)}`) {
-      setWrongNetwork(true);
-    }
-  }, [chainId, isWeb3Enabled, enableWeb3]);
+  useEffect(() => {
+    connectWallet();
+  }, []);
 
   const handleClose = () => {
     setOpenMenuActions(false);
   };
 
-  const connectWallet = async () => {
-    if (!isWalletConnected) {
-      await authenticate({
-        signingMessage: 'Connect to BlockPass',
-        chainId: MATIC_NETWORK.chainId,
-        onError: (err) => {
-          switch (err.code) {
-            case 4001:
-              // user denied message signature
-              enqueueSnackbar('User denied message signature', { variant: 'error' });
-              break;
-            default:
-              console.error(err);
-              enqueueSnackbar('Something went wrong', { variant: 'error' });
-              break;
-          }
-        },
-        onSuccess: () => {
-          if (chainId.toString() !== `0x${MATIC_NETWORK.chainId.toString(16)}`) {
-            enqueueSnackbar('Connected to unsupported network!', { variant: 'warning' });
-            setWrongNetwork(true);
-          } else {
-            enqueueSnackbar('Wallet connected!');
-            setWrongNetwork(false);
-          }
-          setIsWalletConnected(true);
-          trackEvent(mixpanel, 'Connect Wallet', { success: true, network: chainId.toString() });
-        },
-      }).catch((err) => {
-        console.error(err);
-        enqueueSnackbar('Something went wrong', { variant: 'error' });
-        trackEvent(mixpanel, 'Connect Wallet', { success: false });
-      });
-    }
-  };
+  const walletChangedHandler = (walletAddress) => setCurrentWallet(walletAddress);
 
   const disconnectWallet = () => {
-    logout();
     setIsWalletConnected(false);
     setWrongNetwork(false);
+    setCurrentWallet('');
   };
 
   const saveWallet = async () => {
-    const newWallet = user.get('ethAddress');
-    if (isDuplicateWallet(MATIC_NETWORK.network, newWallet)) {
+    // const newWallet = user.get('ethAddress');
+    if (isDuplicateWallet(MATIC_NETWORK.network, currentWallet)) {
       // wallet is already saved so do nothing.
       enqueueSnackbar('Wallet already saved', { variant: 'info' });
       return;
@@ -122,7 +102,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
 
     // build new metadata object for org
     const temp = { ...wallets };
-    temp[MATIC_NETWORK.network] = newWallet;
+    temp[MATIC_NETWORK.network] = currentWallet;
 
     try {
       const token = await getAccessToken();
@@ -255,27 +235,15 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
           <Stack spacing={3}>
             <Typography variant="subtitle1">Add new wallet (Polygon only)</Typography>
 
-            {/*  */}
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
               <TextField
                 fullWidth
                 placeholder="Wallet Address"
                 InputProps={{ readOnly: true }}
-                value={isWalletConnected ? user.get('ethAddress') : ''}
+                value={currentWallet}
                 color={wrongNetwork && isWalletConnected ? 'warning' : 'primary'}
                 helperText={wrongNetwork && isWalletConnected ? 'Unsupported network connected' : ''}
                 focused={wrongNetwork && isWalletConnected}
-                // InputProps={{
-                //   endAdornment: (
-                //     <InputAdornment position="end">
-                //       <IconButton edge="end" disabled>
-                //         <Icon>
-                //           <img src="../../../../assets/icons/polygon_black_symbol.svg" alt="polygon testnet" />
-                //         </Icon>
-                //       </IconButton>
-                //     </InputAdornment>
-                //   ),
-                // }}
               />
             </Stack>
             <Stack direction="row" justifyContent="flex-end" spacing={1.5}>

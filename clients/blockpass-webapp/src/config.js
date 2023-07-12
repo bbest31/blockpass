@@ -11,11 +11,6 @@ export const HOST_API = process.env.REACT_APP_HOST_API_KEY || '';
 
 export const SERVER_API = process.env.REACT_APP_API_SERVER || '';
 
-export const MORALIS_API = {
-  SERVER_URL: process.env.REACT_APP_MORALIS_SERVER_URL,
-  APP_ID: process.env.REACT_APP_MORALIS_APP_ID,
-};
-
 export const MATIC_NETWORK = {
   network: process.env.NODE_ENV === 'production' ? NETWORKS.POLYGON_MAINNET : NETWORKS.POLYGON_TESTNET,
   chainId: process.env.NODE_ENV === 'production' ? 0x38 : 0x13881,
