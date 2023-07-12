@@ -13,3 +13,5 @@ export { default as OrganizationTicketTierSummary } from './OrganizationTicketTi
 export { default as OrganizationTicketTierDetail } from './OrganizationTicketTierDetail';
 export { default as OrganizationTicketTierOwnersList } from './OrganizationTicketTierOwnersList';
 export { default as TransactionDialog } from './TransactionDialog';
+export { default as OrganizationTicketTierEnhancementDialog } from './OrganizationTicketTierEnhancementDialog';
+export { default as OrganizationTicketTierEnhancementItem } from './OrganizationTicketTierEnhancementItem';

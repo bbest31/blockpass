@@ -1,4 +1,3 @@
-import { useState } from 'react';
 // @mui
 import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
 
@@ -7,10 +6,6 @@ import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogConten
 export default function TransactionDialog({ isOpen, onCloseHandler }) {
   return (
     <div>
-      {/* <Button color="info" variant="outlined" onClick={handleClickOpen}>
-        Open alert dialog
-      </Button> */}
-
       <Dialog open={isOpen} onClose={onCloseHandler}>
         <DialogTitle>Use Google's location service?</DialogTitle>
         <DialogContent>

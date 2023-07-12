@@ -15,3 +15,10 @@ export function getSmartContract(contractAddress) {
   const web3 = new Web3(window.ethereum);
   return new web3.eth.Contract(contractArtifact.abi, contractAddress).methods;
 }
+
+export async function getCurrentChainIdHex() {
+  const web3 = new Web3(window.ethereum);
+  const chainId = await web3.eth.getChainId();
+
+  return web3.utils.toHex(chainId);
+}
