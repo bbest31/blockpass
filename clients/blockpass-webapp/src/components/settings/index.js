@@ -16,12 +16,10 @@ export default function ThemeSettings({ children }) {
   return (
     <ThemeColorPresets>
       <ThemeContrast>
-        <ThemeLocalization>
-          <ThemeRtlLayout>
-            {children}
-            <SettingsDrawer />
-          </ThemeRtlLayout>
-        </ThemeLocalization>
+        <ThemeRtlLayout>
+          {children}
+          <SettingsDrawer />
+        </ThemeRtlLayout>
       </ThemeContrast>
     </ThemeColorPresets>
   );

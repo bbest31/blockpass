@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 // form
 import { useForm } from 'react-hook-form';
@@ -10,8 +10,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Card, Stack, Typography } from '@mui/material';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
-// routes
-import { PATH_DASHBOARD } from '../../../../routes/paths';
 // components
 import { FormProvider, RHFUploadMultiFile } from '../../../../components/hook-form';
 // utils
@@ -25,7 +23,7 @@ OrganizationEventImageUpload.propTypes = {
 };
 
 export default function OrganizationEventImageUpload({ eventItem, isEdit }) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
 

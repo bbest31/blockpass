@@ -5,9 +5,9 @@ module.exports = function override(config) {
     test: /\.svg$/,
     use: [
       {
-        loader: 'file-loader',
+        loader: 'svg-url-loader',
         options: {
-          esModule: false,
+          iesafe: true,
         },
       },
     ],

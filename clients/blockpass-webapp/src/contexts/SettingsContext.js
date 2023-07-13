@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, createContext } from 'react';
+import { createContext } from 'react';
 // hooks
 import useLocalStorage from '../hooks/useLocalStorage';
 // utils
