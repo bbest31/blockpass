@@ -22,7 +22,7 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-AnalyticsWidgetSummary.propTypes = {
+InsightsWidgetSummary.propTypes = {
   color: PropTypes.string,
   icon: PropTypes.string,
   title: PropTypes.string.isRequired,
@@ -33,7 +33,7 @@ AnalyticsWidgetSummary.propTypes = {
   sx: PropTypes.object,
 };
 
-export default function AnalyticsWidgetSummary({
+export default function InsightsWidgetSummary({
   title,
   total,
   icon,

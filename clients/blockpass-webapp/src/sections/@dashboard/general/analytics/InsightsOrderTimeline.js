@@ -7,13 +7,13 @@ import { fDateTime } from '../../../../utils/formatTime';
 
 // ----------------------------------------------------------------------
 
-AnalyticsOrderTimeline.propTypes = {
+InsightsOrderTimeline.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
   list: PropTypes.array.isRequired,
 };
 
-export default function AnalyticsOrderTimeline({ title, subheader, list, ...other }) {
+export default function InsightsOrderTimeline({ title, subheader, list, ...other }) {
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />

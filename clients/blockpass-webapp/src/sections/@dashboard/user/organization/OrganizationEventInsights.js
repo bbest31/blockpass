@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography, Skeleton } from '@mui/material';
+import { Grid, Container, Typography, Skeleton, Card, CardContent } from '@mui/material';
 // hooks
 import useSettings from '../../../../hooks/useSettings';
 import useAuth from '../../../../hooks/useAuth';
@@ -10,15 +10,10 @@ import useAuth from '../../../../hooks/useAuth';
 import { _analyticPost, _analyticOrderTimeline, _analyticTraffic } from '../../../../_mock';
 // sections
 import {
-  AnalyticsTasks,
-  AnalyticsNewsUpdate,
-  AnalyticsOrderTimeline,
-  AnalyticsCurrentVisits,
-  AnalyticsWebsiteVisits,
-  AnalyticsTrafficBySite,
-  AnalyticsWidgetSummary,
-  AnalyticsCurrentSubject,
-  AnalyticsConversionRates,
+  InsightsWebsiteVisits,
+  InsightsWidgetSummary,
+  InsightsConversionRates,
+  InsightsPieChart,
 } from '../../general/analytics';
 // utils
 import axiosInstance from '../../../../utils/axios';
@@ -58,8 +53,7 @@ export default function OrganizationEventInsights({ eventItem }) {
           signal: controller.signal,
         })
         .then((res) => {
-          console.log(res.data);
-          return res.data;
+          return { ...res.data, name: ticketTier.displayName };
         })
         .catch((err) => {
           if (!controller.signal.aborted) {
@@ -112,6 +106,8 @@ export default function OrganizationEventInsights({ eventItem }) {
     return vol;
   };
 
+  const getRevenueBreakdown = () => {};
+
   return (
     <Container maxWidth={themeStretch ? false : 'xl'}>
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -120,7 +116,7 @@ export default function OrganizationEventInsights({ eventItem }) {
 
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
+          <InsightsWidgetSummary
             title="Tickets Sold"
             total={isLoading ? 0 : getTotalTicketsSold()}
             icon={'ic:round-receipt'}
@@ -129,7 +125,7 @@ export default function OrganizationEventInsights({ eventItem }) {
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
+          <InsightsWidgetSummary
             title="Total Revenue"
             total={isLoading ? 0 : getTotalRevenue()}
             color="success"
@@ -140,7 +136,7 @@ export default function OrganizationEventInsights({ eventItem }) {
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
+          <InsightsWidgetSummary
             title="Secondary Sale Volume"
             total={isLoading ? 0 : getTotalSecondaryVol()}
             color="warning"
@@ -151,7 +147,7 @@ export default function OrganizationEventInsights({ eventItem }) {
         </Grid>
 
         <Grid item xs={12} md={6} lg={8}>
-          <AnalyticsWebsiteVisits
+          <InsightsWebsiteVisits
             title="Website Visits"
             subheader="(+43%) than last year"
             chartLabels={[
@@ -191,25 +187,29 @@ export default function OrganizationEventInsights({ eventItem }) {
         </Grid>
 
         <Grid item xs={12} md={6} lg={4}>
-          <AnalyticsCurrentVisits
-            title="Current Visits"
-            chartData={[
-              { label: 'America', value: 4344 },
-              { label: 'Asia', value: 5435 },
-              { label: 'Europe', value: 1443 },
-              { label: 'Africa', value: 4443 },
-            ]}
-            chartColors={[
-              theme.palette.primary.main,
-              theme.palette.chart.blue[0],
-              theme.palette.chart.violet[0],
-              theme.palette.chart.yellow[0],
-            ]}
-          />
+          {isLoading ? (
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Ticket Tier Sales Breakdown</Typography>
+                <Skeleton variant="circular" height={280} width={280} sx={{ marginBottom: 12 }} animation="pulse" />
+                <Typography variant="body1">
+                  <Skeleton variant="text" animation="pulse" />
+                </Typography>
+              </CardContent>
+            </Card>
+          ) : (
+            <InsightsPieChart
+              title="Ticket Tier Sales Breakdown"
+              chartData={data.map((tier) => {
+                return { label: tier.name, value: tier.primaryRevenue };
+              })}
+            />
+          )}
         </Grid>
 
         <Grid item xs={12} md={6} lg={8}>
-          <AnalyticsConversionRates
+          {/* TODO Skeleton */}
+          <InsightsConversionRates
             title="Conversion Rates"
             subheader="(+43%) than last year"
             chartData={[
@@ -228,41 +228,8 @@ export default function OrganizationEventInsights({ eventItem }) {
         </Grid>
 
         <Grid item xs={12} md={6} lg={4}>
-          <AnalyticsCurrentSubject
-            title="Current Subject"
-            chartLabels={['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math']}
-            chartData={[
-              { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
-              { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
-              { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
-            ]}
-            chartColors={[...Array(6)].map(() => theme.palette.text.secondary)}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6} lg={8}>
-          <AnalyticsNewsUpdate title="News Update" list={_analyticPost} />
-        </Grid>
-
-        <Grid item xs={12} md={6} lg={4}>
-          <AnalyticsOrderTimeline title="Order Timeline" list={_analyticOrderTimeline} />
-        </Grid>
-
-        <Grid item xs={12} md={6} lg={4}>
-          <AnalyticsTrafficBySite title="Traffic by Site" list={_analyticTraffic} />
-        </Grid>
-
-        <Grid item xs={12} md={6} lg={8}>
-          <AnalyticsTasks
-            title="Tasks"
-            list={[
-              { id: '1', label: 'Create FireStone Logo' },
-              { id: '2', label: 'Add SCSS and JS files if required' },
-              { id: '3', label: 'Stakeholder Meeting' },
-              { id: '4', label: 'Scoping & Estimations' },
-              { id: '5', label: 'Sprint Showcase' },
-            ]}
-          />
+          {/* TODO: Skeleton */}
+          {/* <InsightsOrderTimeline title="Order Timeline" list={_analyticOrderTimeline} /> */}
         </Grid>
       </Grid>
     </Container>
