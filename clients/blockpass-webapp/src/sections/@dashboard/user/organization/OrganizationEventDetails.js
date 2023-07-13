@@ -16,6 +16,7 @@ import Iconify from '../../../../components/Iconify';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 // sections
 import {
+  OrganizationEventInsights,
   OrganizationEventGeneral,
   OrganizationEventImageUpload,
   OrganizationTicketTierDetail,
@@ -33,13 +34,13 @@ OrganizationEventDetails.propTypes = {
 export default function OrganizationEventDetails({ eventItem }) {
   const { themeStretch } = useSettings();
 
-  const { currentTab, onChangeTab } = useTabs('basic_info');
+  const { currentTab, onChangeTab } = useTabs('insights');
   const [selectedTicketTier, setSelectedTicketTier] = useState(null);
 
   const mixpanel = useMixpanel();
 
   useEffect(() => {
-    trackEvent(mixpanel, 'Navigate', { page: `Event Details ${eventItem._id}`, tab: 'basic_info' });
+    trackEvent(mixpanel, 'Navigate', { page: `Event Details ${eventItem._id}`, tab: 'insights' });
   }, []);
 
   const onTicketTierSelectedHandler = (ticketTier) => {
@@ -47,6 +48,11 @@ export default function OrganizationEventDetails({ eventItem }) {
   };
 
   const EVENT_TABS = [
+    {
+      value: 'insights',
+      icon: <Iconify icon={'ic:baseline-trending-up'} width={20} height={20} />,
+      component: <OrganizationEventInsights eventItem={eventItem} />,
+    },
     {
       value: 'basic_info',
       icon: <Iconify icon={'ic:baseline-info'} width={20} height={20} />,
@@ -70,10 +76,7 @@ export default function OrganizationEventDetails({ eventItem }) {
   };
 
   return selectedTicketTier ? (
-    <OrganizationTicketTierDetail
-      details={selectedTicketTier}
-      event={{ id: eventItem._id, name: eventItem.name }}
-    />
+    <OrganizationTicketTierDetail details={selectedTicketTier} event={{ id: eventItem._id, name: eventItem.name }} />
   ) : (
     <>
       <HeaderBreadcrumbs

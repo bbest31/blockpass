@@ -1,7 +1,7 @@
 // @mui
 import PropTypes from 'prop-types';
 import { alpha, styled } from '@mui/material/styles';
-import { Card, Typography } from '@mui/material';
+import { Card, Typography, Skeleton } from '@mui/material';
 // utils
 import { fShortenNumber } from '../../../../utils/formatNumber';
 // components
@@ -27,10 +27,11 @@ AnalyticsWidgetSummary.propTypes = {
   icon: PropTypes.string,
   title: PropTypes.string.isRequired,
   total: PropTypes.number.isRequired,
+  loading: PropTypes.bool.isRequired,
   sx: PropTypes.object,
 };
 
-export default function AnalyticsWidgetSummary({ title, total, icon, color = 'primary', sx, ...other }) {
+export default function AnalyticsWidgetSummary({ title, total, icon, color = 'primary', loading, sx, ...other }) {
   return (
     <Card
       sx={{
@@ -56,7 +57,20 @@ export default function AnalyticsWidgetSummary({ title, total, icon, color = 'pr
         <Iconify icon={icon} width={24} height={24} />
       </IconWrapperStyle>
 
-      <Typography variant="h3">{fShortenNumber(total)}</Typography>
+      {
+        <Typography variant="h3" align="center">
+          {loading ? (
+            <Skeleton
+              width={60}
+              animation="pulse"
+              variant="text"
+              sx={{ bgcolor: (theme) => theme.palette[color].light, margin: 'auto' }}
+            />
+          ) : (
+            fShortenNumber(total)
+          )}
+        </Typography>
+      }
 
       <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
         {title}
