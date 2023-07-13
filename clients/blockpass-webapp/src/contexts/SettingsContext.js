@@ -58,15 +58,6 @@ function SettingsProvider({ children }) {
     themeColorPresets: initialState.themeColorPresets,
   });
 
-  const isArabic = localStorage.getItem('i18nextLng') === 'ar';
-
-  useEffect(() => {
-    if (isArabic) {
-      onChangeDirectionByLang('ar');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isArabic]);
-
   // Mode
 
   const onToggleMode = () => {

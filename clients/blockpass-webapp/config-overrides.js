@@ -1,14 +1,17 @@
 const webpack = require('webpack');
 
 module.exports = function override(config) {
-  config.resolve.fallback = {
-    process: require.resolve('process/browser'),
-    zlib: require.resolve('browserify-zlib'),
-    stream: require.resolve('stream-browserify'),
-    util: require.resolve('util'),
-    buffer: require.resolve('buffer'),
-    asset: require.resolve('assert'),
-  };
+  config.module.rules.push({
+    test: /\.svg$/,
+    use: [
+      {
+        loader: 'file-loader',
+        options: {
+          esModule: false,
+        },
+      },
+    ],
+  });
 
   config.plugins.push(
     new webpack.ProvidePlugin({
