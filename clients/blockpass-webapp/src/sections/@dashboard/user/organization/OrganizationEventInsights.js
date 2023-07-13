@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography, Skeleton } from '@mui/material';
@@ -19,6 +20,8 @@ import {
   AnalyticsCurrentSubject,
   AnalyticsConversionRates,
 } from '../../general/analytics';
+// utils
+import axiosInstance from '../../../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +29,7 @@ export default function OrganizationEventInsights({ eventItem }) {
   const event = eventItem;
   const theme = useTheme();
   const { organization, getAccessToken } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { themeStretch } = useSettings();
 
@@ -33,34 +37,79 @@ export default function OrganizationEventInsights({ eventItem }) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    getEventInsights(event._id);
+    const controller = new AbortController();
+    getEventInsights(event, controller);
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  const getEventInsights = async () => {
+  const getEventInsights = async (event, controller) => {
     setIsLoading(true);
     const token = await getAccessToken();
 
     // for each ticket tier retrieve the analytics data
-    event.ticketTiers.forEach((ticket) => {
-      console.log(ticket);
+    const dataPromises = event.ticketTiers.map((ticketTier) =>
+      axiosInstance
+        .get(`/organizations/${organization.id}/events/${event._id}/ticket-tiers/${ticketTier._id}/stats`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          signal: controller.signal,
+        })
+        .then((res) => {
+          console.log(res.data);
+          return res.data;
+        })
+        .catch((err) => {
+          if (!controller.signal.aborted) {
+            enqueueSnackbar(`Unable to retrieve all event data.`, { variant: 'error' });
+          }
+          setIsLoading(false);
+        })
+    );
+
+    Promise.all(dataPromises).then((data) => {
+      setData(data);
+      setIsLoading(false);
     });
-    // axiosInstance
-    //   .get(`/organizations/${organization.id}/events/${event._id}/ticket-tiers`, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //     signal: controller.signal,
-    //   })
-    //   .then((res) => {
-    //     setTableData([...res.data.ticketTiers]);
-    //     setIsLoading(false);
-    //   })
-    //   .catch((err) => {
-    //     if (!controller.signal.aborted) {
-    //       enqueueSnackbar(`Unable to retrieve ticket tiers.`, { variant: 'error' });
-    //     }
-    //     setIsLoading(false);
-    //   });
+  };
+
+  /**
+   * Calculates the total tickets sold for an event across ticket tiers.
+   * @returns {number}
+   */
+  const getTotalTicketsSold = () => {
+    let ticketsSold = 0;
+
+    data.forEach((tier) => {
+      ticketsSold += tier.ticketsSold;
+    });
+    return ticketsSold;
+  };
+
+  /**
+   * Calculates the total revenue for an event across ticket tiers.
+   * @returns {number}
+   */
+  const getTotalRevenue = () => {
+    let revenue = 0;
+    data.forEach((tier) => {
+      revenue += tier.revenue;
+    });
+    return revenue;
+  };
+
+  /**
+   * Calculates the total secondary sale volume for an event across ticket tiers.
+   * @returns {number}
+   */
+  const getTotalSecondaryVol = () => {
+    let vol = 0;
+    data.forEach((tier) => {
+      vol += tier.secondaryVolume;
+    });
+    return vol;
   };
 
   return (
@@ -73,7 +122,7 @@ export default function OrganizationEventInsights({ eventItem }) {
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title="Tickets Sold"
-            total={isLoading ? 0 : 714000}
+            total={isLoading ? 0 : getTotalTicketsSold()}
             icon={'ic:round-receipt'}
             loading={isLoading}
           />
@@ -82,8 +131,9 @@ export default function OrganizationEventInsights({ eventItem }) {
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title="Total Revenue"
-            total={1352831}
+            total={isLoading ? 0 : getTotalRevenue()}
             color="success"
+            prefix={'$'}
             icon={'fa6-solid:coins'}
             loading={isLoading}
           />
@@ -92,8 +142,9 @@ export default function OrganizationEventInsights({ eventItem }) {
         <Grid item xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title="Secondary Sale Volume"
-            total={1723315}
+            total={isLoading ? 0 : getTotalSecondaryVol()}
             color="warning"
+            prefix={'$'}
             icon={'ph:hand-coins-fill'}
             loading={isLoading}
           />

@@ -27,11 +27,23 @@ AnalyticsWidgetSummary.propTypes = {
   icon: PropTypes.string,
   title: PropTypes.string.isRequired,
   total: PropTypes.number.isRequired,
+  prefix: PropTypes.string,
+  suffix: PropTypes.string,
   loading: PropTypes.bool.isRequired,
   sx: PropTypes.object,
 };
 
-export default function AnalyticsWidgetSummary({ title, total, icon, color = 'primary', loading, sx, ...other }) {
+export default function AnalyticsWidgetSummary({
+  title,
+  total,
+  icon,
+  color = 'primary',
+  loading,
+  prefix,
+  suffix,
+  sx,
+  ...other
+}) {
   return (
     <Card
       sx={{
@@ -67,7 +79,7 @@ export default function AnalyticsWidgetSummary({ title, total, icon, color = 'pr
               sx={{ bgcolor: (theme) => theme.palette[color].light, margin: 'auto' }}
             />
           ) : (
-            fShortenNumber(total)
+            `${prefix || ''}${fShortenNumber(total)}${suffix || ''}`
           )}
         </Typography>
       }
