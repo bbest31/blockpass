@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 // @mui
 import { styled } from '@mui/material/styles';
 import { List, Box, ListSubheader } from '@mui/material';
-// hooks
-import useLocales from '../../../hooks/useLocales';
 //
 import { NavListRoot } from './NavList';
 
@@ -30,7 +28,6 @@ NavSectionVertical.propTypes = {
 };
 
 export default function NavSectionVertical({ navConfig, isCollapse = false, ...other }) {
-  const { translate } = useLocales();
 
   return (
     <Box {...other}>
@@ -43,7 +40,7 @@ export default function NavSectionVertical({ navConfig, isCollapse = false, ...o
               }),
             }}
           >
-            {translate(group.subheader)}
+            {group.subheader}
           </ListSubheaderStyle>
 
           {group.items.map((list) => (

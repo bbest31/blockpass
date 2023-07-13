@@ -3,8 +3,6 @@ import { forwardRef } from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 // @mui
 import { Box, Link, ListItemText, Typography, Tooltip } from '@mui/material';
-// hooks
-import useLocales from '../../../hooks/useLocales';
 // guards
 import RoleBasedGuard from '../../../guards/RoleBasedGuard';
 //
@@ -46,8 +44,6 @@ NavItemRoot.propTypes = {
 };
 
 export function NavItemRoot({ item, isCollapse, open = false, active, onOpen }) {
-  const { translate } = useLocales();
-
   const { title, path, icon, info, children, disabled, caption, roles } = item;
 
   const renderContent = (
@@ -55,16 +51,16 @@ export function NavItemRoot({ item, isCollapse, open = false, active, onOpen }) 
       {icon && <ListItemIconStyle>{icon}</ListItemIconStyle>}
       <ListItemTextStyle
         disableTypography
-        primary={translate(title)}
+        primary={title}
         secondary={
-          <Tooltip title={translate(caption) || ''} arrow>
+          <Tooltip title={caption || ''} arrow>
             <Typography
               noWrap
               variant="caption"
               component="div"
               sx={{ textTransform: 'initial', color: 'text.secondary' }}
             >
-              {translate(caption)}
+              {caption}
             </Typography>
           </Tooltip>
         }
@@ -116,8 +112,6 @@ NavItemSub.propTypes = {
 };
 
 export function NavItemSub({ item, open = false, active = false, onOpen }) {
-  const { translate } = useLocales();
-
   const { title, path, info, children, disabled, caption, roles } = item;
 
   const renderContent = (
@@ -125,16 +119,16 @@ export function NavItemSub({ item, open = false, active = false, onOpen }) {
       <DotIcon active={active} />
       <ListItemText
         disableTypography
-        primary={translate(title)}
+        primary={title}
         secondary={
-          <Tooltip title={translate(caption) || ''} arrow>
+          <Tooltip title={caption || ''} arrow>
             <Typography
               noWrap
               variant="caption"
               component="div"
               sx={{ textTransform: 'initial', color: 'text.secondary' }}
             >
-              {translate(caption)}
+              {caption}
             </Typography>
           </Tooltip>
         }

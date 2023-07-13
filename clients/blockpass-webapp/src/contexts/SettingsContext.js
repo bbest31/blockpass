@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, createContext } from 'react';
+import { createContext } from 'react';
 // hooks
 import useLocalStorage from '../hooks/useLocalStorage';
 // utils
@@ -57,15 +57,6 @@ function SettingsProvider({ children }) {
     themeDirection: initialState.themeDirection,
     themeColorPresets: initialState.themeColorPresets,
   });
-
-  const isArabic = localStorage.getItem('i18nextLng') === 'ar';
-
-  useEffect(() => {
-    if (isArabic) {
-      onChangeDirectionByLang('ar');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isArabic]);
 
   // Mode
 

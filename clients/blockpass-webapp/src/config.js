@@ -15,29 +15,12 @@ export const MATIC_NETWORK = {
   network: process.env.NODE_ENV === 'production' ? NETWORKS.POLYGON_MAINNET : NETWORKS.POLYGON_TESTNET,
   chainId: process.env.NODE_ENV === 'production' ? 0x38 : 0x13881,
 };
-export const FIREBASE_API = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APPID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
-};
-
-export const COGNITO_API = {
-  userPoolId: process.env.REACT_APP_AWS_COGNITO_USER_POOL_ID,
-  clientId: process.env.REACT_APP_AWS_COGNITO_CLIENT_ID,
-};
 
 export const AUTH0_API = {
   clientId: process.env.REACT_APP_AUTH0_CLIENT_ID,
   domain: process.env.REACT_APP_AUTH0_DOMAIN,
   audience: process.env.REACT_APP_AUTH0_AUDIENCE,
 };
-
-export const MAPBOX_API = process.env.REACT_APP_MAPBOX_API;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = PATH_APP.general.dashboard; // as '/dashboard'

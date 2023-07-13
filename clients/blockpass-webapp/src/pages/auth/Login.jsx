@@ -1,11 +1,7 @@
 import { capitalCase } from 'change-case';
-import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Card, Stack, Link, Alert, Tooltip, Container, Typography } from '@mui/material';
-import AuthSocial from '../../sections/auth/AuthSocial';
-// routes
-import { PATH_AUTH } from '../../routes/paths';
+import { Box, Card, Stack, Tooltip, Container, Typography } from '@mui/material';
 // hooks
 import useAuth from '../../hooks/useAuth';
 import useResponsive from '../../hooks/useResponsive';
@@ -67,7 +63,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Login() {
   const { method } = useAuth();
 
-  const smUp = useResponsive('up', 'sm');
+  // const smUp = useResponsive('up', 'sm');
 
   const mdUp = useResponsive('up', 'md');
 

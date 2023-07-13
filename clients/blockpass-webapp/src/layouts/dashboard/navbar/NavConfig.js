@@ -1,5 +1,5 @@
 // routes
-import { PATH_APP, PATH_DASHBOARD, PATH_PAGE } from '../../../routes/paths';
+import { PATH_APP, PATH_PAGE } from '../../../routes/paths';
 // components
 // import Label from '../../../components/Label';
 // import Iconify from '../../../components/Iconify';
