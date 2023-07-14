@@ -4,19 +4,19 @@ import ReactApexChart from 'react-apexcharts';
 // @mui
 import { Box, Card, CardHeader } from '@mui/material';
 // utils
-import { fCurrency, fNumber, fPercent } from '../../../../utils/formatNumber';
+import { fCurrency, fPercent } from '../../../../utils/formatNumber';
 // components
 import { BaseOptionChart } from '../../../../components/chart';
 
 // ----------------------------------------------------------------------
 
-InsightsConversionRates.propTypes = {
+InsightsRevenueOverview.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
   chartData: PropTypes.array.isRequired,
 };
 
-export default function InsightsConversionRates({ title, subheader, chartData, ...other }) {
+export default function InsightsRevenueOverview({ title, subheader, chartData, ...other }) {
   const chartLabels = chartData.map((i) => i.label);
 
   const chartSeries = chartData.map((i) => i.value);

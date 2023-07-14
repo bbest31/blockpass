@@ -1,28 +1,29 @@
 import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 // @mui
-import { useTheme } from '@mui/material/styles';
+import PropTypes from 'prop-types';
 import { Grid, Container, Typography, Skeleton, Card, CardContent } from '@mui/material';
 // hooks
 import useSettings from '../../../../hooks/useSettings';
 import useAuth from '../../../../hooks/useAuth';
-// _mock_
-import { _analyticPost, _analyticOrderTimeline, _analyticTraffic } from '../../../../_mock';
 // sections
 import {
-  InsightsWebsiteVisits,
+  InsightsEventTimeline,
   InsightsWidgetSummary,
-  InsightsConversionRates,
-  InsightsPieChart,
+  InsightsRevenueOverview,
+  InsightsSalesBreakdown,
 } from '../../general/analytics';
 // utils
 import axiosInstance from '../../../../utils/axios';
 
 // ----------------------------------------------------------------------
 
+OrganizationEventInsights.propTypes = {
+  eventItem: PropTypes.object.isRequired,
+};
+
 export default function OrganizationEventInsights({ eventItem }) {
   const event = eventItem;
-  const theme = useTheme();
   const { organization, getAccessToken } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -30,6 +31,7 @@ export default function OrganizationEventInsights({ eventItem }) {
 
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [volumeData, setVolumeData] = useState({});
 
   useEffect(() => {
     const controller = new AbortController();
@@ -37,7 +39,83 @@ export default function OrganizationEventInsights({ eventItem }) {
     return () => {
       controller.abort();
     };
-  }, []);
+    // eslint-disable-next-line
+  }, [event]);
+
+  useEffect(() => {
+    const tierEvents = data.map((tier) => {
+      const primaryVolData = [];
+      const secondaryVolData = [];
+
+      // gather all needed event data from the blockchain events for this ticket tier
+      const chainEvents = tier.processedEvents.map(
+        (evt) =>
+          new Promise((resolve) => {
+            const { price, isPrimary } = evt.returnValues;
+            const y = Number(price);
+            const ts = new Date(evt.blockTimestamp);
+            const data = { x: ts.toLocaleDateString(), y };
+
+            // add the data point to either the primary or secondary volume array
+            if (isPrimary) {
+              primaryVolData.push(data);
+            } else {
+              secondaryVolData.push(data);
+            }
+            resolve();
+          })
+      );
+      // return all primary volume and secondary volume data points for a ticket-tier
+      return Promise.all(chainEvents).then(() => ({ primary: primaryVolData, secondary: secondaryVolData }));
+    });
+
+    Promise.all(tierEvents).then((volData) => {
+      // merge the data arrays together from each ticket-tier
+      const mergedVolData = volData.reduce(
+        (acc, datapoints) => {
+          acc.primary = acc.primary.concat(datapoints.primary);
+          acc.secondary = acc.secondary.concat(datapoints.secondary);
+          return acc;
+        },
+        { primary: [], secondary: [] }
+      );
+
+      // Create a new array with the total volume by day
+      const totalVolumeData = [mergedVolData].reduce((acc, event) => {
+        const { primary, secondary } = event;
+
+        // Process primary events
+        primary.forEach((pEvent) => {
+          const { x, y } = pEvent;
+          if (acc[x]) {
+            acc[x].y += y;
+          } else {
+            acc[x] = { x, y };
+          }
+        });
+
+        // Process secondary events
+        secondary.forEach((sEvent) => {
+          const { x, y } = sEvent;
+          if (acc[x]) {
+            acc[x].y += y;
+          } else {
+            acc[x] = { x, y };
+          }
+        });
+
+        return acc;
+      }, {});
+
+      // Convert the summedEventData object into an array
+      const volume = {
+        primary: mergedVolData.primary,
+        secondary: mergedVolData.secondary,
+        total: Object.values(totalVolumeData),
+      };
+      setVolumeData(volume);
+    });
+  }, [data]);
 
   const getEventInsights = async (event, controller) => {
     setIsLoading(true);
@@ -52,10 +130,9 @@ export default function OrganizationEventInsights({ eventItem }) {
           },
           signal: controller.signal,
         })
-        .then((res) => {
-          return { ...res.data, name: ticketTier.displayName };
-        })
+        .then((res) => ({ ...res.data, name: ticketTier.displayName }))
         .catch((err) => {
+          console.error(err);
           if (!controller.signal.aborted) {
             enqueueSnackbar(`Unable to retrieve all event data.`, { variant: 'error' });
           }
@@ -106,6 +183,31 @@ export default function OrganizationEventInsights({ eventItem }) {
     return vol;
   };
 
+  /**
+   * Constructs the timeline data needed for events insights timeline
+   * @returns {Array<Object>}
+   */
+  const eventTimelineData = () => [
+    {
+      name: 'Primary Sale Volume',
+      type: 'area',
+      fill: 'gradient',
+      data: volumeData?.primary || [],
+    },
+    {
+      name: 'Secondary Sale Volume',
+      type: 'area',
+      fill: 'gradient',
+      data: volumeData?.secondary || [],
+    },
+    {
+      name: 'Total Volume',
+      type: 'line',
+      fill: 'solid',
+      data: volumeData?.total || [],
+    },
+  ];
+
   return (
     <Container maxWidth={themeStretch ? false : 'xl'}>
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -145,43 +247,19 @@ export default function OrganizationEventInsights({ eventItem }) {
         </Grid>
 
         <Grid item xs={12} md={6} lg={8}>
-          <InsightsWebsiteVisits
-            title="Website Visits"
-            subheader="(+43%) than last year"
-            chartLabels={[
-              '01/01/2003',
-              '02/01/2003',
-              '03/01/2003',
-              '04/01/2003',
-              '05/01/2003',
-              '06/01/2003',
-              '07/01/2003',
-              '08/01/2003',
-              '09/01/2003',
-              '10/01/2003',
-              '11/01/2003',
-            ]}
-            chartData={[
-              {
-                name: 'Team A',
-                type: 'column',
-                fill: 'solid',
-                data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-              },
-              {
-                name: 'Team B',
-                type: 'area',
-                fill: 'gradient',
-                data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-              },
-              {
-                name: 'Team C',
-                type: 'line',
-                fill: 'solid',
-                data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-              },
-            ]}
-          />
+          {isLoading ? (
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Event Timeline</Typography>
+                <Skeleton variant="rectangle" animation="pulse" height={400} />
+                <Typography variant="body1">
+                  <Skeleton variant="text" animation="pulse" />
+                </Typography>
+              </CardContent>
+            </Card>
+          ) : (
+            <InsightsEventTimeline title="Event Timeline" chartData={eventTimelineData()} />
+          )}
         </Grid>
 
         <Grid item xs={12} md={6} lg={4}>
@@ -196,11 +274,9 @@ export default function OrganizationEventInsights({ eventItem }) {
               </CardContent>
             </Card>
           ) : (
-            <InsightsPieChart
+            <InsightsSalesBreakdown
               title="Ticket Tier Sales Breakdown"
-              chartData={data.map((tier) => {
-                return { label: tier.name, value: tier.ticketsSold };
-              })}
+              chartData={data.map((tier) => ({ label: tier.name, value: tier.ticketsSold }))}
             />
           )}
         </Grid>
@@ -220,18 +296,11 @@ export default function OrganizationEventInsights({ eventItem }) {
               </CardContent>
             </Card>
           ) : (
-            <InsightsConversionRates
+            <InsightsRevenueOverview
               title="Ticket Tier Revenue Overview"
-              chartData={data.map((tier) => {
-                return { label: tier.name, value: tier.revenue };
-              })}
+              chartData={data.map((tier) => ({ label: tier.name, value: tier.revenue }))}
             />
           )}
-        </Grid>
-
-        <Grid item xs={12} md={6} lg={4}>
-          {/* TODO: Skeleton */}
-          {/* <InsightsOrderTimeline title="Order Timeline" list={_analyticOrderTimeline} /> */}
         </Grid>
       </Grid>
     </Container>
