@@ -61,7 +61,6 @@ export default function Router() {
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'dashboard', element: <GeneralApp /> },
         { path: 'events', element: <Events /> },
-        { path: 'analytics', element: <GeneralAnalytics /> },
         { path: 'account', element: <UserAccount /> },
       ],
     },
@@ -98,13 +97,9 @@ export default function Router() {
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
-const ResetPassword = Loadable(lazy(() => import('../pages/auth/ResetPassword')));
-const NewPassword = Loadable(lazy(() => import('../pages/auth/NewPassword')));
-const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
 
 // GENERAL
 const GeneralApp = Loadable(lazy(() => import('../pages/dashboard/GeneralApp')));
-const GeneralAnalytics = Loadable(lazy(() => import('../pages/dashboard/GeneralAnalytics')));
 
 // USER
 const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')));

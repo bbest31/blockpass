@@ -9,24 +9,17 @@ import {
   Table,
   Tooltip,
   TableBody,
-  Container,
   IconButton,
   TableContainer,
   TablePagination,
-  FormControlLabel,
   Typography,
 } from '@mui/material';
-// redux
-import { useDispatch, useSelector } from '../../../../redux/store';
-import { getProducts } from '../../../../redux/slices/product';
 // routes
 import { PATH_DASHBOARD } from '../../../../routes/paths';
 // hooks
 import useSettings from '../../../../hooks/useSettings';
 import useAuth from '../../../../hooks/useAuth';
 import useTable, { getComparator, emptyRows } from '../../../../hooks/useTable';
-// components
-import Page from '../../../../components/Page';
 import Iconify from '../../../../components/Iconify';
 import Scrollbar from '../../../../components/Scrollbar';
 import {
@@ -40,7 +33,6 @@ import {
 import { OrganizationEventTableRow } from '.';
 // utils
 import axiosInstance from '../../../../utils/axios';
-import { trackEvent } from '../../../../utils/mixpanelUtils';
 
 // ----------------------------------------------------------------------
 
@@ -50,12 +42,6 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Status', align: 'center', width: 180 },
   { id: 'price', label: 'Price', align: 'right' },
   { id: 'options', label: '', align: 'right' },
-];
-
-const TICKET_TIERS = [
-  { tier: 'Early Bird Special', owners: 25, status: 'active', price: '$23.42' },
-  { tier: 'General Admission', owners: 48, status: 'closed', price: '$23.42' },
-  { tier: 'VIP Access', owners: 15, status: 'paused', price: '$23.42' },
 ];
 // ----------------------------------------------------------------------
 

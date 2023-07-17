@@ -15,13 +15,11 @@ export default function App() {
   return (
     <MotionLazyContainer>
       <ThemeProvider>
-        <ThemeSettings>
-          <NotistackProvider>
-            <ProgressBarStyle />
-            <ChartStyle />
-            <Router />
-          </NotistackProvider>
-        </ThemeSettings>
+        <NotistackProvider>
+          <ProgressBarStyle />
+          <ChartStyle />
+          <Router />
+        </NotistackProvider>
       </ThemeProvider>
     </MotionLazyContainer>
   );

@@ -5,21 +5,21 @@ import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, Box } from '@mui/material';
 // components
 import { BaseOptionChart } from '../../../../components/chart';
+// utils
+import { fCurrency } from '../../../../utils/formatNumber';
 
 // ----------------------------------------------------------------------
 
-AnalyticsWebsiteVisits.propTypes = {
+InsightsEventTimeline.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
   chartData: PropTypes.array.isRequired,
-  chartLabels: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default function AnalyticsWebsiteVisits({ title, subheader, chartLabels, chartData, ...other }) {
+export default function InsightsEventTimeline({ title, subheader, chartLabels, chartData, ...other }) {
   const chartOptions = merge(BaseOptionChart(), {
     plotOptions: { bar: { columnWidth: '16%' } },
     fill: { type: chartData.map((i) => i.fill) },
-    labels: chartLabels,
     xaxis: { type: 'datetime' },
     tooltip: {
       shared: true,
@@ -27,7 +27,7 @@ export default function AnalyticsWebsiteVisits({ title, subheader, chartLabels, 
       y: {
         formatter: (y) => {
           if (typeof y !== 'undefined') {
-            return `${y.toFixed(0)} visits`;
+            return `${fCurrency(y.toFixed(2))}`;
           }
           return y;
         },

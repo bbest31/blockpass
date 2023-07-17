@@ -4,28 +4,31 @@ import ReactApexChart from 'react-apexcharts';
 // @mui
 import { Box, Card, CardHeader } from '@mui/material';
 // utils
-import { fNumber } from '../../../../utils/formatNumber';
+import { fCurrency, fPercent } from '../../../../utils/formatNumber';
 // components
 import { BaseOptionChart } from '../../../../components/chart';
 
 // ----------------------------------------------------------------------
 
-AnalyticsConversionRates.propTypes = {
+InsightsRevenueOverview.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
   chartData: PropTypes.array.isRequired,
 };
 
-export default function AnalyticsConversionRates({ title, subheader, chartData, ...other }) {
+export default function InsightsRevenueOverview({ title, subheader, chartData, ...other }) {
   const chartLabels = chartData.map((i) => i.label);
 
   const chartSeries = chartData.map((i) => i.value);
+  const seriesTotal = chartData.reduce((sum, b) => {
+    return sum + b.value;
+  }, 0);
 
   const chartOptions = merge(BaseOptionChart(), {
     tooltip: {
-      marker: { show: false },
+      marker: { show: true },
       y: {
-        formatter: (seriesName) => fNumber(seriesName),
+        formatter: (seriesName) => fCurrency(seriesName),
         title: {
           formatter: () => '',
         },
@@ -36,6 +39,10 @@ export default function AnalyticsConversionRates({ title, subheader, chartData, 
     },
     xaxis: {
       categories: chartLabels,
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: (val) => `${fCurrency(val)} (${fPercent((val / seriesTotal) * 100)})`,
     },
   });
 

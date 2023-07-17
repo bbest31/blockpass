@@ -32,14 +32,14 @@ const ChartWrapperStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-AnalyticsCurrentVisits.propTypes = {
+InsightsSalesBreakdown.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
   chartColors: PropTypes.arrayOf(PropTypes.string),
   chartData: PropTypes.array,
 };
 
-export default function AnalyticsCurrentVisits({ title, subheader, chartColors, chartData, ...other }) {
+export default function InsightsSalesBreakdown({ title, subheader, chartColors, chartData, ...other }) {
   const theme = useTheme();
 
   const chartLabels = chartData.map((i) => i.label);
