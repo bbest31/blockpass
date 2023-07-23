@@ -43,7 +43,7 @@ const navConfig = [
   {
     subheader: 'support',
     items: [
-      { title: 'faq', path: PATH_PAGE.faqs, icon: ICONS.invoice },
+      { title: 'token gating', path: PATH_APP.support.tokenGating, icon: ICONS.invoice },
       { title: 'contact us', path: PATH_PAGE.contact, icon: ICONS.chat },
       // EXPANDABLE EXAMPLE
       // {

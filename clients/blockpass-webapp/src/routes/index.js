@@ -62,6 +62,7 @@ export default function Router() {
         { path: 'dashboard', element: <GeneralApp /> },
         { path: 'events', element: <Events /> },
         { path: 'account', element: <UserAccount /> },
+        { path: 'token-gating', element: <div>Token Gating</div> },
       ],
     },
 
