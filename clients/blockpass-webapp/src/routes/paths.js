@@ -34,8 +34,11 @@ export const PATH_PAGE = {
   components: '/components',
 };
 
-// Event Organizer App Routes
+// App Routes
 export const PATH_APP = {
+  marketplace: {
+    events: '/events',
+  },
   general: {
     dashboard: '/dashboard',
     events: '/events',
