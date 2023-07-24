@@ -62,6 +62,7 @@ export default function Router() {
         { path: 'dashboard', element: <GeneralApp /> },
         { path: 'events', element: <Events /> },
         { path: 'account', element: <UserAccount /> },
+        { path: 'token-gating', element: <TokenGating /> },
       ],
     },
 
@@ -106,6 +107,9 @@ const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')
 
 // EVENTS
 const Events = Loadable(lazy(() => import('../pages/dashboard/OrganizationEvents')));
+
+// SUPPORT
+const TokenGating = Loadable(lazy(() => import('../pages/dashboard/TokenGating')));
 
 // MAIN
 const Page500 = Loadable(lazy(() => import('../pages/Page500')));

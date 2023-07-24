@@ -40,15 +40,17 @@ export const PATH_APP = {
     dashboard: '/dashboard',
     events: '/events',
     analytics: '/analytics',
-    account: '/account'
-  }
-}
+    account: '/account',
+  },
+  support: {
+    tokenGating: '/token-gating',
+  },
+};
 
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
   general: {
     app: path(ROOTS_DASHBOARD, '/app'),
-
   },
   mail: {
     root: path(ROOTS_DASHBOARD, '/mail'),
