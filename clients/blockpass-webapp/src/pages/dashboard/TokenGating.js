@@ -1,4 +1,3 @@
-import { capitalCase } from 'change-case';
 import { useMixpanel } from 'react-mixpanel-browser';
 import { useEffect } from 'react';
 // @mui
@@ -7,8 +6,6 @@ import { Container, Box, Card, Typography } from '@mui/material';
 import { PATH_APP } from '../../routes/paths';
 // hooks
 import useSettings from '../../hooks/useSettings';
-// _mock_
-import { _userWallets } from '../../_mock';
 // components
 import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
