@@ -15,7 +15,7 @@ export default function MainLayout() {
   const isHome = pathname === '/';
 
   return (
-    <Stack sx={{ minHeight: 1 }}>
+    <Stack spacing={16} sx={{ minHeight: 1 }}>
       <MainHeader />
 
       <Outlet />

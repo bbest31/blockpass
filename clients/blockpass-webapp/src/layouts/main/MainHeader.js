@@ -77,6 +77,8 @@ export default function MainHeader() {
         >
           <Logo />
 
+          {/* TODO: Add search bar */}
+
           <Box sx={{ flexGrow: 1 }} />
 
           {isDesktop && <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
@@ -94,7 +96,7 @@ export default function MainHeader() {
         </Container>
       </ToolbarStyle>
 
-      {isOffset && <ToolbarShadowStyle />}
+      <ToolbarShadowStyle />
     </AppBar>
   );
 }

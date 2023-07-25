@@ -1,42 +1,64 @@
-import { m } from 'framer-motion';
-import { Link as RouterLink } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 // @mui
-import { Button, Typography, Container } from '@mui/material';
+import { Typography, Grid } from '@mui/material';
+// hook
+import useSettings from '../hooks/useSettings';
 // components
 import Page from '../components/Page';
-import { MotionContainer, varBounce } from '../components/animate';
-
-// ----------------------------------------------------------------------
-
-const ContentStyle = styled('div')(({ theme }) => ({
-  maxWidth: 480,
-  margin: 'auto',
-  minHeight: '100vh',
-  display: 'flex',
-  justifyContent: 'center',
-  flexDirection: 'column',
-  padding: theme.spacing(12, 0),
-}));
+// utils
+import axiosInstance from '../utils/axios';
+// config
+import { SERVER_API_KEY } from '../config';
 
 // ----------------------------------------------------------------------
 
 export default function Home() {
+  const { enqueueSnackbar } = useSnackbar();
+  const { themeStretch } = useSettings();
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getEvents(controller);
+    return () => {
+      controller.abort();
+    };
+  });
+
+  const getEvents = (controller) => {
+    axiosInstance
+      .get('/events', {
+        headers: {
+          'blockpass-api-key': SERVER_API_KEY,
+        },
+      })
+      .then((res) => {
+        setEvents(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!controller.signal.aborted) {
+          enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
+        }
+        setIsLoading(false);
+      });
+  };
+
   return (
     <Page title="BlockPass">
-      <Container component={MotionContainer}>
-        <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
-          <m.div variants={varBounce().in}>
-            <Typography variant="h3" paragraph>
-              Home
-            </Typography>
-          </m.div>
-
-          <m.div variants={varBounce().in}>
-            <Typography sx={{ color: 'text.secondary' }}>This is the home page.</Typography>
-          </m.div>
-        </ContentStyle>
-      </Container>
+      <Grid container spacing={4} maxWidth={themeStretch ? false : 'xl'} sx={{ marginX: 12 }}>
+        <Grid item xs={12}>
+          <Typography variant="h3" component="h1">
+            Browse Events
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          {/* TODO: Events section */}
+          {events.toString()}
+        </Grid>
+      </Grid>
     </Page>
   );
 }
