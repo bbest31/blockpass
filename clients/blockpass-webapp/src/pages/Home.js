@@ -38,13 +38,14 @@ export default function Home() {
       })
       .then((res) => {
         setEvents(res.data);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error(err);
         if (!controller.signal.aborted) {
           enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
         }
-        // setIsLoading(false);
+        setIsLoading(false);
       });
   };
 
