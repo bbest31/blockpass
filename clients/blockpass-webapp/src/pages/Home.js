@@ -6,6 +6,8 @@ import { Typography, Grid } from '@mui/material';
 import useSettings from '../hooks/useSettings';
 // components
 import Page from '../components/Page';
+// sections
+import GallerySkeleton from '../components/GallerySkeleton';
 // utils
 import axiosInstance from '../utils/axios';
 // config
@@ -42,7 +44,7 @@ export default function Home() {
         if (!controller.signal.aborted) {
           enqueueSnackbar(`Unable to retrieve events.`, { variant: 'error' });
         }
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
 
@@ -56,7 +58,7 @@ export default function Home() {
         </Grid>
         <Grid item xs={12}>
           {/* TODO: Events section */}
-          {events.toString()}
+          {isLoading ? <GallerySkeleton items={10} /> : events.toString()}
         </Grid>
       </Grid>
     </Page>
