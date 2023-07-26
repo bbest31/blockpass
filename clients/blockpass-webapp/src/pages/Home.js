@@ -8,6 +8,7 @@ import useSettings from '../hooks/useSettings';
 import Page from '../components/Page';
 // sections
 import GallerySkeleton from '../components/GallerySkeleton';
+import EventsGallery from '../sections/EventsGallery';
 // utils
 import axiosInstance from '../utils/axios';
 // config
@@ -58,8 +59,7 @@ export default function Home() {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          {/* TODO: Events section */}
-          {isLoading ? <GallerySkeleton items={10} /> : events.toString()}
+          {isLoading ? <GallerySkeleton items={10} /> : <EventsGallery gallery={events} onClickHandler={()=>{console.log('clicked event!')}}/>}
         </Grid>
       </Grid>
     </Page>
