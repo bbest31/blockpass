@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 // @mui
-import { Box } from '@mui/material';
+import { Box, Button, Grid } from '@mui/material';
 // sections
 import EventsGalleryItem from './EventsGalleryItem';
+// componetns
+import Iconify from '../components/Iconify';
 // ----------------------------------------------------------------------
 
 EventGallery.propTypes = {
@@ -11,8 +14,43 @@ EventGallery.propTypes = {
 };
 
 export default function EventGallery({ gallery, onClickHandler }) {
+  const [sortOrder, setSortOrder] = useState('asc');
+  const sortedEvents = gallery.slice().sort((a, b) => {
+    // Custom sorting logic based on sortOrder state
+    const dateA = new Date(a.startDate);
+    const dateB = new Date(b.startDate);
+
+    if (sortOrder === 'asc') {
+      return dateA - dateB;
+    }
+    return dateB - dateA;
+  });
+
+  const handleSortToggle = () => {
+    setSortOrder((prevSortOrder) => (prevSortOrder === 'asc' ? 'desc' : 'asc'));
+  };
+
   return (
     <Box sx={{ mt: 2 }}>
+      <Grid container sx={{ mt: 2 }}>
+        <Grid item xs={12} sx={{ marginY: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+          <Button
+            variant="text"
+            color="inherit"
+            sx={{ marginY: 1 }}
+            onClick={handleSortToggle}
+            endIcon={
+              <Iconify
+                icon={sortOrder === 'asc' ? 'ic:baseline-arrow-upward' : 'ic:baseline-arrow-downward'}
+                height={20}
+                width={20}
+              />
+            }
+          >
+            Sort By: Date
+          </Button>
+        </Grid>
+      </Grid>
       <Box
         sx={{
           display: 'grid',
@@ -25,7 +63,9 @@ export default function EventGallery({ gallery, onClickHandler }) {
         }}
       >
         {gallery.length !== 0
-          ? gallery.map((event) => <EventsGalleryItem key={event._id} event={event} onClickHandler={onClickHandler} />)
+          ? sortedEvents.map((event) => (
+              <EventsGalleryItem key={event._id} event={event} onClickHandler={onClickHandler} />
+            ))
           : `No events`}
       </Box>
     </Box>
