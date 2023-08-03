@@ -11,11 +11,10 @@ import cssStyles from '../../utils/cssStyles';
 import { HEADER } from '../../config';
 // components
 import Logo from '../../components/Logo';
-import Label from '../../components/Label';
 //
 import MenuDesktop from './MenuDesktop';
 import MenuMobile from './MenuMobile';
-import navConfig from './MenuConfig';
+import useMenuConfig from './MenuConfig';
 
 // ----------------------------------------------------------------------
 
@@ -56,6 +55,8 @@ export default function MainHeader() {
 
   const isHome = pathname === '/';
 
+  const navConfig = useMenuConfig(false); // TODO: check to see if attendee is authenticated.
+
   return (
     <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent' }}>
       <ToolbarStyle
@@ -76,9 +77,8 @@ export default function MainHeader() {
         >
           <Logo />
 
-          <Label color="info" sx={{ ml: 1 }}>
-            v3.4.0
-          </Label>
+          {/* TODO: Add search bar */}
+
           <Box sx={{ flexGrow: 1 }} />
 
           {isDesktop && <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
@@ -89,14 +89,14 @@ export default function MainHeader() {
             rel="noopener"
             href="https://material-ui.com/store/items/minimal-dashboard/"
           >
-            Purchase Now
+            Connect Wallet
           </Button>
 
           {!isDesktop && <MenuMobile isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
         </Container>
       </ToolbarStyle>
 
-      {isOffset && <ToolbarShadowStyle />}
+      <ToolbarShadowStyle />
     </AppBar>
   );
 }

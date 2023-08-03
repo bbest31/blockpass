@@ -15,7 +15,7 @@ export default function MainLayout() {
   const isHome = pathname === '/';
 
   return (
-    <Stack sx={{ minHeight: 1 }}>
+    <Stack spacing={16} sx={{ minHeight: 1 }}>
       <MainHeader />
 
       <Outlet />
@@ -38,8 +38,6 @@ export default function MainLayout() {
 
             <Typography variant="caption" component="p">
               © All rights reserved
-              <br /> made by &nbsp;
-              <Link href="https://minimals.cc/">minimals.cc</Link>
             </Typography>
           </Container>
         </Box>

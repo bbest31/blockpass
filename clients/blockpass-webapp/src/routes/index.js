@@ -49,9 +49,16 @@ export default function Router() {
       ],
     },
 
-    // App Routes
+    // Marketplace Routes
     {
-      path: '',
+      path: '/',
+      element: <MainLayout />,
+      children: [{ element: <Home />, index: true }],
+    },
+
+    // Event Organizer Dashboard Routes
+    {
+      path: 'dashboard',
       element: (
         <AuthGuard>
           <DashboardLayout />
@@ -66,16 +73,6 @@ export default function Router() {
       ],
     },
 
-    // Dashboard Routes
-    {
-      path: 'dashboard',
-      element: (
-        <AuthGuard>
-          <DashboardLayout />
-        </AuthGuard>
-      ),
-    },
-
     // Main Routes
     {
       path: '*',
@@ -87,13 +84,12 @@ export default function Router() {
         { path: '*', element: <Navigate to="/404" replace /> },
       ],
     },
-    {
-      path: '/',
-      element: <MainLayout />,
-    },
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);
 }
+
+// MARKETPLACE
+const Home = Loadable(lazy(() => import('../pages/Home')));
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));

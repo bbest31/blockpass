@@ -45,7 +45,7 @@ export default function TokenGating() {
 
   useEffect(() => {
     trackEvent(mixpanel, 'Navigate', { page: 'TokenGating' });
-  }, []);
+  });
 
   return (
     <Page title="Token Gating Guide">

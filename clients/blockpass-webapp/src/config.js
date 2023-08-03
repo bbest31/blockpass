@@ -22,6 +22,8 @@ export const AUTH0_API = {
   audience: process.env.REACT_APP_AUTH0_AUDIENCE,
 };
 
+export const SERVER_API_KEY = process.env.REACT_APP_SERVER_API_KEY;
+
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = PATH_APP.general.dashboard; // as '/dashboard'
 
