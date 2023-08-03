@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 // @mui
 import { Box, Button, Grid } from '@mui/material';
 // sections
@@ -10,10 +11,9 @@ import Iconify from '../components/Iconify';
 
 EventGallery.propTypes = {
   gallery: PropTypes.array.isRequired,
-  onClickHandler: PropTypes.func,
 };
 
-export default function EventGallery({ gallery, onClickHandler }) {
+export default function EventGallery({ gallery }) {
   const [sortOrder, setSortOrder] = useState('asc');
   const sortedEvents = gallery.slice().sort((a, b) => {
     // Custom sorting logic based on sortOrder state
@@ -64,7 +64,9 @@ export default function EventGallery({ gallery, onClickHandler }) {
       >
         {gallery.length !== 0
           ? sortedEvents.map((event) => (
-              <EventsGalleryItem key={event._id} event={event} onClickHandler={onClickHandler} />
+              <Link to={`/event/${event._id}`}>
+                <EventsGalleryItem key={event._id} event={event} />
+              </Link>
             ))
           : `No events`}
       </Box>
