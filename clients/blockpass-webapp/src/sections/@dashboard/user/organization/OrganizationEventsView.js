@@ -5,7 +5,7 @@ import { useMixpanel } from 'react-mixpanel-browser';
 import PropTypes from 'prop-types';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Tab, Box, Card, Typography, Tabs } from '@mui/material';
+import { Tab, Box, Card, Typography, Tabs, Stack, Button } from '@mui/material';
 // routes
 import { PATH_APP } from '../../../../routes/paths';
 // hooks
@@ -47,11 +47,12 @@ const FILTER_OPTIONS = {
 
 OrganizationEventsView.propTypes = {
   onClickHandler: PropTypes.func,
+  createEventHandler: PropTypes.func
 };
 
 // ----------------------------------------------------------------------
 
-export default function OrganizationEventsView({ onClickHandler }) {
+export default function OrganizationEventsView({ onClickHandler, createEventHandler }) {
   const mixpanel = useMixpanel();
 
   useEffect(() => {
@@ -225,9 +226,15 @@ export default function OrganizationEventsView({ onClickHandler }) {
         </TabsWrapperStyle>
       </Card>
       <Box sx={{ mt: 5 }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>
-          {`${capitalCase(currentTab)} events`}
-        </Typography>
+        <Stack direction="row" spacing={2} flexWrap="wrap" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+          <Typography variant="h4">
+            {`${capitalCase(currentTab)} events`}
+          </Typography>
+
+          <Button size="large" color="primary" variant="contained" onClick={createEventHandler}>
+            Create Event +
+          </Button>
+        </Stack>
 
         <OrganizationEventToolbar
           filterName={findEvent}

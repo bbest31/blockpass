@@ -11,6 +11,11 @@ export const HOST_API = process.env.REACT_APP_HOST_API_KEY || '';
 
 export const SERVER_API = process.env.REACT_APP_API_SERVER || '';
 
+export const MARKETPLACE_CONTRACT = {
+  address: process.env.REACT_APP_MARKETPLACE_CONTRACT_ADDRESS,
+  feeNumerator: process.env.REACT_APP_MARKETPLACE_FEE_NUMERATOR,
+};
+
 export const MATIC_NETWORK = {
   network: process.env.NODE_ENV === 'production' ? NETWORKS.POLYGON_MAINNET : NETWORKS.POLYGON_TESTNET,
   chainId: process.env.NODE_ENV === 'production' ? 0x38 : 0x13881,
