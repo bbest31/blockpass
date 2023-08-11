@@ -64,8 +64,8 @@ export default function EventGallery({ gallery }) {
       >
         {gallery.length !== 0
           ? sortedEvents.map((event) => (
-              <Link to={`/event/${event._id}`}>
-                <EventsGalleryItem key={event._id} event={event} />
+              <Link key={event._id} to={`/event/${event._id}`}>
+                <EventsGalleryItem event={event} />
               </Link>
             ))
           : `No events`}

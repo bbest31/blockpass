@@ -31,3 +31,18 @@ export function fDateYearMonthDay(date) {
 export function fTimeHourMinute(date) {
   return format(new Date(date), 'HH:mm');
 }
+
+export function fDateWithTimeZone(date) {
+  const formattedDate = format(new Date(date), 'MMMM d yyyy @ h:mm a');
+  const timezoneAbbreviation = /\((.*)\)/.exec(new Date().toString())[1];
+
+  return `${formattedDate} ${timezoneAbbreviation}`;
+}
+
+export function fDateTimespanWithTimeZone(start, end) {
+  const formattedStart = format(new Date(start), 'MMMM d yyyy, h:mm a');
+  const formattedEnd = format(new Date(end), 'h:mm a');
+  const timezoneAbbreviation = /\((.*)\)/.exec(new Date().toString())[1];
+
+  return `${formattedStart}—${formattedEnd} ${timezoneAbbreviation}`;
+}

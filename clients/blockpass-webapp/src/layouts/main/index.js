@@ -1,19 +1,14 @@
-import { useLocation, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 // @mui
-import { Box, Link, Container, Typography, Stack } from '@mui/material';
+import { Box, Container, Typography, Stack } from '@mui/material';
 // components
 import Logo from '../../components/Logo';
 //
-import MainFooter from './MainFooter';
 import MainHeader from './MainHeader';
 
 // ----------------------------------------------------------------------
 
 export default function MainLayout() {
-  const { pathname } = useLocation();
-
-  const isHome = pathname === '/';
-
   return (
     <Stack spacing={16} sx={{ minHeight: 1 }}>
       <MainHeader />
