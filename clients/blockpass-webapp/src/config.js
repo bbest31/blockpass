@@ -24,6 +24,8 @@ export const AUTH0_API = {
 
 export const SERVER_API_KEY = process.env.REACT_APP_SERVER_API_KEY;
 
+export const GMAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = PATH_APP.general.dashboard; // as '/dashboard'
 

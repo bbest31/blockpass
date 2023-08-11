@@ -14,7 +14,7 @@ import EventPreviewInfoItem from '../sections/EventPreviewInfoItem';
 import axiosInstance from '../utils/axios';
 import { fDateWithTimeZone, fDateTimespanWithTimeZone, fDate } from '../utils/formatTime';
 // config
-import { SERVER_API_KEY } from '../config';
+import { SERVER_API_KEY, GMAPS_API_KEY } from '../config';
 
 // ----------------------------------------------------------------------
 
@@ -76,12 +76,7 @@ export default function EventPreview() {
 
   return (
     <Page title={event ? event.name : 'Event Preview'}>
-      <Grid container spacing={4} maxWidth={themeStretch ? false : 'xl'} sx={{ marginX: 12 }}>
-        <Grid item xs={12}>
-          <Typography variant="h3" component="h1">
-            Event Preview
-          </Typography>
-        </Grid>
+      <Grid container spacing={4} sx={{ marginX: 12 }}>
         {/* EventHero */}
         {/* About section */}
         <Grid item container xs={12} spacing={3}>
@@ -110,7 +105,7 @@ export default function EventPreview() {
         </Grid>
         {/* Ticket tier list items */}
         {/* time and place */}
-        <Grid item container xs={12} spacing={3}>
+        <Grid item container xs={12} spacing={4}>
           <Grid item xs={12}>
             <Typography variant="h3" component="h1">
               Time and place
@@ -124,8 +119,17 @@ export default function EventPreview() {
               <EventPreviewInfoItem title="Location" subtext={event?.location} icon="ic:baseline-location-on" />
             </Grid>
           </Grid>
-          <Grid item xs={12}>
-            {/* map */}
+          <Grid item container justifyContent="center" xs={12}>
+            <iframe
+              title="location"
+              width="60%"
+              height="500"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/place?key=${GMAPS_API_KEY}${
+                event?.location ? `&q=${encodeURIComponent(event?.location)}` : ''
+              }`}
+            />
           </Grid>
         </Grid>
       </Grid>

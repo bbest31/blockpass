@@ -23,7 +23,7 @@ EventsGalleryItem.propTypes = {
   event: PropTypes.object,
 };
 
-export default function EventsGalleryItem({ event, onClickHandler }) {
+export default function EventsGalleryItem({ event }) {
   const { img, name, startDate, location } = event;
   return (
     <Card sx={{ cursor: 'pointer', position: 'relative' }}>
