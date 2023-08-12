@@ -22,7 +22,7 @@ const routes = require('./src/routes/index.js');
 // APP SETUP
 const app = express();
 const port = process.env.PORT;
-const regex = /^(?!\/(events|logout|verify|authenticate|request-message)(?:\/|$)).*$/;
+const regex = /^(?!\/(events|logout|verify|authenticate|request-message|ticket-tiers)(?:\/|$)).*$/;
 
 app.use(cors());
 app.use(helmet());
