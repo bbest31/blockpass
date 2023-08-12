@@ -47,6 +47,10 @@ REACT_APP_AUTH0_AUDIENCE=
 
 # MIXPANEL
 REACT_APP_MIXPANEL_TOKEN=
+
+# SMART_CONTRACT
+REACT_APP_MARKETPLACE_CONTRACT_ADDRESS=
+REACT_APP_MARKETPLACE_FEE_NUMERATOR=
 ```
 
 ```sh
@@ -66,5 +70,5 @@ You can find detailed instructions on using Create React App and many tips in [i
 
 ## References
 
-* [Axios](https://www.npmjs.com/package/axios)
-* [Auth0 JS SPA](https://github.com/auth0/auth0-spa-js)
+- [Axios](https://www.npmjs.com/package/axios)
+- [Auth0 JS SPA](https://github.com/auth0/auth0-spa-js)
