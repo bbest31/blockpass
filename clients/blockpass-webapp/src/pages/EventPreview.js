@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
 // @mui
-import { Typography, Grid, Button } from '@mui/material';
+import { Typography, Grid, Button, Skeleton } from '@mui/material';
 // hook
 import useSettings from '../hooks/useSettings';
 // components
@@ -10,6 +10,7 @@ import Page from '../components/Page';
 import Iconify from '../components/Iconify';
 // sections
 import EventPreviewInfoItem from '../sections/EventPreviewInfoItem';
+import EventPreviewHero from '../sections/EventPreviewHero';
 // utils
 import axiosInstance from '../utils/axios';
 import { fDateWithTimeZone, fDateTimespanWithTimeZone, fDate } from '../utils/formatTime';
@@ -23,12 +24,14 @@ export default function EventPreview() {
   const { eventId } = useParams();
   const { themeStretch } = useSettings();
   const [event, setEvent] = useState(null);
+  const [eventOrganizer, setEventOrganizer] = useState(null);
   const [timeline, setTimeline] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
     getEventById(controller);
+    getEventOrganizer(controller);
     return () => {
       controller.abort();
     };
@@ -56,6 +59,25 @@ export default function EventPreview() {
       });
   };
 
+  const getEventOrganizer = (controller) => {
+    axiosInstance
+      .get(`/events/${eventId}/organizer`, {
+        headers: {
+          'blockpass-api-key': SERVER_API_KEY,
+        },
+      })
+      .then((res) => {
+        setEventOrganizer(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!controller.signal.aborted) {
+          enqueueSnackbar(`Unable to retrieve event organzier.`, { variant: 'warning' });
+        }
+      });
+  };
+
   const formatEventTimeline = (evt) => {
     if (evt.endDate !== undefined) {
       if (areDatesOnSameDay(new Date(evt.startDate), new Date(evt.endDate))) {
@@ -75,9 +97,15 @@ export default function EventPreview() {
   }
 
   return (
+    // TODO: figure out how to remove gap between hero and navbar
     <Page title={event ? event.name : 'Event Preview'}>
-      <Grid container spacing={4} sx={{ marginX: 12 }}>
-        {/* EventHero */}
+      {/* Event Hero */}
+      {isLoading ? (
+        <Skeleton variant="rectangular" animation="wave" width="100%" height={500} />
+      ) : (
+        <EventPreviewHero event={event} organizer={eventOrganizer} />
+      )}
+      <Grid container spacing={4} sx={{ paddingX: 12, marginTop: 4 }}>
         {/* About section */}
         <Grid item container xs={12} spacing={3}>
           <Grid item xs={12}>

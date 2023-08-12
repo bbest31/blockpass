@@ -1,8 +1,7 @@
 'use strict';
 const mongoose = require('mongoose');
-
 const Event = require('../models/Events.js');
-
+const { getOrganization } = require('./organizationServices.js');
 const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website', 'description', 'removeEndDate'];
 
 /**
@@ -36,6 +35,19 @@ const getEventById = async (id) => {
     .exec();
 
   return event;
+};
+
+/**
+ * Gets an events event organizer.
+ * @param {string} id
+ * @returns {Object}
+ */
+const getEventOrganizer = async (id) => {
+  const event = await Event.findById(id).lean().exec();
+  const org = await getOrganization(event.orgId);
+  delete org.metadata;
+  delete org.name;
+  return org;
 };
 
 /**
@@ -123,6 +135,7 @@ const patchOrganizationEventsImages = async (eventId, imageUrls, removedImages) 
 module.exports = {
   getEvents,
   getEventById,
+  getEventOrganizer,
   getOrganizationEvents,
   postOrganizationEvent,
   patchOrganizationEvents,
