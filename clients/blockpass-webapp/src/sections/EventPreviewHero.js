@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
-import { Avatar, Box, Typography, Stack } from '@mui/material';
+import { Avatar, Box, Typography } from '@mui/material';
 // components
 import Image from '../components/Image';
 // utils
@@ -16,19 +16,6 @@ const OverlayStyle = styled('h1')(({ theme }) => ({
   zIndex: 9,
   position: 'absolute',
   backgroundColor: alpha(theme.palette.grey[900], 0.72),
-}));
-
-const TitleStyle = styled('h1')(({ theme }) => ({
-  ...theme.typography.h2,
-  bottom: 1,
-  zIndex: 10,
-  width: '100%',
-  position: 'absolute',
-  padding: theme.spacing(3),
-  color: theme.palette.common.white,
-  [theme.breakpoints.up('lg')]: {
-    padding: theme.spacing(10),
-  },
 }));
 
 const FooterStyle = styled('div')(({ theme }) => ({
@@ -69,16 +56,18 @@ export default function EventPreviewHero({ event, organizer }) {
         <Typography variant="h4" sx={{ color: 'common.white', mb: 2 }}>
           {fDate(startDate)}—{location}
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {organizer && organizer.branding.logo_url && (
-            <Avatar alt={organizer.display_name} src={organizer.branding.logo_url} sx={{ width: 48, height: 48 }} />
-          )}
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="h5" sx={{ color: 'common.white' }}>
-              {organizer.display_name}
-            </Typography>
+        {organizer && (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {organizer.branding.logo_url && (
+              <Avatar alt={organizer.display_name} src={organizer.branding.logo_url} sx={{ width: 48, height: 48 }} />
+            )}
+            <Box sx={{ ml: 2 }}>
+              <Typography variant="h5" sx={{ color: 'common.white' }}>
+                {organizer.display_name}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
+        )}
       </FooterStyle>
 
       <OverlayStyle />

@@ -24,10 +24,10 @@ EventsGalleryItem.propTypes = {
 };
 
 export default function EventsGalleryItem({ event }) {
-  const { img, name, startDate, location } = event;
+  const { images, name, startDate, location } = event;
   return (
     <Card sx={{ cursor: 'pointer', position: 'relative' }}>
-      <Image alt="gallery image" ratio="1/1" src={img} />
+      <Image alt="gallery image" ratio="1/1" src={images.length > 0 ? images[0] : null} />
 
       <CaptionStyle>
         <div>
