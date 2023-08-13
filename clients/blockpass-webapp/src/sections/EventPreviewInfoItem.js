@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 // @mui
-import { Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid, Avatar } from '@mui/material';
 // components
 import Iconify from '../components/Iconify';
 // theme
@@ -17,19 +17,9 @@ export default function EventPreviewInfoItem({ title, subtext, icon }) {
   return (
     <Grid container>
       <Grid item xs={1} container>
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          width={48}
-          height={48}
-          borderRadius="50%"
-          bgcolor={palette.light.info.lighter}
-          color="white"
-          component="span"
-        >
+        <Avatar sx={{ bgcolor: palette.light.info.lighter }}>
           <Iconify icon={icon} color={palette.light.info.main} sx={{ width: 28, height: 28 }} />
-        </Box>
+        </Avatar>
       </Grid>
       <Grid item xs={11}>
         <Grid container spacing={2}>

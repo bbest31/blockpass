@@ -59,7 +59,12 @@ export default function EventPreviewHero({ event, organizer }) {
         {organizer && (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {organizer.branding.logo_url && (
-              <Avatar alt={organizer.display_name} src={organizer.branding.logo_url} sx={{ width: 48, height: 48 }} />
+              <Avatar
+                alt={organizer.display_name}
+                src={organizer.branding.logo_url}
+                sx={{ width: 48, height: 48 }}
+                imgProps={{ sx: { objectFit: 'contain' } }}
+              />
             )}
             <Box sx={{ ml: 2 }}>
               <Typography variant="h5" sx={{ color: 'common.white' }}>

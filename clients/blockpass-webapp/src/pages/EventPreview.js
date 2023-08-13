@@ -100,7 +100,6 @@ export default function EventPreview() {
     tickets = event.ticketTiers.map((tier) => (
       <EventPreviewTicket key={tier._id} ticketTier={tier} sx={{ mb: 2 }} />
     ));
-    // TODO sort by price
   }
 
   return (

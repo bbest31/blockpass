@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 // @mui
-import { Typography, Grid, Button, Card, Box, Stack } from '@mui/material';
+import { Typography, Grid, Button, Card, Box, Stack, Skeleton, Avatar, AvatarGroup } from '@mui/material';
 // components
 import Iconify from '../components/Iconify';
+import Image from '../components/Image';
 // theme
 import palette from '../theme/palette';
 // utils
 import { fDate } from '../utils/formatTime';
+import axiosInstance from '../utils/axios';
+// config
+import { SERVER_API_KEY } from '../config';
 
 EventPreviewTicket.propTypes = {
   ticketTier: PropTypes.object.isRequired,
@@ -42,51 +46,125 @@ const ENHANCEMENT_STYLE = {
   Reward: { icon: 'ph:medal', bgcolor: palette.light.secondary.dark },
 };
 
-/**
- *
- * @param {string} type
- * @returns {object}
- */
-const getEnhancementStyle = (type) => {
-  let bgColor;
-  let icon;
-  let iconColor;
-
-  switch (type) {
-    case '':
-      break;
-
-    default:
-      break;
-  }
+const TierState = {
+  active: 'active',
+  pending: 'pending',
+  paused: 'paused',
+  closed: 'closed',
+  soldOut: 'soldOut',
 };
 
 export default function EventPreviewTicket({ ticketTier, sx }) {
   const [contractData, setContractData] = useState(null);
+  const [tierState, setTierState] = useState('closed');
+  const [isLoading, setIsLoading] = useState(true);
+
+  const determineTierState = (data) => {
+    if (data) {
+      const closeDate = new Date(data.closeDate);
+      const liveDate = new Date(data.liveDate);
+      if (parseInt(data.totalticketsForSale, 10) === 0) return TierState.soldOut;
+      if (closeDate <= new Date()) return TierState.closed;
+      if (data.paused) return TierState.paused;
+      if (liveDate > new Date()) return TierState.pending;
+      return TierState.active;
+    }
+    return TierState.closed;
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    axiosInstance
+      .get(`/ticket-tiers/${ticketTier._id}`, {
+        headers: {
+          'blockpass-api-key': SERVER_API_KEY,
+        },
+      })
+      .then((res) => {
+        setContractData(res.data);
+        setTierState(determineTierState(res.data));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!controller.signal.aborted) {
+          // show error information
+          console.error('Unable to retrieve all ticket information');
+        }
+        setIsLoading(false);
+      });
+  }, [ticketTier._id]);
 
   const hasEnhancements = ticketTier.enhancements.length > 0;
+
+  let ctaButton = (
+    <Button variant="text" size="large">
+      Learn more
+    </Button>
+  );
+
+  if (tierState === TierState.active) {
+    ctaButton = (
+      <Button
+        variant="contained"
+        color="secondary"
+        size="large"
+        sx={{ color: palette.light.text.primary, boxShadow: 0 }}
+      >
+        BUY NOW
+      </Button>
+    );
+  }
+
+  /**
+   * Returns the appropriate subtext to set based on the ticket tier state.
+   * @param {object} data
+   * @returns {string}
+   */
+  const getStateInfoText = (data) => {
+    const liveDate = new Date(data.liveDate);
+    const closeDate = new Date(data.closeDate);
+    switch (tierState) {
+      case TierState.active:
+        return `Sale ends on ${fDate(closeDate)}`;
+      case TierState.pending:
+        return `Sale starts on ${fDate(liveDate)}`;
+      case TierState.closed:
+        return `Sale ended on ${fDate(closeDate)}`;
+      case TierState.soldOut:
+        return `Sold out`;
+      default:
+        return `Currently unavailable`;
+    }
+  };
+
   return (
     <Card variant="outlined" sx={{ p: '24px', ...sx }}>
       <Grid container rowSpacing={3}>
         <Grid item xs={12} container direction="row" justifyContent="space-between" alignItems="center">
-          <Grid item xs={6} container>
-            <Grid item xs={12}>
-              <Typography variant="h4">{ticketTier.displayName}</Typography>
+          <Grid item xs={6} spacing={3} container direction={'row'} justifyContent={'flex-start'} alignItems="center">
+            <Grid item xs="auto">
+              <Box sx={{ height: '80px', width: '80px' }}>
+                <Image ratio="1/1" alt="token asset" src={contractData.tokenURI} objectFit="contain" />
+              </Box>
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant="body2">{truncateString(ticketTier.description)}</Typography>
+            <Grid item xs="auto">
+              <Stack>
+                <Typography variant="h4">{ticketTier.displayName}</Typography>
+                <Typography variant="body2">{truncateString(ticketTier.description)}</Typography>
+              </Stack>
             </Grid>
           </Grid>
           <Grid item xs={6} container direction="row" justifyContent="flex-end" alignItems="center" spacing={6}>
-            <Grid item>
-              {/* TODO: show primary sale price */}
-              <Typography variant="h3">$200</Typography>
+            <Grid item xs="auto">
+              {isLoading ? (
+                <Skeleton variant="text" animation="wave" width={150} height={40} />
+              ) : (
+                <Typography variant="h3">{contractData?.primarySalePrice}</Typography>
+              )}
             </Grid>
-            <Grid item>
-              {/* TODO: show buy now button if active otherwise show Learn More */}
-              <Button variant="text" size="large">
-                Learn more
-              </Button>
+            <Grid item xs="auto">
+              {isLoading ? <Skeleton variant="text" animation="wave" width={116} height={48} /> : ctaButton}
             </Grid>
           </Grid>
         </Grid>
@@ -110,27 +188,16 @@ export default function EventPreviewTicket({ ticketTier, sx }) {
                   <Typography variant="h4">✨Perks Available</Typography>{' '}
                 </Grid>
                 <Grid item>
-                  <Stack direction="row" spacing={1}>
+                  <AvatarGroup>
                     {ticketTier.enhancements.map((perk) => {
                       const iconStyle = ENHANCEMENT_STYLE[perk.type];
                       return (
-                        <Box
-                          key={perk._id}
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          width={48}
-                          height={48}
-                          borderRadius="50%"
-                          bgcolor={iconStyle.bgcolor}
-                          color="white"
-                          component="span"
-                        >
-                          <Iconify icon={iconStyle.icon} color="white" sx={{ width: 28, height: 28 }} />
-                        </Box>
+                        <Avatar key={perk._id} sx={{ bgcolor: iconStyle.bgcolor }}>
+                          <Iconify icon={iconStyle.icon} color="white" sx={{ width: 24, height: 24 }} />
+                        </Avatar>
                       );
                     })}
-                  </Stack>
+                  </AvatarGroup>
                 </Grid>
               </>
             ) : (
@@ -139,8 +206,11 @@ export default function EventPreviewTicket({ ticketTier, sx }) {
           </Grid>
           {/* Sale start or end text */}
           <Grid item>
-            {/* TODO: show when the ticket tier is on sale, when it ends, or when it ended */}
-            <Typography variant="body1">Sales starts on {fDate(new Date())}</Typography>
+            {isLoading ? (
+              <Skeleton variant="rectangular" animation="wave" width={100} height={16} />
+            ) : (
+              <Typography variant="body1">{getStateInfoText(contractData)}</Typography>
+            )}
           </Grid>
         </Grid>
       </Grid>
