@@ -16,3 +16,7 @@ export { default as TransactionDialog } from './TransactionDialog';
 export { default as OrganizationTicketTierEnhancementDialog } from './OrganizationTicketTierEnhancementDialog';
 export { default as OrganizationTicketTierEnhancementItem } from './OrganizationTicketTierEnhancementItem';
 export { default as OrganizationEventInsights } from './OrganizationEventInsights';
+export { default as OrganizationCreateEvent } from './OrganizationCreateEvent';
+export { default as OrganizationCreateEventInfo } from './OrganizationCreateEventInfo';
+export { default as OrganizationCreateEventTicketTier } from './OrganizationCreateEventTicketTiers';
+export { default as OrganizationTicketTierDialog } from './OrganizationTicketTierDialog';
