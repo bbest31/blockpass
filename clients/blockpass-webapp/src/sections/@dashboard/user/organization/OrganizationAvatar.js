@@ -20,6 +20,7 @@ export default function OrganizationAvatar({ ...styles }) {
       src={organization?.branding?.logo_url}
       alt={organization?.display_name}
       color={organization?.branding?.logo_url ? 'default' : createAvatar(organization?.display_name).color}
+      imgProps={{ sx: { objectFit: 'contain' } }}
       {...styles}
     >
       {createAvatar(organization?.display_name).name}

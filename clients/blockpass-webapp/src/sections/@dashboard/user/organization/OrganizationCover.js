@@ -6,7 +6,7 @@ import cssStyles from '../../../../utils/cssStyles';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // sections
-// import OrganizationAvatar from './OrganizationAvatar';
+import OrganizationAvatar from './OrganizationAvatar';
 
 // ----------------------------------------------------------------------
 
@@ -40,11 +40,11 @@ const InfoStyle = styled('div')(({ theme }) => ({
 
 export default function OrganizationCover() {
   const { organization } = useAuth();
-  
+
   return (
     <RootStyle>
-      <InfoStyle>
-        {/* <OrganizationAvatar
+      <InfoStyle sx={{ position: 'absolute', top: '100px', ml: '24px', mb: '24px' }}>
+        <OrganizationAvatar
           sx={{
             mx: 'auto',
             borderWidth: 2,
@@ -54,7 +54,7 @@ export default function OrganizationCover() {
             width: { xs: 80, md: 128 },
             height: { xs: 80, md: 128 },
           }}
-        /> */}
+        />
         <Box
           sx={{
             ml: { md: 3 },
