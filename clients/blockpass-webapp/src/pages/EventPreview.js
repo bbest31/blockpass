@@ -44,7 +44,6 @@ export default function EventPreview() {
         },
       })
       .then((res) => {
-        console.log(res.data);
         setEvent(res.data);
         setTimeline(formatEventTimeline(res.data));
         setIsLoading(false);

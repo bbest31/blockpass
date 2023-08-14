@@ -144,9 +144,13 @@ export default function EventPreviewTicket({ ticketTier, sx }) {
         <Grid item xs={12} container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6} spacing={3} container direction={'row'} justifyContent={'flex-start'} alignItems="center">
             <Grid item xs="auto">
-              <Box sx={{ height: '80px', width: '80px' }}>
-                <Image ratio="1/1" alt="token asset" src={contractData.tokenURI} objectFit="contain" />
-              </Box>
+              {isLoading ? (
+                <Skeleton variant="rectangular" animation="wave" width="80px" height="80px" />
+              ) : (
+                <Box sx={{ height: '80px', width: '80px' }}>
+                  <Image ratio="1/1" alt="token asset" src={contractData.tokenURI} objectFit="contain" />
+                </Box>
+              )}
             </Grid>
             <Grid item xs="auto">
               <Stack>
