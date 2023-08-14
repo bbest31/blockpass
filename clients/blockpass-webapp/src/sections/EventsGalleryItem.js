@@ -21,14 +21,13 @@ const CaptionStyle = styled(CardContent)(({ theme }) => ({
 
 EventsGalleryItem.propTypes = {
   event: PropTypes.object,
-  onClickHandler: PropTypes.func,
 };
 
-export default function EventsGalleryItem({ event, onClickHandler }) {
-  const { img, name, startDate, location } = event;
+export default function EventsGalleryItem({ event }) {
+  const { images, name, startDate, location } = event;
   return (
-    <Card sx={{ cursor: 'pointer', position: 'relative' }} onClick={() => onClickHandler(event)}>
-      <Image alt="gallery image" ratio="1/1" src={img} />
+    <Card sx={{ cursor: 'pointer', position: 'relative' }}>
+      <Image alt="gallery image" ratio="1/1" src={images.length > 0 ? images[0] : null} />
 
       <CaptionStyle>
         <div>

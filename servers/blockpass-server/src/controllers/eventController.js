@@ -2,6 +2,7 @@
 const {
   getEvents,
   getEventById,
+  getEventOrganizer,
   getOrganizationEvents,
   patchOrganizationEvents,
   postOrganizationEvent,
@@ -35,8 +36,24 @@ const readEventById = async (req, res, next) => {
   const { id } = req.params;
 
   await getEventById(id)
-    .then((events) => {
-      res.status(200).send(events);
+    .then((event) => {
+      res.status(200).send(event);
+    })
+    .catch((err) => next(err));
+};
+
+/**
+ * Get event organizer.
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {function} next
+ */
+const readEventOrganizer = async (req, res, next) => {
+  const { id } = req.params;
+
+  await getEventOrganizer(id)
+    .then((organzier) => {
+      res.status(200).send(organzier);
     })
     .catch((err) => next(err));
 };
@@ -122,6 +139,7 @@ const updateEventImages = async (req, res, next) => {
 module.exports = {
   readEvents,
   readEventById,
+  readEventOrganizer,
   readOrganizationEvents,
   createEvent,
   updateEvents,

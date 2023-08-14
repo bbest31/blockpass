@@ -55,6 +55,11 @@ export default function Router() {
       element: <MainLayout />,
       children: [{ element: <Home />, index: true }],
     },
+    {
+      path: '/event/:eventId',
+      element: <MainLayout />,
+      children: [{ element: <EventPreview />, index: true }],
+    },
 
     // Event Organizer Dashboard Routes
     {
@@ -90,6 +95,7 @@ export default function Router() {
 
 // MARKETPLACE
 const Home = Loadable(lazy(() => import('../pages/Home')));
+const EventPreview = Loadable(lazy(() => import('../pages/EventPreview')));
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));

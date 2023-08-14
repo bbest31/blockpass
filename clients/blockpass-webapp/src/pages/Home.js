@@ -59,7 +59,7 @@ export default function Home() {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          {isLoading ? <GallerySkeleton items={10} /> : <EventsGallery gallery={events} onClickHandler={()=>{console.log('clicked event!')}}/>}
+          {isLoading ? <GallerySkeleton items={10} /> : <EventsGallery gallery={events}/>}
         </Grid>
       </Grid>
     </Page>
