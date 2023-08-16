@@ -34,13 +34,13 @@ OrganizationEventDetails.propTypes = {
 export default function OrganizationEventDetails({ eventItem }) {
   const { themeStretch } = useSettings();
 
-  const { currentTab, onChangeTab } = useTabs('insights');
+  const { currentTab, onChangeTab } = useTabs('basic_info');
   const [selectedTicketTier, setSelectedTicketTier] = useState(null);
 
   const mixpanel = useMixpanel();
 
   useEffect(() => {
-    trackEvent(mixpanel, 'Navigate', { page: `Event Details ${eventItem._id}`, tab: 'insights' });
+    trackEvent(mixpanel, 'Navigate', { page: `Event Details ${eventItem._id}`, tab: 'basic_info' });
   }, []);
 
   const onTicketTierSelectedHandler = (ticketTier) => {
@@ -48,11 +48,11 @@ export default function OrganizationEventDetails({ eventItem }) {
   };
 
   const EVENT_TABS = [
-    {
-      value: 'insights',
-      icon: <Iconify icon={'ic:baseline-trending-up'} width={20} height={20} />,
-      component: <OrganizationEventInsights eventItem={eventItem} />,
-    },
+    // {
+    //   value: 'insights',
+    //   icon: <Iconify icon={'ic:baseline-trending-up'} width={20} height={20} />,
+    //   component: <OrganizationEventInsights eventItem={eventItem} />,
+    // },
     {
       value: 'basic_info',
       icon: <Iconify icon={'ic:baseline-info'} width={20} height={20} />,
