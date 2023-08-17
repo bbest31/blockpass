@@ -28,7 +28,6 @@ export default function OrganizationEventTableRow({
   onDeleteRow,
   onClickHandler,
 }) {
-  console.log(row);
   const theme = useTheme();
 
   const [ticketTierDetail, setTicketTierDetail] = useState(row);
