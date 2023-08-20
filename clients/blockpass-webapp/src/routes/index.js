@@ -67,7 +67,7 @@ export default function Router() {
       ),
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
-        { path: 'dashboard', element: <GeneralApp /> },
+        { path: 'dashboard', element: <div>Dashboard</div> },
         { path: 'events', element: <Events /> },
         { path: 'account', element: <UserAccount /> },
         { path: 'token-gating', element: <TokenGating /> },
@@ -96,9 +96,6 @@ const EventPreview = Loadable(lazy(() => import('../pages/EventPreview')));
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
-
-// GENERAL
-const GeneralApp = Loadable(lazy(() => import('../pages/dashboard/GeneralApp')));
 
 // USER
 const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')));

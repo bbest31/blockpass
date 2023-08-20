@@ -38,6 +38,8 @@ export const MIXPANEL_API = {
   debug: process.env.NODE_ENV !== 'production',
 };
 
+export const MIXPANEL_TOKEN = process.env.REACT_APP_MIXPANEL_TOKEN;
+
 // LAYOUT
 // ----------------------------------------------------------------------
 

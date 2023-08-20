@@ -1,6 +1,7 @@
-import Web3 from 'web3';
 import contractArtifact from '../contracts/BlockPassTicket.json';
 import { MARKETPLACE_CONTRACT } from '../config';
+
+const  { Web3 } = require('web3');
 
 export function getWalletAddress(accountChangedHandler) {
   const provider = window.ethereum;

@@ -11,8 +11,6 @@ import { PATH_APP } from '../../../../routes/paths';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 import useTabs from '../../../../hooks/useTabs';
-// _mock_
-import { _userAbout } from '../../../../_mock';
 // components
 import Iconify from '../../../../components/Iconify';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
@@ -212,7 +210,7 @@ export default function OrganizationEventsView({ onClickHandler, createEventHand
           position: 'relative',
         }}
       >
-        <OrganizationCover myProfile={_userAbout} />
+        <OrganizationCover />
 
         <TabsWrapperStyle>
           <Tabs

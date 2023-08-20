@@ -41,9 +41,9 @@ export const PATH_APP = {
   },
   general: {
     dashboard: '/dashboard',
-    events: '/events',
-    analytics: '/analytics',
-    account: '/account',
+    events: '/dashboard/events',
+    analytics: '/dashboard/analytics',
+    account: '/dashboard/account',
   },
   support: {
     tokenGating: '/token-gating',

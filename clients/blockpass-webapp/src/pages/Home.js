@@ -28,7 +28,8 @@ export default function Home() {
     return () => {
       controller.abort();
     };
-  });
+    // eslint-disable-next-line
+  },[]);
 
   const getEvents = (controller) => {
     axiosInstance
