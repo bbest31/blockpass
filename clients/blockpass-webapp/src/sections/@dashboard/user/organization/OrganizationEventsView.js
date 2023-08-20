@@ -47,7 +47,7 @@ const FILTER_OPTIONS = {
 
 OrganizationEventsView.propTypes = {
   onClickHandler: PropTypes.func,
-  createEventHandler: PropTypes.func
+  createEventHandler: PropTypes.func,
 };
 
 // ----------------------------------------------------------------------
@@ -62,6 +62,7 @@ export default function OrganizationEventsView({ onClickHandler, createEventHand
     return () => {
       controller.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -84,15 +85,17 @@ export default function OrganizationEventsView({ onClickHandler, createEventHand
     } else {
       searchEvents(filterPastEvents(events));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [findEvent, currentTab, events]);
 
   useEffect(() => {
     filterMap[filterOption]();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterOption]);
 
   useEffect(() => {
     trackEvent(mixpanel, 'Navigate', { page: 'OrganizationEvents', tab: 'upcoming' });
-  }, []);
+  }, [mixpanel]);
 
   const handleChangeTab = (event, value) => {
     const option = FILTER_OPTIONS[value][0];
@@ -226,10 +229,15 @@ export default function OrganizationEventsView({ onClickHandler, createEventHand
         </TabsWrapperStyle>
       </Card>
       <Box sx={{ mt: 5 }}>
-        <Stack direction="row" spacing={2} flexWrap="wrap" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-          <Typography variant="h4">
-            {`${capitalCase(currentTab)} events`}
-          </Typography>
+        <Stack
+          direction="row"
+          spacing={2}
+          flexWrap="wrap"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mb: 2 }}
+        >
+          <Typography variant="h4">{`${capitalCase(currentTab)} events`}</Typography>
 
           <Button size="large" color="primary" variant="contained" onClick={createEventHandler}>
             Create Event +

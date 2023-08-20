@@ -1,21 +1,18 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import {
   Box,
-  Grid,
   Stack,
   Dialog,
-  MenuItem,
   Typography,
   Switch,
   FormControlLabel,
-  Checkbox,
   Button,
   Card,
   CircularProgress,
@@ -24,15 +21,13 @@ import { LoadingButton } from '@mui/lab';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
-import { fDateYearMonthDay } from '../../../../utils/formatTime';
-import { getWalletAddress, deployTicketTierContract } from '../../../../utils/web3Client';
+import { deployTicketTierContract } from '../../../../utils/web3Client';
 import axiosInstance from '../../../../utils/axios';
 // components
 import { FormProvider, RHFTextField, RHFEditor } from '../../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
-const ENHANCEMENT_TYPES = ['Access', 'Discount', 'Gift', 'Reward'];
 const singleColumn = { gridColumn: '1 / span 2' };
 
 // ----------------------------------------------------------------------
@@ -58,7 +53,6 @@ OrganizationTicketTierDialog.propTypes = {
   showHandler: PropTypes.func,
   eventId: PropTypes.string,
   eventInformation: PropTypes.object,
-  createHandler: PropTypes.func,
   addTicketTierRow: PropTypes.func,
 };
 
@@ -67,7 +61,6 @@ export default function OrganizationTicketTierDialog({
   eventId,
   eventInformation,
   showHandler,
-  createHandler,
   addTicketTierRow,
 }) {
   const { organization, getAccessToken } = useAuth();
@@ -75,15 +68,14 @@ export default function OrganizationTicketTierDialog({
 
   const [dialogState, setDialogState] = useState(DIALOG_STATE.CREATE);
 
-  const [title, setTitle] = useState('Test Title');
-  const [symbol, setSymbol] = useState('BPS');
-  const [liveDate, setLiveDate] = useState('2023-08-20');
-  const [tokenURI, setTokenURI] = useState('https://i.ibb.co/dKXvTRm/Block-Pass-Logo.png');
-  const [description, setDescription] = useState('Description');
-  const [primarySalePrice, setPrimarySalePrice] = useState(1000);
-  const [maxSupply, setMaxSupply] = useState(100);
-  const [maxMarkup, setMaxMarkup] = useState(0);
-  const [walletAddress, setWalletAddress] = useState('');
+  const [title] = useState('');
+  const [symbol] = useState('');
+  const [liveDate] = useState('');
+  const [tokenURI] = useState('');
+  const [description] = useState('');
+  const [primarySalePrice] = useState(0);
+  const [maxSupply] = useState(0);
+  const [maxMarkup] = useState(0);
   const [scalpingPrevention, setScalpingPrevention] = useState(true);
 
   const methods = useForm({
@@ -109,14 +101,6 @@ export default function OrganizationTicketTierDialog({
   } = methods;
 
   const values = watch();
-
-  useEffect(() => {
-    getWalletAddress(walletChangedHandler);
-  }, []);
-
-  const walletChangedHandler = (walletAddress) => {
-    setWalletAddress(walletAddress);
-  };
 
   const onSubmit = async () => {
     setDialogState(DIALOG_STATE.DEPLOY);
@@ -237,11 +221,9 @@ export default function OrganizationTicketTierDialog({
 
 // ----------------------------------------------------------------------
 
-const DeployingDialog = () => {
-  return (
-    <Box display="flex" alignItems="center" justifyContent="center" flexDirection="column" minHeight="50vh">
-      <CircularProgress color="success" sx={{ mb: 3 }} />
-      <p>Creating and deploying ticket smart contract...</p>
-    </Box>
-  );
-};
+const DeployingDialog = () => (
+  <Box display="flex" alignItems="center" justifyContent="center" flexDirection="column" minHeight="50vh">
+    <CircularProgress color="success" sx={{ mb: 3 }} />
+    <p>Creating and deploying ticket smart contract...</p>
+  </Box>
+);

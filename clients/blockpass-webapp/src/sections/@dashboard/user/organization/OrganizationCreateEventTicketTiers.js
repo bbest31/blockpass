@@ -1,37 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 // @mui
-import { styled } from '@mui/material/styles';
 import {
-  Tab,
   Box,
-  Grid,
   Card,
   Typography,
-  Tabs,
   Stack,
   Button,
   Container,
   TableContainer,
-  TablePagination,
   Table,
-  Tooltip,
   TableBody,
-  IconButton,
   TableRow,
   TableCell,
 } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-// utils
-import { capitalCase, sentenceCase } from 'change-case';
-import { fDate } from '../../../../utils/formatTime';
-// hooks
-import useSettings from '../../../../hooks/useSettings';
-import useAuth from '../../../../hooks/useAuth';
-import useTable, { getComparator, emptyRows } from '../../../../hooks/useTable';
-import Iconify from '../../../../components/Iconify';
+import useTable from '../../../../hooks/useTable';
 import Scrollbar from '../../../../components/Scrollbar';
-import { TableNoData, TableSkeleton, TableEmptyRows, TableHeadCustom } from '../../../../components/table';
+import { TableNoData, TableHeadCustom } from '../../../../components/table';
 // sections
 import { OrganizationTicketTierDialog } from '.';
 
@@ -43,8 +28,6 @@ const TABLE_HEAD = [
   { id: 'liveDate', label: 'Live Date', align: 'left' },
   { id: 'supply', label: 'Supply', align: 'left' },
 ];
-
-const denseHeight = 80;
 
 OrganizationCreateEventTicketTier.propTypes = {
   eventId: PropTypes.string,
@@ -67,8 +50,6 @@ export default function OrganizationCreateEventTicketTier({ eventId, eventInform
   };
 
   const isNotFound = !tableData.length;
-
-  const addTicketTierOnClickHandler = () => setShowDialog(true);
 
   const showDialogHandler = () => setShowDialog((show) => !show);
 
@@ -131,22 +112,24 @@ export default function OrganizationCreateEventTicketTier({ eventId, eventInform
 
 // ----------------------------------------------------------------------
 
-const TicketTierRow = ({ row }) => {
-  return (
-    <TableRow hover>
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Box sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}>
-          <img alt={row.title} src={row.tokenURI} style={{ width: 48, height: 48, objectFit: 'contain' }} />
-        </Box>
-
-        <Typography variant="subtitle2" noWrap>
-          {row.title}
-        </Typography>
-      </TableCell>
-
-      <TableCell align="left">{row.primarySalePrice}</TableCell>
-      <TableCell align="left">{row.liveDate}</TableCell>
-      <TableCell align="left">{row.maxSupply}</TableCell>
-    </TableRow>
-  );
+TicketTierRow.propTypes = {
+  row: PropTypes.object.isRequired,
 };
+
+const TicketTierRow = ({ row }) => (
+  <TableRow hover>
+    <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}>
+        <img alt={row.title} src={row.tokenURI} style={{ width: 48, height: 48, objectFit: 'contain' }} />
+      </Box>
+
+      <Typography variant="subtitle2" noWrap>
+        {row.title}
+      </Typography>
+    </TableCell>
+
+    <TableCell align="left">{row.primarySalePrice}</TableCell>
+    <TableCell align="left">{row.liveDate}</TableCell>
+    <TableCell align="left">{row.maxSupply}</TableCell>
+  </TableRow>
+);

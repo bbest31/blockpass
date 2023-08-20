@@ -28,10 +28,9 @@ export async function deployTicketTierContract(ticketTier, eventInfo) {
   const web3 = new Web3(window.ethereum);
   const contract = new web3.eth.Contract(contractArtifact.abi);
 
-  const { title, description, tokenURI, primarySalePrice, maxMarkup, liveDate, maxSupply } = ticketTier;
+  const { title, tokenURI, primarySalePrice, maxMarkup, liveDate, maxSupply } = ticketTier;
 
   const closeDate = new Date(eventInfo.endDate) / 1000;
-  const feeNumerator = 10;
 
   const ticketTierInformation = [
     tokenURI,

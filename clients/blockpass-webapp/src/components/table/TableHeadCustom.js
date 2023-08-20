@@ -27,6 +27,7 @@ TableHeadCustom.propTypes = {
   onSelectAllRows: PropTypes.func,
   order: PropTypes.oneOf(['asc', 'desc']),
   sx: PropTypes.object,
+  headerSx: PropTypes.object,
 };
 
 export default function TableHeadCustom({

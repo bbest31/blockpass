@@ -1,48 +1,11 @@
-import { paramCase } from 'change-case';
-import { useState, useEffect } from 'react';
-import { useSnackbar } from 'notistack';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
 // @mui
-import {
-  Box,
-  Card,
-  Table,
-  Tooltip,
-  TableBody,
-  Container,
-  IconButton,
-  TableContainer,
-  TablePagination,
-  FormControlLabel,
-  Typography,
-  TableCell,
-  TableRow,
-} from '@mui/material';
-// redux
-import { useDispatch, useSelector } from '../../../../redux/store';
-import { getProducts } from '../../../../redux/slices/product';
-// routes
-import { PATH_DASHBOARD } from '../../../../routes/paths';
+import { Box, Table, TableBody, TableContainer, TablePagination, TableCell, TableRow } from '@mui/material';
 // hooks
-import useSettings from '../../../../hooks/useSettings';
-import useAuth from '../../../../hooks/useAuth';
 import useTable, { getComparator, emptyRows } from '../../../../hooks/useTable';
 // components
-import Page from '../../../../components/Page';
-import Iconify from '../../../../components/Iconify';
 import Scrollbar from '../../../../components/Scrollbar';
-import {
-  TableNoData,
-  TableSkeleton,
-  TableEmptyRows,
-  TableHeadCustom,
-  TableSelectedActions,
-} from '../../../../components/table';
-// sections
-import { OrganizationEventTableRow } from '.';
-// utils
-import axiosInstance from '../../../../utils/axios';
-import { trackEvent } from '../../../../utils/mixpanelUtils';
+import { TableNoData, TableSkeleton, TableEmptyRows, TableHeadCustom } from '../../../../components/table';
 
 // ----------------------------------------------------------------------
 
@@ -53,16 +16,15 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
+OrganizationTicketTierOwnersList.propTypes = {
+  ticketTierOwners: PropTypes.array,
+  isLoading: PropTypes.bool.isRequired,
+};
+
 export default function OrganizationTicketTierOwnersList({ ticketTierOwners, isLoading }) {
-  const { page, order, orderBy, rowsPerPage, setPage, selected, onChangePage, onChangeRowsPerPage } = useTable({
+  const { page, order, orderBy, rowsPerPage, selected, onChangePage, onChangeRowsPerPage } = useTable({
     defaultOrderBy: 'id',
   });
-
-  const { themeStretch } = useSettings();
-  const { organization, getAccessToken } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const navigate = useNavigate();
 
   const dataFiltered = applySortFilter({
     tableData: ticketTierOwners,
@@ -121,6 +83,11 @@ export default function OrganizationTicketTierOwnersList({ ticketTierOwners, isL
 }
 
 // ----------------------------------------------------------------------
+
+OwnerRow.propTypes = {
+  walletAddress: PropTypes.string.isRequired,
+  tokenId: PropTypes.string.isRequired,
+};
 
 const OwnerRow = ({ walletAddress, tokenId }) => (
   <TableRow key={tokenId} hover>

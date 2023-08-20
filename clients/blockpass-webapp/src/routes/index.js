@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Navigate, useRoutes, useLocation } from 'react-router-dom';
+import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import MainLayout from '../layouts/main';
 import DashboardLayout from '../layouts/dashboard';
@@ -14,16 +14,12 @@ import LoadingScreen from '../components/LoadingScreen';
 
 // ----------------------------------------------------------------------
 
-const Loadable = (Component) => (props) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { pathname } = useLocation();
-
-  return (
+const Loadable = (Component) => (props) =>
+  (
     <Suspense fallback={<LoadingScreen isDashboard />}>
       <Component {...props} />
     </Suspense>
   );
-};
 
 export default function Router() {
   return useRoutes([

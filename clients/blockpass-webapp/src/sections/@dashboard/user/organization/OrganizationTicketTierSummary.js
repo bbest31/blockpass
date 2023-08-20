@@ -1,20 +1,10 @@
 import PropTypes from 'prop-types';
 import { sentenceCase } from 'change-case';
-// form
-import { Controller, useForm } from 'react-hook-form';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
-import { Box, Link, Stack, Button, Rating, Divider, IconButton, Typography } from '@mui/material';
-// routes
-import { PATH_DASHBOARD } from '../../../../routes/paths';
-// utils
-import { fShortenNumber, fCurrency } from '../../../../utils/formatNumber';
+import {  Stack, Button,  Divider, Typography } from '@mui/material';
 // components
 import Label from '../../../../components/Label';
-import Iconify from '../../../../components/Iconify';
-import SocialsButton from '../../../../components/SocialsButton';
-import { ColorSinglePicker } from '../../../../components/color-utils';
-import { FormProvider, RHFSelect } from '../../../../components/hook-form';
 
 import { fDate } from '../../../../utils/formatTime';
 
@@ -61,7 +51,6 @@ OrganizationTicketTierSummary.propTypes = {
 
 export default function OrganizationTicketTierSummary({
   ticketTierDetail,
-  isLoading,
   pauseTicketSaleHandler,
   resumeTicketSaleHandler,
   closeTicketSaleHandler,
@@ -71,13 +60,6 @@ export default function OrganizationTicketTierSummary({
 }) {
   const theme = useTheme();
 
-  const methods = useForm({});
-
-  const contractMethods = {
-    pause: pauseTicketSaleHandler,
-    resume: resumeTicketSaleHandler,
-    close: closeTicketSaleHandler,
-  };
 
   const displayContractState = () => {
     let color = 'success';

@@ -20,9 +20,7 @@ export default function InsightsRevenueOverview({ title, subheader, chartData, .
   const chartLabels = chartData.map((i) => i.label);
 
   const chartSeries = chartData.map((i) => i.value);
-  const seriesTotal = chartData.reduce((sum, b) => {
-    return sum + b.value;
-  }, 0);
+  const seriesTotal = chartData.reduce((sum, b) => sum + b.value, 0);
 
   const chartOptions = merge(BaseOptionChart(), {
     tooltip: {

@@ -3,13 +3,9 @@ import { useState, useEffect } from 'react';
 import { sentenceCase } from 'change-case';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { TableRow, Checkbox, TableCell, Typography, MenuItem, Box, Link } from '@mui/material';
-// utils
-import { fDate } from '../../../../utils/formatTime';
-import { fCurrency } from '../../../../utils/formatNumber';
+import { TableRow, TableCell, Typography, MenuItem, Box, Link } from '@mui/material';
 // components
 import Label from '../../../../components/Label';
-import Image from '../../../../components/Image';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
 
@@ -17,26 +13,22 @@ import { TableMoreMenu } from '../../../../components/table';
 
 OrganizationEventTableRow.propTypes = {
   row: PropTypes.object,
+  onEditRow: PropTypes.func,
+  onDeleteRow: PropTypes.func,
+  onClickHandler: PropTypes.func,
 };
 
-export default function OrganizationEventTableRow({
-  row,
-  eventId,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow,
-  onClickHandler,
-}) {
+export default function OrganizationEventTableRow({ row, onEditRow, onDeleteRow, onClickHandler }) {
   const theme = useTheme();
 
   const [ticketTierDetail, setTicketTierDetail] = useState(row);
   const [openMenu, setOpenMenuActions] = useState(null);
-  const [isClosed, setIsClosed] = useState(new Date() > new Date(ticketTierDetail.closeDate));
-  const [isPaused, setIsPaused] = useState(ticketTierDetail.paused);
+  const [isClosed] = useState(new Date() > new Date(ticketTierDetail.closeDate));
+  const [isPaused] = useState(ticketTierDetail.paused);
 
   useEffect(() => {
     setTicketTierDetail(row);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenMenu = (event) => {
@@ -77,7 +69,7 @@ export default function OrganizationEventTableRow({
           <img
             alt={ticketTierDetail.name}
             src={ticketTierDetail.tokenURI}
-            style={{ width: 48, height: 48, 'objectFit': 'contain' }}
+            style={{ width: 48, height: 48, objectFit: 'contain' }}
           />
         </Box>
 

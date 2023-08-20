@@ -1,7 +1,6 @@
-import { paramCase } from 'change-case';
+import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
 // @mui
 import {
   Box,
@@ -14,10 +13,7 @@ import {
   TablePagination,
   Typography,
 } from '@mui/material';
-// routes
-import { PATH_DASHBOARD } from '../../../../routes/paths';
 // hooks
-import useSettings from '../../../../hooks/useSettings';
 import useAuth from '../../../../hooks/useAuth';
 import useTable, { getComparator, emptyRows } from '../../../../hooks/useTable';
 import Iconify from '../../../../components/Iconify';
@@ -45,16 +41,19 @@ const TABLE_HEAD = [
 ];
 // ----------------------------------------------------------------------
 
+OrganizationTicketTierList.propTypes = {
+  eventItem: PropTypes.object.isRequired,
+  onClickHandler: PropTypes.func.isRequired,
+};
+
 export default function OrganizationTicketTierList({ eventItem, onClickHandler }) {
   const {
     page,
     order,
     orderBy,
     rowsPerPage,
-    setPage,
     selected,
     setSelected,
-    onSelectRow,
     onSelectAllRows,
     onSort,
     onChangePage,
@@ -65,11 +64,8 @@ export default function OrganizationTicketTierList({ eventItem, onClickHandler }
 
   const _eventId = eventItem._id;
 
-  const { themeStretch } = useSettings();
   const { organization, getAccessToken } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-
-  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState([]);
@@ -80,6 +76,7 @@ export default function OrganizationTicketTierList({ eventItem, onClickHandler }
     return () => {
       controller.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getEvents = async (controller) => {
@@ -98,25 +95,16 @@ export default function OrganizationTicketTierList({ eventItem, onClickHandler }
       .catch((err) => {
         if (!controller.signal.aborted) {
           enqueueSnackbar(`Unable to retrieve ticket tiers.`, { variant: 'error' });
+          console.error(err);
         }
         setIsLoading(false);
       });
-  };
-
-  const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
   };
 
   const handleDeleteRows = (selected) => {
     const deleteRows = tableData.filter((row) => !selected.includes(row.id));
     setSelected([]);
     setTableData(deleteRows);
-  };
-
-  const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.eCommerce.edit(paramCase(id)));
   };
 
   const dataFiltered = applySortFilter({
