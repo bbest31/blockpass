@@ -6,13 +6,11 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { styled } from '@mui/material/styles';
-import { Tab, Box, Grid, Card, Typography, Stack, Button, Container, FormControlLabel, Switch } from '@mui/material';
+import { Box, Grid, Card, Typography, Stack, Button, Container, FormControlLabel, Switch } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // components
-import Iconify from '../../../../components/Iconify';
 import { FormProvider, RHFEditor, RHFTextField, RHFUploadMultiFile } from '../../../../components/hook-form';
 // utils
 import axiosInstance from '../../../../utils/axios';
@@ -39,17 +37,16 @@ export default function OrganizationCreateEventInfo({ handleNext, onEventCreated
   const { organization, getAccessToken } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [eventName, setEventName] = useState('');
-  const [location, setLocation] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [startTime, setStartTime] = useState('');
+  const [eventName] = useState('');
+  const [location] = useState('');
+  const [startDate] = useState('');
+  const [startTime] = useState('');
   const [endDate, setEndDate] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [website, setWebsite] = useState('');
-  const [description, setDescription] = useState('');
+  const [website] = useState('');
+  const [description] = useState('');
   const [displayEndDate, setDisplayEndDate] = useState(endDate !== '');
-  const [removeEndDate, setRemoveEndDate] = useState(false);
-  const [images, setImages] = useState([]);
+  const [images] = useState([]);
 
   const methods = useForm({
     resolver: yupResolver(UpdateEventSchema),
@@ -81,7 +78,6 @@ export default function OrganizationCreateEventInfo({ handleNext, onEventCreated
       setEndTime('');
       setValue('endDate', '');
       setValue('endTime', '');
-      setRemoveEndDate(true);
     }
     setDisplayEndDate(!displayEndDate);
   };

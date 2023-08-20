@@ -8,9 +8,6 @@ import { Tab, Box, Tabs } from '@mui/material';
 import { PATH_APP } from '../../../../routes/paths';
 // hooks
 import useTabs from '../../../../hooks/useTabs';
-import useSettings from '../../../../hooks/useSettings';
-// _mock_
-import { _userWallets } from '../../../../_mock';
 // components
 import Iconify from '../../../../components/Iconify';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
@@ -32,8 +29,6 @@ OrganizationEventDetails.propTypes = {
 };
 
 export default function OrganizationEventDetails({ eventItem }) {
-  const { themeStretch } = useSettings();
-
   const { currentTab, onChangeTab } = useTabs('insights');
   const [selectedTicketTier, setSelectedTicketTier] = useState(null);
 
@@ -41,7 +36,7 @@ export default function OrganizationEventDetails({ eventItem }) {
 
   useEffect(() => {
     trackEvent(mixpanel, 'Navigate', { page: `Event Details ${eventItem._id}`, tab: 'insights' });
-  }, []);
+  }, [mixpanel, eventItem]);
 
   const onTicketTierSelectedHandler = (ticketTier) => {
     setSelectedTicketTier(ticketTier);

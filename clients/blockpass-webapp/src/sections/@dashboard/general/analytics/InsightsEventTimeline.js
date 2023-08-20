@@ -16,7 +16,7 @@ InsightsEventTimeline.propTypes = {
   chartData: PropTypes.array.isRequired,
 };
 
-export default function InsightsEventTimeline({ title, subheader, chartLabels, chartData, ...other }) {
+export default function InsightsEventTimeline({ title, subheader, chartData, ...other }) {
   const chartOptions = merge(BaseOptionChart(), {
     plotOptions: { bar: { columnWidth: '16%' } },
     fill: { type: chartData.map((i) => i.fill) },

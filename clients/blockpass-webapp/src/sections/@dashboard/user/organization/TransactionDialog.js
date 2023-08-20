@@ -1,7 +1,13 @@
+import PropTypes from 'prop-types';
 // @mui
 import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
 
 // ----------------------------------------------------------------------
+
+TransactionDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onCloseHandler: PropTypes.func.isRequired,
+};
 
 export default function TransactionDialog({ isOpen, onCloseHandler }) {
   return (

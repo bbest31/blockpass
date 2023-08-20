@@ -74,8 +74,10 @@ function AuthProvider({ children }) {
         auth0Client = new Auth0Client({
           client_id: AUTH0_API.clientId,
           domain: AUTH0_API.domain,
+          authorizationParams: {
           redirect_uri: `${window.location.origin}${PATH_AFTER_LOGIN}`,
           audience: AUTH0_API.audience,
+          },
         });
 
         await auth0Client.checkSession();

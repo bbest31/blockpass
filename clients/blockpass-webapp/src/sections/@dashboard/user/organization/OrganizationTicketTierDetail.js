@@ -57,6 +57,7 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
     return () => {
       controller.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
     return () => {
       controller.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdated]);
 
   useEffect(() => {

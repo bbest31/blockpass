@@ -2,29 +2,11 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 // @mui
 import { styled } from '@mui/material/styles';
-import {
-  Tab,
-  Tabs,
-  Stack,
-  Button,
-  Step,
-  Stepper,
-  Typography,
-  Container,
-  StepLabel,
-  StepConnector,
-} from '@mui/material';
+import { Stack, Button, Step, Stepper, Typography, Container, StepLabel, StepConnector } from '@mui/material';
 // routes
 import { PATH_APP } from '../../../../routes/paths';
-// hooks
-import useAuth from '../../../../hooks/useAuth';
-import useTabs from '../../../../hooks/useTabs';
-// components
-import Iconify from '../../../../components/Iconify';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 import { OrganizationCreateEventInfo, OrganizationCreateEventTicketTier } from '.';
-// utils
-import axiosInstance from '../../../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -45,8 +27,6 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
 
 const STEPS = ['Event Info', 'Ticket Tier(s)', 'Enhancements'];
 
-OrganizationCreateEvent.propTypes = {};
-
 // ----------------------------------------------------------------------
 
 export default function OrganizationCreateEvent() {
@@ -60,8 +40,7 @@ export default function OrganizationCreateEvent() {
   const onEventCreated = (id, data) => {
     setEventId(id);
     setEventInformation(data);
-  }
-
+  };
 
   return (
     <>
@@ -89,7 +68,13 @@ export default function OrganizationCreateEvent() {
 
       <Container sx={{ mt: '40px', py: '24px' }}>
         {activeStep === 0 && <OrganizationCreateEventInfo handleNext={handleNext} onEventCreated={onEventCreated} />}
-        {activeStep === 1 && <OrganizationCreateEventTicketTier eventId={eventId} eventInformation={eventInformation} handleNext={handleNext} />}
+        {activeStep === 1 && (
+          <OrganizationCreateEventTicketTier
+            eventId={eventId}
+            eventInformation={eventInformation}
+            handleNext={handleNext}
+          />
+        )}
         {activeStep === 2 && <OrganizationCreateEventEnhancement handleNext={handleNext} />}
       </Container>
     </>
@@ -98,22 +83,24 @@ export default function OrganizationCreateEvent() {
 
 // ----------------------------------------------------------------------
 
-const OrganizationCreateEventEnhancement = ({ handleNext }) => {
-  return (
-    <>
-      <Typography variant="h4">{'Ticket Enhancements'}</Typography>
-      <p>
-        Showcase exclusive perks and rewards associated with ownership of a particular ticket tier. These highlight the
-        many things you can offer as added value beyond the normal utility of the ticket.
-      </p>
-      <br />
-      <p>Go to your ticket tier details page via the Event screen to manage ticket enhancements!</p>
-
-      <Stack direction="row" flexWrap="wrap" spacing={3} justifyContent="flex-end" my={5}>
-        <Button type="submit" variant="contained" onClick={handleNext} sx={{ px: '22px', py: '11px' }}>
-          Finish
-        </Button>
-      </Stack>
-    </>
-  );
+OrganizationCreateEventEnhancement.propTypes = {
+  handleNext: PropTypes.func,
 };
+
+const OrganizationCreateEventEnhancement = ({ handleNext }) => (
+  <>
+    <Typography variant="h4">{'Ticket Enhancements'}</Typography>
+    <p>
+      Showcase exclusive perks and rewards associated with ownership of a particular ticket tier. These highlight the
+      many things you can offer as added value beyond the normal utility of the ticket.
+    </p>
+    <br />
+    <p>Go to your ticket tier details page via the Event screen to manage ticket enhancements!</p>
+
+    <Stack direction="row" flexWrap="wrap" spacing={3} justifyContent="flex-end" my={5}>
+      <Button type="submit" variant="contained" onClick={handleNext} sx={{ px: '22px', py: '11px' }}>
+        Finish
+      </Button>
+    </Stack>
+  </>
+);

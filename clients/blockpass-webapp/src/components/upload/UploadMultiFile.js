@@ -30,6 +30,8 @@ UploadMultiFile.propTypes = {
   onRemoveAll: PropTypes.func,
   helperText: PropTypes.node,
   sx: PropTypes.object,
+  uploadButton: PropTypes.bool,
+  removeAllButton: PropTypes.bool,
 };
 
 export default function UploadMultiFile({

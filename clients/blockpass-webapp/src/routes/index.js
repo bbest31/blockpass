@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Navigate, useRoutes, useLocation } from 'react-router-dom';
+import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import MainLayout from '../layouts/main';
 import DashboardLayout from '../layouts/dashboard';
@@ -14,16 +14,12 @@ import LoadingScreen from '../components/LoadingScreen';
 
 // ----------------------------------------------------------------------
 
-const Loadable = (Component) => (props) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { pathname } = useLocation();
-
-  return (
+const Loadable = (Component) => (props) =>
+  (
     <Suspense fallback={<LoadingScreen isDashboard />}>
       <Component {...props} />
     </Suspense>
   );
-};
 
 export default function Router() {
   return useRoutes([
@@ -71,7 +67,7 @@ export default function Router() {
       ),
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
-        { path: 'dashboard', element: <GeneralApp /> },
+        { path: 'dashboard', element: <div>Dashboard</div> },
         { path: 'events', element: <Events /> },
         { path: 'account', element: <UserAccount /> },
         { path: 'token-gating', element: <TokenGating /> },
@@ -100,9 +96,6 @@ const EventPreview = Loadable(lazy(() => import('../pages/EventPreview')));
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
-
-// GENERAL
-const GeneralApp = Loadable(lazy(() => import('../pages/dashboard/GeneralApp')));
 
 // USER
 const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')));

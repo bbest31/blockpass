@@ -3,8 +3,6 @@ import { forwardRef } from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 // @mui
 import { Box, Link, ListItemText, Typography, Tooltip } from '@mui/material';
-// guards
-import RoleBasedGuard from '../../../guards/RoleBasedGuard';
 //
 import Iconify from '../../Iconify';
 import { ListItemStyle, ListItemTextStyle, ListItemIconStyle } from './style';
@@ -14,11 +12,9 @@ import { isExternalLink } from '..';
 
 // HANDLE SHOW ITEM BY ROLE
 const ListItem = forwardRef((props, ref) => (
-  <RoleBasedGuard roles={props.roles}>
-    <ListItemStyle {...props} ref={ref}>
-      {props.children}
-    </ListItemStyle>
-  </RoleBasedGuard>
+  <ListItemStyle {...props} ref={ref}>
+    {props.children}
+  </ListItemStyle>
 ));
 
 ListItem.propTypes = {

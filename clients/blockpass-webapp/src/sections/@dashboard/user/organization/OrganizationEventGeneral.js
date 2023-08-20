@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useSnackbar } from 'notistack';
@@ -18,6 +19,10 @@ import { FormProvider, RHFEditor, RHFTextField } from '../../../../components/ho
 // ----------------------------------------------------------------------
 
 const singleColumn = { gridColumn: '1 / span 2' };
+
+OrganizationEventGeneral.propTypes = {
+  eventItem: PropTypes.object.isRequired,
+};
 
 export default function OrganizationEventGeneral({ eventItem }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -239,18 +244,22 @@ export default function OrganizationEventGeneral({ eventItem }) {
 
 // ----------------------------------------------------------------------
 
-const EditButton = ({ onClickHandler }) => {
-  return (
-    <LoadingButton variant="contained" onClick={onClickHandler}>
-      Edit Info
-    </LoadingButton>
-  );
+EditButton.propTypes = {
+  onClickHandler: PropTypes.func,
 };
 
-const SaveButton = ({ loading }) => {
-  return (
-    <LoadingButton type="submit" variant="contained" loading={loading}>
-      Save Changes
-    </LoadingButton>
-  );
+const EditButton = ({ onClickHandler }) => (
+  <LoadingButton variant="contained" onClick={onClickHandler}>
+    Edit Info
+  </LoadingButton>
+);
+
+SaveButton.propTypes = {
+  loading: PropTypes.bool,
 };
+
+const SaveButton = ({ loading }) => (
+  <LoadingButton type="submit" variant="contained" loading={loading}>
+    Save Changes
+  </LoadingButton>
+);

@@ -1,6 +1,7 @@
-import Web3 from 'web3';
 import contractArtifact from '../contracts/BlockPassTicket.json';
 import { MARKETPLACE_CONTRACT } from '../config';
+
+const  { Web3 } = require('web3');
 
 export function getWalletAddress(accountChangedHandler) {
   const provider = window.ethereum;
@@ -28,10 +29,9 @@ export async function deployTicketTierContract(ticketTier, eventInfo) {
   const web3 = new Web3(window.ethereum);
   const contract = new web3.eth.Contract(contractArtifact.abi);
 
-  const { title, description, tokenURI, primarySalePrice, maxMarkup, liveDate, maxSupply } = ticketTier;
+  const { title, tokenURI, primarySalePrice, maxMarkup, liveDate, maxSupply } = ticketTier;
 
   const closeDate = new Date(eventInfo.endDate) / 1000;
-  const feeNumerator = 10;
 
   const ticketTierInformation = [
     tokenURI,

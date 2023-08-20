@@ -36,7 +36,7 @@ OrganizationTicketTierEnhancementDialog.propTypes = {
   enhancement: PropTypes.object,
   createHandler: PropTypes.func,
   updateHandler: PropTypes.func,
-  deleteHandler: PropTypes.func
+  deleteHandler: PropTypes.func,
 };
 
 export default function OrganizationTicketTierEnhancementDialog({
@@ -123,6 +123,7 @@ export default function OrganizationTicketTierEnhancementDialog({
     } else {
       setEditable(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enhancement]);
 
   const onSubmit = async (data) => {
@@ -314,7 +315,7 @@ const EditButton = ({ onClickHandler }) => (
 );
 
 EditButton.propTypes = {
-  onClickHandler: PropTypes.func
+  onClickHandler: PropTypes.func,
 };
 
 const SaveButton = ({ loading }) => (
@@ -324,5 +325,5 @@ const SaveButton = ({ loading }) => (
 );
 
 SaveButton.propTypes = {
-  loading: PropTypes.bool
+  loading: PropTypes.bool,
 };

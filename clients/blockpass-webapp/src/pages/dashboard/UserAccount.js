@@ -9,8 +9,6 @@ import { PATH_APP } from '../../routes/paths';
 import useTabs from '../../hooks/useTabs';
 import useAuth from '../../hooks/useAuth';
 import useSettings from '../../hooks/useSettings';
-// _mock_
-import { _userWallets } from '../../_mock';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
@@ -34,7 +32,7 @@ export default function UserAccount() {
 
   useEffect(() => {
     trackEvent(mixpanel, 'Navigate', { page: 'UserAccount', tab: 'my_info' });
-  }, []);
+  }, [mixpanel]);
 
   const ACCOUNT_TABS = [
     {

@@ -41,8 +41,7 @@ AccountBillingPaymentMethod.propTypes = {
   onCancel: PropTypes.func,
 };
 
-export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, onCancel }) {  
-
+export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, onCancel }) {
   const { enqueueSnackbar } = useSnackbar();
   const [wallets, setWallets] = useState(metadata);
   const { organization, getAccessToken, refreshOrg } = useAuth();
@@ -50,8 +49,8 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
   const [openMenu, setOpenMenuActions] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [wrongNetwork, setWrongNetwork] = useState(false);
-  const [currentWallet, setCurrentWallet]  = useState('');
-  
+  const [currentWallet, setCurrentWallet] = useState('');
+
   const mixpanel = useMixpanel();
 
   const handleClick = (event) => {
@@ -78,6 +77,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
 
   useEffect(() => {
     connectWallet();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = () => {
