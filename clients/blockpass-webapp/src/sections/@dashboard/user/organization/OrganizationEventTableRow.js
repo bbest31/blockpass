@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { sentenceCase } from 'change-case';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { TableRow, TableCell, Typography, MenuItem, Box, Link } from '@mui/material';
+import { TableRow, TableCell, Typography, MenuItem, Box, Link, Avatar, Stack } from '@mui/material';
 // components
 import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
@@ -39,6 +39,13 @@ export default function OrganizationEventTableRow({ row, onEditRow, onDeleteRow,
     setOpenMenuActions(null);
   };
 
+  const truncateString = (str) => {
+    if (str.length > 50) {
+      return `${str.substring(0, 47)}...`;
+    }
+    return str;
+  };
+
   const displayContractState = () => {
     let color = 'success';
     let state = 'active';
@@ -64,21 +71,27 @@ export default function OrganizationEventTableRow({ row, onEditRow, onDeleteRow,
 
   return (
     <TableRow hover>
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Box sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}>
-          <img
-            alt={ticketTierDetail.name}
-            src={ticketTierDetail.tokenURI}
-            style={{ width: 48, height: 48, objectFit: 'contain' }}
-          />
-        </Box>
+      <Link component="button" onClick={() => onClickHandler(row)} underline="none" width={'100%'}>
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}>
+            <Avatar
+              alt={ticketTierDetail.name}
+              src={ticketTierDetail.tokenURI}
+              sx={{ width: 48, height: 48 }}
+              imgProps={{ sx: { objectFit: 'contain' } }}
+            />
+          </Box>
 
-        <Typography variant="subtitle2" noWrap>
-          <Link component="button" onClick={() => onClickHandler(row)}>
-            {ticketTierDetail.name}
-          </Link>
-        </Typography>
-      </TableCell>
+          <Stack>
+            <Typography variant="subtitle1" noWrap>
+              {ticketTierDetail.name}
+            </Typography>
+            <Typography variant="body1">
+              {ticketTierDetail.description && truncateString(ticketTierDetail.description)}
+            </Typography>
+          </Stack>
+        </TableCell>
+      </Link>
 
       <TableCell>{ticketTierDetail.supply - ticketTierDetail.totalTicketsForSale}</TableCell>
 
