@@ -1,4 +1,7 @@
-import { useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAccount, useConnect, useSignMessage, useDisconnect } from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
 // @mui
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, Button, AppBar, Toolbar, Container } from '@mui/material';
@@ -11,10 +14,11 @@ import cssStyles from '../../utils/cssStyles';
 import { HEADER } from '../../config';
 // components
 import Logo from '../../components/Logo';
-//
+
 import MenuDesktop from './MenuDesktop';
 import MenuMobile from './MenuMobile';
 import useMenuConfig from './MenuConfig';
+import axiosInstance from '../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -55,7 +59,63 @@ export default function MainHeader() {
 
   const isHome = pathname === '/';
 
-  const navConfig = useMenuConfig(false); // TODO: check to see if attendee is authenticated.
+  const navigate = useNavigate();
+
+  const { connectAsync } = useConnect();
+  const { disconnectAsync } = useDisconnect();
+  const { isConnected } = useAccount();
+  const { signMessageAsync } = useSignMessage();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(isConnected);
+
+  const navConfig = useMenuConfig(isAuthenticated);
+
+  const handleAuth = async () => {
+    try{
+    // disconnects the web3 provider if it's already active
+    if (isConnected) {
+      await disconnectAsync();
+    }
+    // enabling the web3 provider metamask
+    const { account } = await connectAsync({
+      connector: new InjectedConnector(),
+    });
+
+    const userData = { address: account, chain: 1 };
+    // making a post request to our 'request-message' endpoint
+    const { data } = await axiosInstance.post('/request-message',
+      userData,
+      {
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
+    const { message } = data;
+    // signing the received message via metamask
+    const signature = await signMessageAsync({ message });
+
+    await axiosInstance.post('/verify',
+      {
+        message,
+        signature,
+      },
+      { withCredentials: true, } // set cookie from Express server
+    );
+
+    setIsAuthenticated(true);
+      navigate('/tickets');
+    } catch (err) {
+      // user did not sign message
+      console.error(err);
+    }
+   
+  };
+
+  const logout = async () => {
+    await axiosInstance.get('/logout', {withCredentials: true});
+    setIsAuthenticated(false);
+  }
 
   return (
     <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent' }}>
@@ -83,14 +143,17 @@ export default function MainHeader() {
 
           {isDesktop && <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
 
-          <Button
-            variant="contained"
-            target="_blank"
-            rel="noopener"
-            href="https://material-ui.com/store/items/minimal-dashboard/"
+          {isAuthenticated ? <Button
+            variant="text"
+            onClick={()=>logout()}
           >
-            Connect Wallet
-          </Button>
+            Sign Out
+          </Button>  : <Button
+            variant="contained"
+            onClick={()=>handleAuth()}
+          >
+            Sign In
+          </Button>}
 
           {!isDesktop && <MenuMobile isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
         </Container>

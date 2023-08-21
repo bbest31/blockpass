@@ -13,17 +13,10 @@ const useMenuConfig = (isAuthenticated) => {
   if (isAuthenticated) {
     menuConfig.push({
       title: 'My Tickets',
-      icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
+      icon: <Iconify icon={'mdi:ticket-outline'} {...ICON_SIZE} />,
       path: '/tickets',
     });
-  } else {
-    menuConfig.push({
-      title: 'Sign In',
-      icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
-      path: '/sign-in',
-    });
   }
-
   return menuConfig;
 };
 

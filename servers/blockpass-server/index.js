@@ -22,11 +22,19 @@ const routes = require('./src/routes/index.js');
 // APP SETUP
 const app = express();
 const port = process.env.PORT;
-const regex = /^(?!\/(events|logout|verify|authenticate|request-message|ticket-tiers)(?:\/|$)).*$/;
+const checkJWTRegex = /^(?!\/(events|logout|verify|authenticate|request-message|ticket-tiers)(?:\/|$)).*$/;
+const corsRegex = /^(?!\/(logout|verify|authenticate)(?:\/|$)).*$/;
+const withCredentialsRegex = /^\/(logout|verify|authenticate)$/;
 
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CLIENT_URL || 'http://localhost:3030',
+  credentials: true,
+};
+
+app.use(corsRegex, cors());
+app.use(withCredentialsRegex, cors(corsOptions));
 app.use(helmet());
-app.use(regex, checkJwt);
+app.use(checkJWTRegex, checkJwt);
 
 async function main() {
   mongoose.set('strictQuery', true);
