@@ -15,6 +15,9 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { MixpanelProvider } from 'react-mixpanel-browser';
+import { createConfig, configureChains, WagmiConfig } from 'wagmi';
+import { publicProvider } from 'wagmi/providers/public';
+import { chains } from './config';
 // @mui
 import { MIXPANEL_API, MIXPANEL_TOKEN } from './config';
 // contexts
@@ -30,15 +33,25 @@ import reportWebVitals from './reportWebVitals';
 
 // ----------------------------------------------------------------------
 
+const { publicClient, webSocketPublicClient } = configureChains([...chains], [publicProvider()]);
+
+const config = createConfig({
+  autoConnect: true,
+  publicClient,
+  webSocketPublicClient,
+});
+
 createRoot(document.getElementById('root')).render(
   <MixpanelProvider config={{ ...MIXPANEL_API }} token={MIXPANEL_TOKEN}>
     <AuthProvider>
       <HelmetProvider>
         <SettingsProvider>
           <CollapseDrawerProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
+            <WagmiConfig config={config}>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </WagmiConfig>
           </CollapseDrawerProvider>
         </SettingsProvider>
       </HelmetProvider>

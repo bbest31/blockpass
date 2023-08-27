@@ -129,7 +129,7 @@ function MenuDesktopItem({ item, isHome, isOpen, isOffset, onOpen, onClose }) {
             display: 'flex',
             cursor: 'pointer',
             alignItems: 'center',
-            ...(isHome && { color: 'common.white' }),
+            ...(isHome && { color: 'text.primary' }),
             ...(isOffset && { color: 'text.primary' }),
             ...(isOpen && { opacity: 0.48 }),
           }}
@@ -234,29 +234,13 @@ function MenuDesktopItem({ item, isHome, isOpen, isOffset, onOpen, onClose }) {
     );
   }
 
-  if (title === 'Documentation') {
-    return (
-      <LinkStyle
-        href={path}
-        target="_blank"
-        rel="noopener"
-        sx={{
-          ...(isHome && { color: 'common.white' }),
-          ...(isOffset && { color: 'text.primary' }),
-        }}
-      >
-        {title}
-      </LinkStyle>
-    );
-  }
-
   return (
     <LinkStyle
       to={path}
       component={RouterLink}
       end={path === '/'}
       sx={{
-        ...(isHome && { color: 'common.white' }),
+        ...(isHome && { color: 'text.primary' }),
         ...(isOffset && { color: 'text.primary' }),
         '&.active': {
           color: 'primary.main',
