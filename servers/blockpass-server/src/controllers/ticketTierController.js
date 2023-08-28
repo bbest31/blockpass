@@ -6,8 +6,6 @@ const {
   postTicketTier,
   getTicketTierStats,
 } = require('../services/ticketTierServices');
-const { httpResponseMessage } = require('../utils/responseMessages.js');
-const logger = require('../utils/logger');
 
 /**
  * Read all ticket tiers from a specific event.

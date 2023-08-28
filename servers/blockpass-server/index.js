@@ -22,8 +22,11 @@ const routes = require('./src/routes/index.js');
 // APP SETUP
 const app = express();
 const port = process.env.PORT;
-const checkJWTRegex = /^(?!\/(events|logout|verify|authenticate|request-message|ticket-tiers)(?:\/|$)).*$/;
+// routes to ignore when using the JWT middlware meant for Auth0.
+const checkJWTRegex = /^(?!\/(events|logout|verify|authenticate|request-message|ticket-tiers|attendees)(?:\/|$)).*$/;
+// routes for CORS to ignore since we are using credentials false for most.
 const corsRegex = /^(?!\/(logout|verify|authenticate)(?:\/|$)).*$/;
+// routes to use with credentials meant for the attendee auth.
 const withCredentialsRegex = /^\/(logout|verify|authenticate)$/;
 
 const corsOptions = {
@@ -53,7 +56,7 @@ app.use('', routes);
 
 // request message to be signed by client for attendee authentication
 app.post('/request-message', async (req, res) => {
-  const { address, chain, network } = req.body;
+  const { address, chain } = req.body;
 
   try {
     const message = await Moralis.Auth.requestMessage({

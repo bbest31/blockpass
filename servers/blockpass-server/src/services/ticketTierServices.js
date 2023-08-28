@@ -116,6 +116,37 @@ const getTicketTier = async (ticketTierId) => {
 };
 
 /**
+ * Retrieves all information about a ticket tier given it's id.
+ * @param {string} contract
+ * @returns
+ */
+const getTicketTierByContract = async (address) => {
+  // get ticket tier db data
+  const filter = `0x${address.slice(2).toUpperCase()}`;
+  const ticketTier = await TicketTier.findOne({ contract: { $regex: filter, $options: 'i' } })
+    .populate('enhancements')
+    .lean()
+    .exec()
+    .catch((err) => {
+      if (!(err instanceof mongoose.Error.CastError)) {
+        throw err;
+      }
+    });
+  if (!ticketTier) {
+    return {};
+  }
+
+  // get ticket tier smart contract data
+  const contractData = await getTicketTierDetails(ticketTier.contract).catch((err) => {
+    throw err;
+  });
+
+  let response = { ...contractData, ...ticketTier };
+
+  return response;
+};
+
+/**
  * Reads all owners of an NFT by contract address.
  * @param {*} ticketTierId
  * @param {*} cursor
@@ -259,6 +290,7 @@ const processEventStats = async (event, stats, contract, takeRate) => {
 module.exports = {
   getTicketTiers,
   getTicketTier,
+  getTicketTierByContract,
   getTicketTierOwners,
   getTicketTierStats,
   postTicketTier,
