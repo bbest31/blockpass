@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount, useConnect, useSignMessage, useDisconnect } from "wagmi";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import { useAccount, useConnect, useSignMessage, useDisconnect } from 'wagmi';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 // @mui
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, Button, AppBar, Toolbar, Container } from '@mui/material';
@@ -71,51 +71,47 @@ export default function MainHeader() {
   const navConfig = useMenuConfig(isAuthenticated);
 
   const handleAuth = async () => {
-    try{
-    // disconnects the web3 provider if it's already active
-    if (isConnected) {
-      await disconnectAsync();
-    }
-    // enabling the web3 provider metamask
-    const { account } = await connectAsync({
-      connector: new InjectedConnector(),
-    });
-
-    const userData = { address: account, chain: 1 };
-    // making a post request to our 'request-message' endpoint
-    const { data } = await axiosInstance.post('/request-message',
-      userData,
-      {
-        headers: {
-          "content-type": "application/json",
-        },
+    try {
+      // disconnects the web3 provider if it's already active
+      if (isConnected) {
+        await disconnectAsync();
       }
-    );
-    const { message } = data;
-    // signing the received message via metamask
-    const signature = await signMessageAsync({ message });
+      // enabling the web3 provider metamask
+      const { account } = await connectAsync({
+        connector: new InjectedConnector(),
+      });
 
-    await axiosInstance.post('/verify',
-      {
-        message,
-        signature,
-      },
-      { withCredentials: true, } // set cookie from Express server
-    );
+      const userData = { address: account, chain: 1 }; // TODO: get EIP-155 chain id
+      // making a post request to our 'request-message' endpoint
+      const { data } = await axiosInstance.post('/request-message', userData, {
+        headers: {
+          'content-type': 'application/json',
+        },
+      });
+      const { message } = data;
+      // signing the received message via metamask
+      const signature = await signMessageAsync({ message });
 
-    setIsAuthenticated(true);
-      navigate('/tickets');
+      await axiosInstance.post(
+        '/verify',
+        {
+          message,
+          signature,
+        },
+        { withCredentials: true } // set cookie from Express server
+      );
+
+      setIsAuthenticated(true);
     } catch (err) {
       // user did not sign message
       console.error(err);
     }
-   
   };
 
   const logout = async () => {
-    await axiosInstance.get('/logout', {withCredentials: true});
+    await axiosInstance.get('/logout', { withCredentials: true });
     setIsAuthenticated(false);
-  }
+  };
 
   return (
     <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent' }}>
@@ -143,17 +139,15 @@ export default function MainHeader() {
 
           {isDesktop && <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
 
-          {isAuthenticated ? <Button
-            variant="text"
-            onClick={()=>logout()}
-          >
-            Sign Out
-          </Button>  : <Button
-            variant="contained"
-            onClick={()=>handleAuth()}
-          >
-            Sign In
-          </Button>}
+          {isAuthenticated ? (
+            <Button variant="text" onClick={() => logout()}>
+              Sign Out
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={() => handleAuth()}>
+              Sign In
+            </Button>
+          )}
 
           {!isDesktop && <MenuMobile isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
         </Container>
