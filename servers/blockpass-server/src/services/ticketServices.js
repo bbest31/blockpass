@@ -9,7 +9,6 @@ const { getEvmChain } = require('../utils/web3Utils');
  */
 const getUserTickets = async (wallet) => {
   const chain = getEvmChain();
-  console.log(chain);
 
   if (!chain) {
     let err = new Error('Can not determine EVM Chain.');
