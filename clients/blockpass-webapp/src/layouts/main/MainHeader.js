@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAccount, useConnect, useSignMessage, useDisconnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 // @mui
@@ -58,8 +58,6 @@ export default function MainHeader() {
   const isDesktop = useResponsive('up', 'md');
 
   const isHome = pathname === '/';
-
-  const navigate = useNavigate();
 
   const { connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
