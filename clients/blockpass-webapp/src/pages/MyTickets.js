@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { capitalCase } from 'change-case';
+import { useAccount } from 'wagmi';
 // @mui
 import { Typography, Grid, Tab, Tabs, Box } from '@mui/material';
 // hook
@@ -10,18 +11,16 @@ import useTabs from '../hooks/useTabs';
 import Page from '../components/Page';
 // sections
 import GallerySkeleton from '../components/GallerySkeleton';
-import EventsGallery from '../sections/EventsGallery';
+import TicketsGallery from '../sections/TicketsGallery';
 // utils
 import axiosInstance from '../utils/axios';
-// config
-import { SERVER_API_KEY } from '../config';
 
 // ----------------------------------------------------------------------
 
 export default function MyTickets() {
   const { enqueueSnackbar } = useSnackbar();
   const { themeStretch } = useSettings();
-  const { account, setAccount } = useState(null);
+  const { address } = useAccount();
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { currentTab, onChangeTab } = useTabs('upcoming_events');
@@ -29,15 +28,23 @@ export default function MyTickets() {
   const TABS = [
     {
       value: 'upcoming_events',
-      component: <h1>Upcoming Events</h1>,
+      component: isLoading ? (
+        <GallerySkeleton items={6} h={350} w={350} />
+      ) : (
+        <TicketsGallery gallery={tickets.filter((ticket) => new Date(ticket.tier.eventEndDate) > Date.now())} />
+      ),
     },
     {
       value: 'past_events',
-      component: <h1>Past Events</h1>,
+      component: isLoading ? (
+        <GallerySkeleton items={6} h={350} w={350} />
+      ) : (
+        <TicketsGallery gallery={tickets.filter((ticket) => new Date(ticket.tier.eventEndDate) <= Date.now())} />
+      ),
     },
     {
       value: 'listed_for_sale',
-      component: <h1>Listed For Sale</h1>,
+      component: isLoading ? <GallerySkeleton items={6} h={350} w={350} /> : <TicketsGallery gallery={tickets} />,
     },
   ];
 
@@ -55,19 +62,19 @@ export default function MyTickets() {
   }, []);
 
   const getTickets = (controller) => {
-    // axiosInstance
-    //   .get(`/attendees/${account}/tickets`)
-    //   .then((res) => {
-    //     setTickets(res.data);
-    //     setIsLoading(false);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //     if (!controller.signal.aborted) {
-    //       enqueueSnackbar(`Unable to retrieve tickets.`, { variant: 'error' });
-    //     }
-    //     setIsLoading(false);
-    //   });
+    axiosInstance
+      .get(`/attendees/${address}/tickets`, { withCredentials: true })
+      .then((res) => {
+        setTickets(res.data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!controller.signal.aborted) {
+          enqueueSnackbar(`Unable to retrieve tickets.`, { variant: 'error' });
+        }
+        setIsLoading(false);
+      });
   };
 
   return (

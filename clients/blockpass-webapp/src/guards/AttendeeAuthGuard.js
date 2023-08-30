@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import { PATH_PAGE } from '../routes/paths';
+import axiosInstance from '../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -11,11 +12,21 @@ AttendeeAuthGuard.propTypes = {
 };
 
 export default function AttendeeAuthGuard({ children }) {
+  const navigate = useNavigate();
   const { isConnected } = useAccount();
 
   const { pathname } = useLocation();
 
   const [requestedLocation, setRequestedLocation] = useState(null);
+
+  useEffect(() => {
+    axiosInstance(`/authenticate`, {
+      withCredentials: true,
+    }).catch(() => {
+      navigate(PATH_PAGE.page403);
+    });
+    // eslint-disable-next-line
+  }, []);
 
   if (!isConnected) {
     if (pathname !== requestedLocation) {

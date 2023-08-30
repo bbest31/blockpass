@@ -11,7 +11,7 @@ import palette from '../theme/palette';
 import { fDate } from '../utils/formatTime';
 import axiosInstance from '../utils/axios';
 // config
-import { SERVER_API_KEY } from '../config';
+import { SERVER_API_KEY, ENHANCEMENT_STYLE } from '../config';
 
 EventPreviewTicket.propTypes = {
   ticketTier: PropTypes.object.isRequired,
@@ -28,22 +28,6 @@ const truncateString = (str) => {
     return `${str.substring(0, 47)}...`;
   }
   return str;
-};
-
-const ENHANCEMENT_STYLE = {
-  Discount: {
-    icon: 'ic:outline-discount',
-    bgcolor: palette.light.error.dark,
-  },
-  Access: {
-    icon: 'solar:key-outline',
-    bgcolor: palette.light.info.dark,
-  },
-  Gift: {
-    icon: 'mdi:gift-outline',
-    bgcolor: palette.light.warning.main,
-  },
-  Reward: { icon: 'ph:medal', bgcolor: palette.light.secondary.dark },
 };
 
 const TierState = {

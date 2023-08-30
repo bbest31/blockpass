@@ -3,6 +3,8 @@ import { mainnet, polygonMumbai } from 'wagmi/chains';
 import { PATH_APP } from './routes/paths';
 import { NETWORKS } from './utils/networks';
 
+import palette from './theme/palette';
+
 // API
 // ----------------------------------------------------------------------
 
@@ -62,6 +64,24 @@ export const NAVBAR = {
 export const ICON = {
   NAVBAR_ITEM: 22,
   NAVBAR_ITEM_HORIZONTAL: 20,
+};
+
+// CONSTANTS
+
+export const ENHANCEMENT_STYLE = {
+  Discount: {
+    icon: 'ic:outline-discount',
+    bgcolor: palette.light.error.dark,
+  },
+  Access: {
+    icon: 'solar:key-outline',
+    bgcolor: palette.light.info.dark,
+  },
+  Gift: {
+    icon: 'mdi:gift-outline',
+    bgcolor: palette.light.warning.dark,
+  },
+  Reward: { icon: 'ph:medal', bgcolor: palette.light.secondary.dark },
 };
 
 // SETTINGS
