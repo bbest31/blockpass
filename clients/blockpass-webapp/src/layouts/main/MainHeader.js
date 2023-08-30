@@ -138,7 +138,7 @@ export default function MainHeader() {
           {isDesktop && <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
 
           {isAuthenticated ? (
-            <Button variant="text" onClick={() => logout()}>
+            <Button variant="text" sx={{ color: theme.palette.text.secondary }} onClick={() => logout()}>
               Sign Out
             </Button>
           ) : (

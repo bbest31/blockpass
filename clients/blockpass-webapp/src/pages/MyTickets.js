@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
+import { capitalCase } from 'change-case';
 // @mui
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, Tab, Tabs, Box } from '@mui/material';
 // hook
 import useSettings from '../hooks/useSettings';
+import useTabs from '../hooks/useTabs';
 // components
 import Page from '../components/Page';
 // sections
@@ -22,6 +24,26 @@ export default function MyTickets() {
   const { account, setAccount } = useState(null);
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { currentTab, onChangeTab } = useTabs('upcoming_events');
+
+  const TABS = [
+    {
+      value: 'upcoming_events',
+      component: <h1>Upcoming Events</h1>,
+    },
+    {
+      value: 'past_events',
+      component: <h1>Past Events</h1>,
+    },
+    {
+      value: 'listed_for_sale',
+      component: <h1>Listed For Sale</h1>,
+    },
+  ];
+
+  const handleChangeTab = (event, value) => {
+    onChangeTab(event, value);
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -57,8 +79,24 @@ export default function MyTickets() {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          Tickets
-          {/* {isLoading ? <GallerySkeleton items={6} /> : <EventsGallery gallery={tickets} />} */}
+          <Tabs
+            allowScrollButtonsMobile
+            variant="scrollable"
+            scrollButtons="auto"
+            value={currentTab}
+            onChange={handleChangeTab}
+          >
+            {TABS.map((tab) => (
+              <Tab disableRipple key={tab.value} label={capitalCase(tab.value)} value={tab.value} />
+            ))}
+          </Tabs>
+
+          <Box sx={{ mb: 5 }} />
+
+          {TABS.map((tab) => {
+            const isMatched = tab.value === currentTab;
+            return isMatched && <Box key={tab.value}>{tab.component}</Box>;
+          })}
         </Grid>
       </Grid>
     </Page>
