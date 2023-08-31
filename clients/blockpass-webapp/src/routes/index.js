@@ -7,6 +7,7 @@ import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
 // guards
 import GuestGuard from '../guards/GuestGuard';
 import AuthGuard from '../guards/AuthGuard';
+import AttendeeAuthGuard from '../guards/AttendeeAuthGuard';
 // config
 import { PATH_AFTER_LOGIN } from '../config';
 // components
@@ -14,12 +15,11 @@ import LoadingScreen from '../components/LoadingScreen';
 
 // ----------------------------------------------------------------------
 
-const Loadable = (Component) => (props) =>
-  (
-    <Suspense fallback={<LoadingScreen isDashboard />}>
-      <Component {...props} />
-    </Suspense>
-  );
+const Loadable = (Component) => (props) => (
+  <Suspense fallback={<LoadingScreen isDashboard />}>
+    <Component {...props} />
+  </Suspense>
+);
 
 export default function Router() {
   return useRoutes([
@@ -56,7 +56,20 @@ export default function Router() {
       element: <MainLayout />,
       children: [{ element: <EventPreview />, index: true }],
     },
-
+    {
+      path: '/tickets',
+      element: <MainLayout />,
+      children: [
+        {
+          element: (
+            <AttendeeAuthGuard>
+              <MyTickets />
+            </AttendeeAuthGuard>
+          ),
+          index: true,
+        },
+      ],
+    },
     // Event Organizer Dashboard Routes
     {
       path: 'dashboard',
@@ -92,6 +105,7 @@ export default function Router() {
 // MARKETPLACE
 const Home = Loadable(lazy(() => import('../pages/Home')));
 const EventPreview = Loadable(lazy(() => import('../pages/EventPreview')));
+const MyTickets = Loadable(lazy(() => import('../pages/MyTickets')));
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));

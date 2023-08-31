@@ -58,7 +58,7 @@ export default function MainHeader() {
   const isDesktop = useResponsive('up', 'md');
 
   const isHome = pathname === '/';
-
+  
   const navigate = useNavigate();
 
   const { connectAsync } = useConnect();
@@ -111,6 +111,7 @@ export default function MainHeader() {
   const logout = async () => {
     await axiosInstance.get('/logout', { withCredentials: true });
     setIsAuthenticated(false);
+    navigate('/');
   };
 
   return (
@@ -140,7 +141,7 @@ export default function MainHeader() {
           {isDesktop && <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
 
           {isAuthenticated ? (
-            <Button variant="text" onClick={() => logout()}>
+            <Button variant="text" sx={{ color: theme.palette.text.secondary }} onClick={() => logout()}>
               Sign Out
             </Button>
           ) : (

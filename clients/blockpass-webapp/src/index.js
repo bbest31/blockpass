@@ -17,9 +17,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { MixpanelProvider } from 'react-mixpanel-browser';
 import { createConfig, configureChains, WagmiConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import { chains } from './config';
 // @mui
-import { MIXPANEL_API, MIXPANEL_TOKEN } from './config';
+import { MIXPANEL_API, MIXPANEL_TOKEN, chains } from './config';
 // contexts
 import { SettingsProvider } from './contexts/SettingsContext';
 import { CollapseDrawerProvider } from './contexts/CollapseDrawerContext';

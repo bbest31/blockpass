@@ -30,7 +30,7 @@ const getUserTickets = async (wallet) => {
   for (let index = 0; index < nfts.length; index++) {
     const token = nfts[index];
     const tier = await getTicketTierByContract(token.token_address);
-    tickets.push({ token: token.token_id, tier });
+    tickets.push({ token: parseInt(token.token_id), tier });
   }
 
   return tickets;
