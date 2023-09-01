@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Grid, Link, Typography } from '@mui/material';
 // components
-import Iconify from '../../../../components/Iconify';
+import Iconify from '../components/Iconify';
 // config
-import { ENHANCEMENT_STYLE } from '../../../../config';
+import { ENHANCEMENT_STYLE } from '../config';
+
 // ----------------------------------------------------------------------
 
 const IconWrapperStyle = styled('div')(({ theme }) => ({
@@ -21,12 +22,12 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
   backgroundColor: `${alpha(theme.palette.primary.main, 0.08)}`,
 }));
 
-OrganizationTickerTierEnhancementItem.propTypes = {
+EnhancementItem.propTypes = {
   enhancement: PropTypes.object,
   onClickHandler: PropTypes.func,
 };
 
-export default function OrganizationTickerTierEnhancementItem({ enhancement, onClickHandler }) {
+export default function EnhancementItem({ enhancement, onClickHandler }) {
   const type = ENHANCEMENT_STYLE[enhancement.type.toLowerCase()];
   return (
     <Grid item xs={12} md={4}>

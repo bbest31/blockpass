@@ -113,15 +113,15 @@ export default function OrganizationTicketTierSummary({
         {ticketTierDetail.primarySalePrice} Wei
       </Typography>
 
-      <Divider sx={{ borderStyle: 'dashed' }} />
+      <Divider sx={{ borderStyle: 'solid' }} />
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 3 }}>
         <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
           Contract
         </Typography>
         <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
-          {ticketTierDetail.marketplaceContract.slice(0, 6)}...
-          {ticketTierDetail.marketplaceContract.substr(ticketTierDetail.marketplaceContract.length - 4)}
+          {ticketTierDetail.contract.slice(0, 6)}...
+          {ticketTierDetail.contract.substr(ticketTierDetail.contract.length - 4)}
         </Typography>
       </Stack>
 
@@ -154,7 +154,7 @@ export default function OrganizationTicketTierSummary({
 
       {!isClosed && (
         <>
-          <Divider sx={{ borderStyle: 'dashed' }} />
+          <Divider sx={{ borderStyle: 'solid' }} />
           <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
             {displayPauseButton()}
             <Button fullWidth size="large" color="error" variant="contained" onClick={closeTicketSaleHandler}>

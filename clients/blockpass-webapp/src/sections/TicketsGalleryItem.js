@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Grid, Card, Typography, CardContent, Avatar, AvatarGroup, IconButton } from '@mui/material';
@@ -27,8 +28,19 @@ TicketsGalleryItem.propTypes = {
 };
 
 export default function TicketsGalleryItem({ token, ticketTier }) {
+  const navigate = useNavigate();
+
+  const handleOnClick = () => {
+    navigate(`/tickets/${ticketTier._id}/token/${token}`);
+  };
+
+  /**
+   * TODO: Expand menu options for ticket item
+   */
+  const handleMenuButtonOnClick = () => {};
+
   return (
-    <Card sx={{ cursor: 'pointer', position: 'relative' }}>
+    <Card sx={{ cursor: 'pointer', position: 'relative' }} onClick={handleOnClick}>
       <Image alt="token uri" ratio="1/1" src={ticketTier.tokenURI || null} />
       <CaptionStyle>
         <Grid container direction="row" rowSpacing={1}>
@@ -42,7 +54,7 @@ export default function TicketsGalleryItem({ token, ticketTier }) {
             <Grid item xs="auto">
               <AvatarGroup>
                 {ticketTier.enhancements.map((perk) => {
-                  const iconStyle = ENHANCEMENT_STYLE[perk.type];
+                  const iconStyle = ENHANCEMENT_STYLE[perk.type.toLowerCase()];
                   return (
                     <Avatar key={perk._id} sx={{ bgcolor: iconStyle.bgcolor }}>
                       <Iconify icon={iconStyle.icon} color="white" sx={{ width: 24, height: 24 }} />
@@ -52,7 +64,7 @@ export default function TicketsGalleryItem({ token, ticketTier }) {
               </AvatarGroup>
             </Grid>
             <Grid item xs="auto">
-              <IconButton aria-label="more">
+              <IconButton aria-label="more" onClick={handleMenuButtonOnClick}>
                 <Iconify icon="mdi:dots-horizontal" color="white" sx={{ width: 32, height: 32 }} />
               </IconButton>
             </Grid>
