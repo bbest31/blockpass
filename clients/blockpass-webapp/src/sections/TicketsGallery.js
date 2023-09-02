@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 // @mui
 import { Box } from '@mui/material';
 // sections
@@ -39,9 +38,11 @@ export default function TicketsGallery({ gallery }) {
       >
         {gallery.length !== 0
           ? sortedTickets.map((ticket) => (
-              <Link key={`${ticket.token}-${ticket.tier._id}`} to={`tickets/${ticket.tier._id}/token/${ticket.token}`}>
-                <TicketsGalleryItem token={ticket.token} ticketTier={ticket.tier} />
-              </Link>
+              <TicketsGalleryItem
+                key={`${ticket.token}-${ticket.tier._id}`}
+                token={ticket.token}
+                ticketTier={ticket.tier}
+              />
             ))
           : `No tickets`}
       </Box>

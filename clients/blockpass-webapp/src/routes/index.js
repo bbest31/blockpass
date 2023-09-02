@@ -70,6 +70,20 @@ export default function Router() {
         },
       ],
     },
+    {
+      path: '/tickets/:ticketTierId/token/:token',
+      element: <MainLayout />,
+      children: [
+        {
+          element: (
+            <AttendeeAuthGuard>
+              <TicketDetail />
+            </AttendeeAuthGuard>
+          ),
+          index: true,
+        },
+      ],
+    },
     // Event Organizer Dashboard Routes
     {
       path: 'dashboard',
@@ -106,6 +120,7 @@ export default function Router() {
 const Home = Loadable(lazy(() => import('../pages/Home')));
 const EventPreview = Loadable(lazy(() => import('../pages/EventPreview')));
 const MyTickets = Loadable(lazy(() => import('../pages/MyTickets')));
+const TicketDetail = Loadable(lazy(() => import('../pages/TicketDetail')));
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));

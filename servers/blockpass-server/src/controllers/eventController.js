@@ -17,9 +17,8 @@ const {
  * @param {function} next
  */
 const readEvents = async (req, res, next) => {
-  const { skip, limit } = req.query;
-
-  await getEvents(skip || 0, limit || 12)
+  const { skip, limit, ticketTierId } = req.query;
+  await getEvents(skip || 0, limit || 20, ticketTierId)
     .then((events) => {
       res.status(200).send(events);
     })

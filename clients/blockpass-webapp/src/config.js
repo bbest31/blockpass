@@ -69,19 +69,19 @@ export const ICON = {
 // CONSTANTS
 
 export const ENHANCEMENT_STYLE = {
-  Discount: {
+  discount: {
     icon: 'ic:outline-discount',
     bgcolor: palette.light.error.dark,
   },
-  Access: {
+  access: {
     icon: 'solar:key-outline',
     bgcolor: palette.light.info.dark,
   },
-  Gift: {
+  gift: {
     icon: 'mdi:gift-outline',
-    bgcolor: palette.light.warning.dark,
+    bgcolor: palette.light.warning.main,
   },
-  Reward: { icon: 'ph:medal', bgcolor: palette.light.secondary.dark },
+  reward: { icon: 'ph:medal', bgcolor: palette.light.secondary.dark },
 };
 
 // SETTINGS

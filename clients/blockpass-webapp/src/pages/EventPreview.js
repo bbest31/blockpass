@@ -96,9 +96,7 @@ export default function EventPreview() {
   let tickets = null;
 
   if (event && event.ticketTiers) {
-    tickets = event.ticketTiers.map((tier) => (
-      <EventPreviewTicket key={tier._id} ticketTier={tier} sx={{ mb: 2 }} />
-    ));
+    tickets = event.ticketTiers.map((tier) => <EventPreviewTicket key={tier._id} ticketTier={tier} sx={{ mb: 2 }} />);
   }
 
   return (
@@ -106,7 +104,7 @@ export default function EventPreview() {
     <Page title={event ? event.name : 'Event Preview'}>
       {/* Event Hero */}
       {isLoading ? (
-        <Skeleton variant="rectangular" animation="wave" width="100%" height={500} />
+        <Skeleton variant="rounded" animation="wave" width="100%" height={500} />
       ) : (
         <EventPreviewHero event={event} organizer={eventOrganizer} />
       )}
@@ -135,7 +133,7 @@ export default function EventPreview() {
           </Grid>
           <Grid item xs={12}>
             {isLoading ? (
-              <Skeleton variant="rectangular" animation="wave" width={144} height={36} />
+              <Skeleton variant="rounded" animation="wave" width={144} height={36} />
             ) : (
               <Button
                 variant="outlined"

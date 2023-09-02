@@ -38,6 +38,7 @@ export const PATH_PAGE = {
 export const PATH_APP = {
   marketplace: {
     events: '/events',
+    tickets: '/tickets'
   },
   general: {
     dashboard: '/dashboard',
