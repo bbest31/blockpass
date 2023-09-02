@@ -178,7 +178,7 @@ export default function EventPreviewTicket({ ticketTier, sx }) {
                 <Grid item>
                   <AvatarGroup>
                     {ticketTier.enhancements.map((perk) => {
-                      const iconStyle = ENHANCEMENT_STYLE[perk.type];
+                      const iconStyle = ENHANCEMENT_STYLE[perk.type.toLowerCase()];
                       return (
                         <Avatar key={perk._id} sx={{ bgcolor: iconStyle.bgcolor }}>
                           <Iconify icon={iconStyle.icon} color="white" sx={{ width: 24, height: 24 }} />

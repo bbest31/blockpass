@@ -41,6 +41,9 @@ app.use(checkJWTRegex, checkJwt);
 
 async function main() {
   mongoose.set('strictQuery', true);
+  if (process.env.NODE_ENV === 'development') {
+    mongoose.set('debug', true);
+  }
   await mongoose.connect(process.env.MONGODB_CONNECT);
   await Moralis.start({
     apiKey: process.env.MORALIS_API_KEY,

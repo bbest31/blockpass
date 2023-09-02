@@ -67,7 +67,7 @@ export default function TicketDetail() {
             },
           })
           .then((res) => {
-            setEvent(res.data);
+            setEvent(res.data[0]);
           })
           .catch((err) => {
             console.error(err);
@@ -77,15 +77,17 @@ export default function TicketDetail() {
             setIsLoading(false);
           });
 
-        // set enhancements
-        const enhancementsComponents = res.data.enhancements.map((enhancement) => (
-          <EnhancementItem
-            key={enhancement._id}
-            enhancement={enhancement}
-            showDialogHandler={onShowDialogHandler}
-            onClickHandler={() => enhancementOnClickHandler(enhancement)}
-          />
-        ));
+        // get enhancements
+        const enhancementsComponents = res.data.enhancements
+          .filter((e) => e.active === true)
+          .map((enhancement) => (
+            <EnhancementItem
+              key={enhancement._id}
+              enhancement={enhancement}
+              showDialogHandler={onShowDialogHandler}
+              onClickHandler={() => enhancementOnClickHandler(enhancement)}
+            />
+          ));
         setEnhancements(enhancementsComponents);
         setIsLoading(false);
       })

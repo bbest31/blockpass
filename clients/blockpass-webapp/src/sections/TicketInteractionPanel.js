@@ -39,7 +39,7 @@ TicketInteractionPanel.propTypes = {
     updatedAt: PropTypes.string,
   }).isRequired,
   token: PropTypes.number.isRequired,
-  event: PropTypes.object.isRequired,
+  event: PropTypes.object,
   transferTicketHandler: PropTypes.func.isRequired,
   sellTicketHandler: PropTypes.func.isRequired,
   updateSalePriceHandler: PropTypes.func.isRequired,
@@ -72,7 +72,6 @@ export default function TicketInteractionPanel({
 
       <Divider sx={{ borderStyle: 'solid' }} />
 
-      {/* TODO: contract links to block explorer */}
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 3 }}>
         <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
           Contract
@@ -127,22 +126,24 @@ export default function TicketInteractionPanel({
         </Grid>
       )}
 
-      <Grid container justifyContent="center">
-        <Grid item>
-          <Button
-            variant="text"
-            sx={{
-              '&:hover': {
-                background: 'none', // Remove any background change on hover
-                boxShadow: 'none', // Remove any shadow on hover
-              },
-            }}
-            onClick={() => navigate(`/event/${event._id}`)}
-          >
-            Event Details
-          </Button>
+      {event && (
+        <Grid container justifyContent="center">
+          <Grid item>
+            <Button
+              variant="text"
+              sx={{
+                '&:hover': {
+                  background: 'none', // Remove any background change on hover
+                  boxShadow: 'none', // Remove any shadow on hover
+                },
+              }}
+              onClick={() => navigate(`/event/${event._id}`)}
+            >
+              Event Details
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </RootStyle>
   );
 }

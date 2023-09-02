@@ -8,17 +8,31 @@ const EVENT_ATTRIBUTES = ['name', 'location', 'startDate', 'endDate', 'website',
  * Gets events
  * @param {number} skip
  * @param {number} limit
+ * @param {string} ticketTierId
  * @returns {Array<Object>}
  */
-const getEvents = async (skip, limit) => {
-  const today = new Date().setHours(0, 0, 0, 0);
-  const events = await Event.find({ endDate: { $gte: today } })
-    .lean()
-    .sort({ endDate: 1 })
-    .skip(skip)
-    .limit(limit)
-    .populate({ path: 'ticketTiers', populate: { path: 'enhancements' } })
-    .exec();
+const getEvents = async (skip, limit, ticketTierId) => {
+  let events;
+  if (ticketTierId) {
+    events = await Event.find({ ticketTiers: ticketTierId })
+      .lean()
+      .sort({ endDate: 1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({ path: 'ticketTiers', populate: { path: 'enhancements' } })
+      .exec();
+  } else {
+    const startOfTodayUTC = new Date(
+      Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate(), 0, 0, 0)
+    );
+    events = await Event.find({ startDate: { $gte: startOfTodayUTC } })
+      .lean()
+      .sort({ endDate: 1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({ path: 'ticketTiers', populate: { path: 'enhancements' } })
+      .exec();
+  }
 
   return events;
 };
