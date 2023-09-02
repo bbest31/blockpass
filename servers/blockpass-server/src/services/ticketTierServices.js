@@ -61,6 +61,7 @@ const postTicketTier = async (eventId, newticketTier) => {
  */
 const getTicketTiers = async (eventId) => {
   const event = await Event.findById(eventId)
+    .lean()
     .exec()
     .catch((err) => {
       throw err;
@@ -79,7 +80,9 @@ const getTicketTiers = async (eventId) => {
       }
     });
 
-    response.ticketTiers = [...response.ticketTiers, tier];
+    if (Object.keys(tier).length) {
+      response.ticketTiers = [...response.ticketTiers, tier];
+    }
   }
 
   return response;
