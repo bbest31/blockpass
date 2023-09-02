@@ -61,6 +61,7 @@ const postTicketTier = async (eventId, newticketTier) => {
  */
 const getTicketTiers = async (eventId) => {
   const event = await Event.findById(eventId)
+    .lean()
     .exec()
     .catch((err) => {
       throw err;
@@ -79,7 +80,9 @@ const getTicketTiers = async (eventId) => {
       }
     });
 
-    response.ticketTiers = [...response.ticketTiers, tier];
+    if (Object.keys(tier).length) {
+      response.ticketTiers = [...response.ticketTiers, tier];
+    }
   }
 
   return response;
@@ -93,6 +96,7 @@ const getTicketTiers = async (eventId) => {
 const getTicketTier = async (ticketTierId) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
+    .lean()
     .populate('enhancements')
     .exec()
     .catch((err) => {
@@ -124,8 +128,8 @@ const getTicketTierByContract = async (address) => {
   // get ticket tier db data
   const filter = `0x${address.slice(2).toUpperCase()}`;
   const ticketTier = await TicketTier.findOne({ contract: { $regex: filter, $options: 'i' } })
-    .populate('enhancements')
     .lean()
+    .populate('enhancements')
     .exec()
     .catch((err) => {
       if (!(err instanceof mongoose.Error.CastError)) {
@@ -155,6 +159,7 @@ const getTicketTierByContract = async (address) => {
 const getTicketTierOwners = async (ticketTierId, cursor) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
+    .lean()
     .populate('enhancements')
     .exec()
     .catch((err) => {
@@ -187,6 +192,7 @@ const getTicketTierOwners = async (ticketTierId, cursor) => {
 const getTicketTierStats = async (ticketTierId) => {
   // get ticket tier db data
   const ticketTier = await TicketTier.findById(ticketTierId)
+    .lean()
     .populate('enhancements')
     .exec()
     .catch((err) => {

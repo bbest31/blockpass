@@ -57,7 +57,9 @@ const getEventById = async (id) => {
  * @returns {Object}
  */
 const getEventOrganizer = async (id) => {
-  const event = await Event.findById(id).lean().exec();
+  const event = await Event.findById(id)
+    .lean()
+    .exec();
   const org = await getOrganization(event.orgId);
   delete org.metadata;
   delete org.name;
@@ -71,6 +73,7 @@ const getEventOrganizer = async (id) => {
  */
 const getOrganizationEvents = async (orgId) => {
   const events = await Event.find({ orgId: orgId })
+    .lean()
     .populate({ path: 'ticketTiers', populate: { path: 'enhancements' } })
     .exec();
   return events;
