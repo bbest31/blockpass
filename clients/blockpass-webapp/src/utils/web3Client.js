@@ -3,6 +3,16 @@ import { MARKETPLACE_CONTRACT } from '../config';
 
 const { Web3 } = require('web3');
 
+export function isValidEthAddress(input) {
+  // Regex for Ethereum address
+  const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+
+  // Regex for ENS domain name
+  const ensRegex = /^[a-zA-Z0-9-]+\.eth$/;
+
+  return ethAddressRegex.test(input) || ensRegex.test(input);
+}
+
 export function getWalletAddress(accountChangedHandler) {
   const provider = window.ethereum;
 
@@ -21,6 +31,19 @@ export function getWalletAddress(accountChangedHandler) {
 export function getSmartContract(contractAddress) {
   const web3 = new Web3(window.ethereum);
   return new web3.eth.Contract(contractArtifact.abi, contractAddress).methods;
+}
+
+/**
+ * Initiates the safe transfer of an ERC-721 token from one wallet to another
+ * @param {string} address
+ * @param {string} from
+ * @param {string} to
+ * @param {number} token
+ * @returns {Promise}
+ */
+export function transferToken(address, from, to, token) {
+  const contract = getSmartContract(address);
+  return contract.safeTransferFrom(from, to, parseInt(token, 10)).send({ from });
 }
 
 export async function getCurrentChainIdHex() {

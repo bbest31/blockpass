@@ -114,12 +114,12 @@ export default function TicketInteractionPanel({
       ) : (
         <Grid container direction="row" spacing={2} sx={{ mt: 2, mb: 3 }} alignItems="center" justifyContent="center">
           <Grid item xs={12} md={6}>
-            <Button fullWidth size="large" color="inherit" variant="contained" onClick={transferTicketHandler}>
+            <Button fullWidth size="large" color="inherit" variant="outlined" onClick={transferTicketHandler}>
               Transfer
             </Button>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Button fullWidth size="large" color="inherit" variant="contained" onClick={sellTicketHandler}>
+            <Button fullWidth size="large" color="inherit" variant="outlined" onClick={sellTicketHandler}>
               Sell
             </Button>
           </Grid>
