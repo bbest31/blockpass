@@ -6,6 +6,7 @@ const TicketTier = require('../models/TicketTiers');
 
 async function getEnhancements(ticketTierId) {
   const tier = await TicketTier.findById(ticketTierId)
+    .lean()
     .exec()
     .catch((err) => {
       throw err;
@@ -38,6 +39,7 @@ async function getEnhancements(ticketTierId) {
  */
 async function getEnhancementById(id) {
   const enhancement = await Enhancement.findById(id)
+    .lean()
     .exec()
     .catch((err) => {
       if (!(err instanceof mongoose.Error.CastError)) {
@@ -48,8 +50,7 @@ async function getEnhancementById(id) {
     return {};
   }
 
-  let data = enhancement._doc;
-  return data;
+  return enhancement;
 }
 
 /**
