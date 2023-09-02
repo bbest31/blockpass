@@ -282,9 +282,6 @@ export default function TicketDetail() {
             </Card>
           </Grid>
         </Grid>
-        {/* 
-        
-      */}
       </Container>
     </Page>
   );
