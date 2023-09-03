@@ -17,9 +17,9 @@ export const MARKETPLACE_CONTRACT = {
   feeNumerator: process.env.REACT_APP_MARKETPLACE_FEE_NUMERATOR,
 };
 
-export const MATIC_NETWORK = {
-  network: process.env.NODE_ENV === 'production' ? NETWORKS.POLYGON_MAINNET : NETWORKS.POLYGON_TESTNET,
-  chainId: process.env.NODE_ENV === 'production' ? 0x38 : 0x13881,
+export const ETH_NETWORK = {
+  network: process.env.NODE_ENV === 'production' ? NETWORKS.ETHEREUM_MAINNET : NETWORKS.SEPOLIA_TESTNET,
+  chainId: process.env.NODE_ENV === 'production' ? 0x1 : 0xaa36a7,
 };
 
 export const AUTH0_API = {

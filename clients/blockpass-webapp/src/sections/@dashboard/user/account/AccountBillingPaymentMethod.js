@@ -28,7 +28,7 @@ import axiosInstance from '../../../../utils/axios';
 import { getNetworkIcon } from '../../../../utils/networks';
 import { trackEvent } from '../../../../utils/mixpanelUtils';
 // config
-import { MATIC_NETWORK } from '../../../../config';
+import { ETH_NETWORK } from '../../../../config';
 
 import { getWalletAddress, getCurrentChainIdHex } from '../../../../utils/web3Client';
 
@@ -62,7 +62,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
     if (!isWalletConnected) {
       getWalletAddress(walletChangedHandler);
       getCurrentChainIdHex().then((chainIdHex) => {
-        if (chainIdHex.toString() !== `0x${MATIC_NETWORK.chainId.toString(16)}`) {
+        if (chainIdHex.toString() !== `0x${ETH_NETWORK.chainId.toString(16)}`) {
           enqueueSnackbar('Connected to unsupported network!', { variant: 'warning' });
           setWrongNetwork(true);
         } else {
@@ -94,7 +94,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
 
   const saveWallet = async () => {
     // const newWallet = user.get('ethAddress');
-    if (isDuplicateWallet(MATIC_NETWORK.network, currentWallet)) {
+    if (isDuplicateWallet(ETH_NETWORK.network, currentWallet)) {
       // wallet is already saved so do nothing.
       enqueueSnackbar('Wallet already saved', { variant: 'info' });
       return;
@@ -102,7 +102,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
 
     // build new metadata object for org
     const temp = { ...wallets };
-    temp[MATIC_NETWORK.network] = currentWallet;
+    temp[ETH_NETWORK.network] = currentWallet;
 
     try {
       const token = await getAccessToken();
@@ -122,7 +122,7 @@ export default function AccountBillingPaymentMethod({ metadata, isOpen, onOpen, 
           refreshOrg();
           setWallets(temp);
           onCancel();
-          trackEvent(mixpanel, 'Save Wallet', { network: MATIC_NETWORK.network });
+          trackEvent(mixpanel, 'Save Wallet', { network: ETH_NETWORK.network });
         });
     } catch (err) {
       console.error(err);
