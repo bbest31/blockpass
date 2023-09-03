@@ -6,6 +6,7 @@ export const NETWORKS = {
   POLYGON_MAINNET: 'matic_mainnet',
   POLYGON_TESTNET: 'matic_testnet',
   ETHEREUM_MAINNET: 'eth_mainnet',
+  SEPOLIA_TESTNET: 'sepolia_testnet',
 };
 
 export function getNetworkIcon(network) {
@@ -14,7 +15,9 @@ export function getNetworkIcon(network) {
       return polygonMainnetIcon;
     case NETWORKS.POLYGON_TESTNET:
       return polygonTestnetIcon;
+    case NETWORKS.SEPOLIA_TESTNET:
+      return ethereumMainnetIcon;
     default:
       return ethereumMainnetIcon;
   }
-};
+}

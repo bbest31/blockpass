@@ -45,12 +45,10 @@ GCLOUD_PRIVATE_KEY=
 #Web3
 PROVIDER=
 MORALIS_API_KEY=
-EVM_CHAIN=MUMBAI
+EVM_CHAIN=SEPOLIA
 ```
 
 ## 3. Start
-### Faucets
-- Mumbai https://mumbaifaucet.com/ | https://faucet.polygon.technology/
 ### Run as dev using nodemon
 ```sh
 npm run dev
