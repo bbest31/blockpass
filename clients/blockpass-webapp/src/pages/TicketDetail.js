@@ -19,7 +19,7 @@ import EnhancementDialog from '../sections/EnhancementDialog';
 import TransferDialog from '../sections/TransferDialog';
 // utils
 import axiosInstance from '../utils/axios';
-import { getWalletAddress, getSmartContract, transferToken } from '../utils/web3Client';
+import { getSmartContract } from '../utils/web3Client';
 // config
 import { SERVER_API_KEY } from '../config';
 

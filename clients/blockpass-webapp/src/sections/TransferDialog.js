@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
-import { Grid, Dialog, Typography, Button, TextField, Link, Box } from '@mui/material';
+import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material';
 // components
 import Iconify from '../components/Iconify';
 // utils
