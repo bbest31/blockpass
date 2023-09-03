@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { useAccount } from 'wagmi';
 // @mui
 import { Box, Card, Grid, Stack, Container, Typography, Skeleton } from '@mui/material';
 // routes
@@ -15,9 +16,10 @@ import HeaderBreadcrumbs from '../components/HeaderBreadcrumbs';
 import TicketInteractionPanel from '../sections/TicketInteractionPanel';
 import EnhancementItem from '../sections/EnhancementItem';
 import EnhancementDialog from '../sections/EnhancementDialog';
+import TransferDialog from '../sections/TransferDialog';
 // utils
 import axiosInstance from '../utils/axios';
-import { getWalletAddress, getSmartContract } from '../utils/web3Client';
+import { getSmartContract } from '../utils/web3Client';
 // config
 import { SERVER_API_KEY } from '../config';
 
@@ -38,12 +40,15 @@ export default function TicketDetail() {
   const [enhancements, setEnhancements] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [showDialog, setShowDialog] = useState(false);
+  const [showEnhancementDialog, setShowEnhancementDialog] = useState(false);
   const [selectedEnhancement, setSelectedEnhancement] = useState({});
 
-  const [walletAddress, setWalletAddress] = useState(null);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
+
   const [contract, setContract] = useState(null);
   const [marketplaceContract, setMarketplaceContract] = useState(null);
+
+  const { address } = useAccount();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -84,7 +89,7 @@ export default function TicketDetail() {
             <EnhancementItem
               key={enhancement._id}
               enhancement={enhancement}
-              showDialogHandler={onShowDialogHandler}
+              showDialogHandler={onShowEnhancementDialog}
               onClickHandler={() => enhancementOnClickHandler(enhancement)}
             />
           ));
@@ -105,14 +110,10 @@ export default function TicketDetail() {
     // eslint-disable-next-line
   }, []);
 
-  const walletChangedHandler = (walletAddress) => {
-    setWalletAddress(walletAddress);
-  };
-
   const updateTicketSalePrice = (newPrice) => {
     marketplaceContract
       .updateTicketSalePrice(newPrice, ticketTier.contract, parseInt(token, 10))
-      .send({ from: walletAddress })
+      .send({ from: address })
       .then(() => {
         enqueueSnackbar('Ticket sale price has been updated.', { variant: 'success' });
         // TODO: re-render to show sale price.
@@ -123,7 +124,7 @@ export default function TicketDetail() {
   const cancelTicketResale = () => {
     marketplaceContract
       .cancelResale(ticketTier.contract, parseInt(token, 10))
-      .send({ from: walletAddress })
+      .send({ from: address })
       .then(() => {
         enqueueSnackbar('Ticket sale successfully cancelled.', { variant: 'success' });
         // TODO: update UI.
@@ -138,7 +139,7 @@ export default function TicketDetail() {
   const sellTicketSaleHandler = (price) => {
     marketplaceContract
       .resellTicket(ticketTier.contract, parseInt(token, 10), price)
-      .send({ from: walletAddress })
+      .send({ from: address })
       .then(() => {
         enqueueSnackbar('Ticket has been listed for sale.', { variant: 'success' });
         // TODO: set is for sale
@@ -146,33 +147,35 @@ export default function TicketDetail() {
       .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
   };
 
-  /**
-   * Calls the safe transfer function
-   * @param {string} to - the address to send the NFT to.
-   */
-  const transferTicketHandler = (to) => {
-    contract
-      .safeTransferFrom(walletAddress, to, parseInt(token, 10))
-      .send({ from: walletAddress })
-      .then(() => {
-        navigate('/tickets');
-        enqueueSnackbar('Ticket has been transfered.', { variant: 'success' });
-      })
-      .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
+  const onShowEnhancementDialog = () => {
+    setShowEnhancementDialog(!showEnhancementDialog);
   };
 
-  const onShowDialogHandler = () => {
-    setShowDialog(!showDialog);
+  const onShowTransferDialog = () => {
+    setShowTransferDialog(!showTransferDialog);
   };
 
   const enhancementOnClickHandler = (enhancement) => {
     setSelectedEnhancement(enhancement);
-    setShowDialog(!showDialog);
+    setShowEnhancementDialog(!showEnhancementDialog);
   };
 
   return (
     <Page title="BlockPass | Ticket">
-      <EnhancementDialog open={showDialog} showHandler={onShowDialogHandler} enhancement={selectedEnhancement} />
+      <EnhancementDialog
+        open={showEnhancementDialog}
+        showHandler={onShowEnhancementDialog}
+        enhancement={selectedEnhancement}
+      />
+      <TransferDialog
+        open={showTransferDialog}
+        showHandler={onShowTransferDialog}
+        contract={ticketTier?.contract}
+        from={address}
+        token={parseInt(token, 10)}
+        event={event?.name}
+        tierName={ticketTier?.displayName}
+      />
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <Grid container spacing={4} maxWidth={themeStretch ? false : 'xl'} sx={{ marginX: 12 }}>
           <Grid item xs={12}>
@@ -228,9 +231,7 @@ export default function TicketDetail() {
                       ticketTier={ticketTier}
                       token={parseInt(token, 10)}
                       event={event}
-                      transferTicketHandler={() => {
-                        console.log('transfer ticket');
-                      }}
+                      transferTicketHandler={onShowTransferDialog}
                       sellTicketHandler={() => {
                         console.log('sell ticket');
                       }}

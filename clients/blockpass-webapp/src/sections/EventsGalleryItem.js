@@ -9,14 +9,14 @@ import cssStyles from '../utils/cssStyles';
 import Image from '../components/Image';
 
 const CaptionStyle = styled(CardContent)(({ theme }) => ({
-  ...cssStyles().bgBlur({ blur: 2, color: theme.palette.grey[900] }),
   bottom: 0,
   width: '100%',
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
   justifyContent: 'space-between',
-  color: theme.palette.common.white,
+  color: theme.palette.text.primary,
+  backgroundColor: theme.palette.common.white,
 }));
 
 EventsGalleryItem.propTypes = {
