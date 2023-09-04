@@ -1,4 +1,5 @@
 import contractArtifact from '../contracts/BlockPassTicket.json';
+import marketplaceArtifact from '../contracts/BlockPass.json';
 import { MARKETPLACE_CONTRACT } from '../config';
 
 const { Web3 } = require('web3');
@@ -31,6 +32,16 @@ export function getWalletAddress(accountChangedHandler) {
 export function getSmartContract(contractAddress) {
   const web3 = new Web3(window.ethereum);
   return new web3.eth.Contract(contractArtifact.abi, contractAddress).methods;
+}
+
+/**
+ * Gets the marketplace contract method array for a given marketplace contract
+ * @param {string} contractAddress
+ * @returns {Array<function>}
+ */
+export function getMarketplaceContract(contractAddress) {
+  const web3 = new Web3(window.ethereum);
+  return new web3.eth.Contract(marketplaceArtifact.abi, contractAddress).methods;
 }
 
 /**

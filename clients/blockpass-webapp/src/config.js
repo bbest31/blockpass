@@ -84,6 +84,8 @@ export const ENHANCEMENT_STYLE = {
   reward: { icon: 'ph:medal', bgcolor: palette.light.secondary.dark },
 };
 
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 // SETTINGS
 // Please remove `localStorage` when you change settings.
 // ----------------------------------------------------------------------

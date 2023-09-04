@@ -11,7 +11,7 @@ import useTabs from '../hooks/useTabs';
 import Page from '../components/Page';
 // sections
 import GallerySkeleton from '../components/GallerySkeleton';
-import TicketsGallery from '../sections/TicketsGallery';
+import TicketsGallery from '../sections/tickets/TicketsGallery';
 // utils
 import axiosInstance from '../utils/axios';
 
@@ -70,7 +70,6 @@ export default function MyTickets() {
       .get(`/attendees/${address}/tickets`, { withCredentials: true })
       .then((res) => {
         setTickets(res.data);
-        console.log(res.data);
         setIsLoading(false);
       })
       .catch((err) => {

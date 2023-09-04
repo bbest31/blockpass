@@ -13,15 +13,16 @@ import Page from '../components/Page';
 import Image from '../components/Image';
 import HeaderBreadcrumbs from '../components/HeaderBreadcrumbs';
 // sections
-import TicketInteractionPanel from '../sections/TicketInteractionPanel';
+import TicketInteractionPanel from '../sections/tickets/TicketInteractionPanel';
 import EnhancementItem from '../sections/EnhancementItem';
 import EnhancementDialog from '../sections/EnhancementDialog';
-import TransferDialog from '../sections/TransferDialog';
+import TransferDialog from '../sections/tickets/TransferDialog';
+import CancelSaleDialog from '../sections/tickets/CancelSaleDialog';
 // utils
 import axiosInstance from '../utils/axios';
-import { getSmartContract } from '../utils/web3Client';
+import { getSmartContract, getMarketplaceContract } from '../utils/web3Client';
 // config
-import { SERVER_API_KEY } from '../config';
+import { SERVER_API_KEY, ZERO_ADDRESS } from '../config';
 
 // ----------------------------------------------------------------------
 
@@ -38,12 +39,16 @@ export default function TicketDetail() {
   const [event, setEvent] = useState(null);
   const [ticketTier, setTicketTier] = useState(null);
   const [enhancements, setEnhancements] = useState(null);
+  const [isForSale, setIsForSale] = useState(false);
+  const [salePrice, setSalePrice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [showEnhancementDialog, setShowEnhancementDialog] = useState(false);
   const [selectedEnhancement, setSelectedEnhancement] = useState({});
 
   const [showTransferDialog, setShowTransferDialog] = useState(false);
+
+  const [showCancelSaleDialog, setShowCancelSaleDialog] = useState(false);
 
   const [contract, setContract] = useState(null);
   const [marketplaceContract, setMarketplaceContract] = useState(null);
@@ -62,7 +67,20 @@ export default function TicketDetail() {
         setTicketTier(res.data);
         if (res.data.contract !== null || res.data.contract !== '') {
           setContract(getSmartContract(res.data.contract));
-          setMarketplaceContract(getSmartContract(res.data.marketplaceContract));
+          const marketplaceContract = getMarketplaceContract(res.data.marketplaceContract);
+          setMarketplaceContract(marketplaceContract);
+
+          // check to see if the ticket is for sale
+          marketplaceContract
+            ._secondaryMarket(res.data.contract, token)
+            .call()
+            .then((res) => {
+              if (res.ticketContract !== ZERO_ADDRESS) {
+                setIsForSale(true);
+                setSalePrice(res.price);
+              }
+            })
+            .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
         }
         // get event information
         axiosInstance
@@ -84,15 +102,17 @@ export default function TicketDetail() {
 
         // get enhancements
         const enhancementsComponents = res.data.enhancements
-          .filter((e) => e.active === true)
-          .map((enhancement) => (
-            <EnhancementItem
-              key={enhancement._id}
-              enhancement={enhancement}
-              showDialogHandler={onShowEnhancementDialog}
-              onClickHandler={() => enhancementOnClickHandler(enhancement)}
-            />
-          ));
+          ? res.data.enhancements
+              .filter((e) => e.active === true)
+              .map((enhancement) => (
+                <EnhancementItem
+                  key={enhancement._id}
+                  enhancement={enhancement}
+                  showDialogHandler={onShowEnhancementDialog}
+                  onClickHandler={() => enhancementOnClickHandler(enhancement)}
+                />
+              ))
+          : null;
         setEnhancements(enhancementsComponents);
         setIsLoading(false);
       })
@@ -127,9 +147,12 @@ export default function TicketDetail() {
       .send({ from: address })
       .then(() => {
         enqueueSnackbar('Ticket sale successfully cancelled.', { variant: 'success' });
-        // TODO: update UI.
+        setIsForSale(false);
+        setSalePrice(null);
       })
       .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
+
+    setShowCancelSaleDialog(false);
   };
 
   /**
@@ -142,7 +165,7 @@ export default function TicketDetail() {
       .send({ from: address })
       .then(() => {
         enqueueSnackbar('Ticket has been listed for sale.', { variant: 'success' });
-        // TODO: set is for sale
+        setIsForSale(true);
       })
       .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
   };
@@ -153,6 +176,10 @@ export default function TicketDetail() {
 
   const onShowTransferDialog = () => {
     setShowTransferDialog(!showTransferDialog);
+  };
+
+  const onShowCancelSaleDialog = () => {
+    setShowCancelSaleDialog(!showCancelSaleDialog);
   };
 
   const enhancementOnClickHandler = (enhancement) => {
@@ -175,6 +202,11 @@ export default function TicketDetail() {
         token={parseInt(token, 10)}
         event={event?.name}
         tierName={ticketTier?.displayName}
+      />
+      <CancelSaleDialog
+        open={showCancelSaleDialog}
+        showHandler={onShowCancelSaleDialog}
+        onCancelSaleHandler={cancelTicketResale}
       />
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <Grid container spacing={4} maxWidth={themeStretch ? false : 'xl'} sx={{ marginX: 12 }}>
@@ -238,15 +270,14 @@ export default function TicketDetail() {
                       updateSalePriceHandler={() => {
                         console.log('update sale price');
                       }}
-                      cancelSaleHandler={() => {
-                        console.log('cancel sale');
-                      }}
-                      isForSale={false} // TODO: check marketplace contract
+                      cancelSaleHandler={onShowCancelSaleDialog}
+                      isForSale={isForSale}
+                      price={salePrice}
                     />
                   )}
                 </Grid>
                 {/* Perks section */}
-                {ticketTier?.enhancements.length !== 0 && (
+                {ticketTier?.enhancements?.length !== 0 && (
                   <Grid item xs={12}>
                     <Stack spacing={3}>
                       <Typography variant="h4" gutterBottom>

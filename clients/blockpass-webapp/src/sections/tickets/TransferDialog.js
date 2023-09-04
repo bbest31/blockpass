@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 // @mui
 import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material';
 // components
-import Iconify from '../components/Iconify';
+import Iconify from '../../components/Iconify';
 // utils
-import { isValidEthAddress, transferToken } from '../utils/web3Client';
+import { isValidEthAddress, transferToken } from '../../utils/web3Client';
 
-import { ReactComponent as SuccessImg } from '../assets/images/undraw_transfer_confirmed.svg';
+import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +36,7 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
     showHandler();
   };
 
+  // TODO: use a more appropriate event to confirm it went through
   const transferOnClick = () => {
     if (isValidEthAddress(to)) {
       setErr(false);
