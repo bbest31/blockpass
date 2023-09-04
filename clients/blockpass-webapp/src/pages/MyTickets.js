@@ -44,7 +44,11 @@ export default function MyTickets() {
     },
     {
       value: 'listed_for_sale',
-      component: isLoading ? <GallerySkeleton items={6} h={350} w={350} /> : <TicketsGallery gallery={tickets} />,
+      component: isLoading ? (
+        <GallerySkeleton items={6} h={350} w={350} />
+      ) : (
+        <TicketsGallery gallery={tickets.filter((ticket) => ticket.isForSale === true)} />
+      ),
     },
   ];
 
@@ -66,6 +70,7 @@ export default function MyTickets() {
       .get(`/attendees/${address}/tickets`, { withCredentials: true })
       .then((res) => {
         setTickets(res.data);
+        console.log(res.data);
         setIsLoading(false);
       })
       .catch((err) => {

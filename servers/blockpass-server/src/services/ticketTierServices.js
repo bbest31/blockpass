@@ -231,7 +231,8 @@ const getTicketTierStats = async (ticketTierId) => {
 
   // get event organizer take rate
   const marketplaceMethods = marketplaceContract.methods;
-  const eventOrganizerTakeRate = (await marketplaceMethods.EO_TAKE().call(contractCallCallback)) / 100;
+  const marketplaceTakeRate = (await marketplaceMethods.TAKE_RATE().call(contractCallCallback)) / 10000;
+  const eventOrganizerTakeRate = 1 - marketplaceTakeRate;
 
   const events = await marketplaceContract.getPastEvents('TicketSold', {
     filter: { ticketContract: address },
