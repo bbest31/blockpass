@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
-import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material';
+import { Grid, Dialog, Typography, Button, TextField, Stack, Divider } from '@mui/material';
 // components
+import Image from '../../components/Image';
 import Iconify from '../../components/Iconify';
 // utils
 import { isValidEthAddress, transferToken } from '../../utils/web3Client';
@@ -15,88 +16,137 @@ import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfe
 ListForSaleDialog.propTypes = {
   open: PropTypes.bool,
   showHandler: PropTypes.func.isRequired,
-  contract: PropTypes.string,
   from: PropTypes.string.isRequired,
   token: PropTypes.number.isRequired,
-  event: PropTypes.string,
-  tierName: PropTypes.string,
+  event: PropTypes.object.isRequired,
+  tier: PropTypes.object.isRequired,
 };
 
-export default function ListForSaleDialog({ open, showHandler, contract, from, token, event, tierName }) {
-  const [to, setTo] = useState(null);
+export default function ListForSaleDialog({ open, showHandler, from, token, event, tier }) {
+  const [price, setPrice] = useState(null);
   const [err, setErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [listingComplete, setListingComplete] = useState(false);
-  const [txn, setTxn] = useState(null);
-
-  const navigate = useNavigate();
 
   const onCloseHandler = () => {
-    if (listingComplete) navigate('/tickets');
     showHandler();
   };
 
-  const transferOnClick = () => {
-    if (isValidEthAddress(to)) {
-      setErr(false);
-      transferToken(contract, from, to, token)
-        .on('transactionHash', (hash) => {
-          setTxn(hash);
-          setListingComplete(true);
-          setErrorMsg(null);
-        })
-        .catch((err) => {
-          setErrorMsg(err.message);
-        });
-    } else {
-      setErr(true);
-    }
+  const listTicketForSale = () => {
+    setListingComplete(true);
+    // if (isValidEthAddress(price)) {
+    //   setErr(false);
+    //   transferToken(contract, from, price, token)
+    //     .on('transactionHash', (hash) => {
+    //       setTxn(hash);
+    //       setListingComplete(true);
+    //       setErrorMsg(null);
+    //     })
+    //     .catch((err) => {
+    //       setErrorMsg(err.message);
+    //     });
+    // } else {
+    //   setErr(true);
+    // }
   };
 
+  /**
+   * Lists the ticket for sale on the marketplace
+   * @param {number} price - the resale price of the ticket.
+   */
+  // const sellTicketSaleHandler = (price) => {
+  //   marketplaceContract
+  //     .resellTicket(ticketTier.contract, parseInt(token, 10), price)
+  //     .send({ from: address })
+  //     .then(() => {
+  //       enqueueSnackbar('Ticket has been listed for sale.', { variant: 'success' });
+  //       setIsForSale(true);
+  //     })
+  //     .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
+  // };
+
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={showHandler}>
+    <Dialog fullWidth maxWidth="md" open={open} onClose={showHandler}>
       {!listingComplete ? (
-        <Grid container spacing={2} sx={{ p: 2.5 }}>
+        <Grid container sx={{ p: 2.5 }}>
           <Grid item xs={12}>
             <Typography variant="h3" sx={{ mb: 3 }}>
-              Transfer
+              List for sale
             </Typography>
           </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h4">{event}</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h4" sx={{ mb: 2 }}>
-              {tierName} — #{token}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              error={err}
-              label="Transfer destination"
-              placeholder="e.g. 0x1ed3...or destination.eth"
-              onChange={(e) => setTo(e.target.value)}
-            />
-          </Grid>
-          <Grid container item xs={12} justifyContent={'center'} spacing={2} sx={{ mb: 2 }}>
-            <Grid item xs="auto">
-              <Button size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
+          <Grid container item xs={6} spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                error={err}
+                type="number"
+                label="Price"
+                placeholder="0.00 ETH"
+                onChange={(e) => setPrice(e.target.value)}
+                helperText={true ? `Pre-event max price: 1.0 ETH` : null}
+                InputProps={{
+                  endAdornment: <Iconify icon="ic:baseline-shield" color="success.dark" />,
+                }}
+              />
+            </Grid>
+            {errorMsg && (
+              <Grid item xs={12}>
+                <Typography variant="body1" color={'red'}>
+                  {errorMsg}
+                </Typography>
+              </Grid>
+            )}
+            <Grid item xs={12}>
+              <Typography variant="h5">Summary</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ mt: 0.5 }}>
+                  Total price
+                </Typography>
+                <Typography variant="body1" sx={{ mt: 0.5 }}>
+                  {price || '--'} ETH
+                </Typography>
+              </Stack>
+              <Divider sx={{ borderStyle: 'solid' }} />
+              <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
+                <Typography variant="h6" sx={{ mt: 0.5 }}>
+                  Potential earnings
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 0.5 }}>
+                  {price || '--'} ETH
+                </Typography>
+              </Stack>
+            </Grid>
+            <Grid item xs={6}>
+              <Button fullWidth size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
                 Cancel
               </Button>
             </Grid>
-            <Grid item xs="auto">
-              <Button size="large" variant="contained" color="primary" onClick={transferOnClick}>
-                Transfer
+            <Grid item xs={6}>
+              <Button fullWidth size="large" variant="contained" color="primary" onClick={listTicketForSale}>
+                List ticket
               </Button>
             </Grid>
           </Grid>
-          {errorMsg && (
-            <Grid container item xs={12} justifyContent={'center'} spacing={2}>
-              <Typography variant="body1" color={'red'}>
-                {errorMsg}
+          <Grid container item xs={6} textAlign="center">
+            {/* TODO Add ticket URI */}
+            <Grid container item xs={12} justifyContent="center" sx={{ mb: 2 }}>
+              <Image objectFit="contain" src={tier?.tokenURI} sx={{ borderRadius: 12, width: 250, height: 250 }} />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">
+                <strong>{event.name}</strong>
               </Typography>
             </Grid>
-          )}
+            <Grid item xs={12}>
+              <Typography variant="subtitle1">
+                <strong>
+                  {tier?.displayName} — #{token}
+                </strong>
+              </Typography>
+            </Grid>
+          </Grid>
         </Grid>
       ) : (
         <Grid container spacing={2} sx={{ p: 2.5 }}>
@@ -104,32 +154,6 @@ export default function ListForSaleDialog({ open, showHandler, contract, from, t
             <Typography variant="h3" sx={{ mb: 3 }}>
               List for sale
             </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <SuccessImg width={200} height={200} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="body1">Transfer sent to: {to}</Typography>
-          </Grid>
-          <Grid container item xs={12} justifyContent={'center'} spacing={2} sx={{ mb: 2 }}>
-            <Grid item xs="auto">
-              <Button size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
-                Close
-              </Button>
-            </Grid>
-            <Grid item xs="auto">
-              <Link target="_blank" href={`https://etherscan.io/tx/${txn}`}>
-                <Button
-                  size="large"
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Iconify icon="ic:baseline-launch" />}
-                  onClick={transferOnClick}
-                >
-                  View Transaction
-                </Button>
-              </Link>
-            </Grid>
           </Grid>
         </Grid>
       )}

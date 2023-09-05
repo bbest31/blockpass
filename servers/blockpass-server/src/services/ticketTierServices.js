@@ -108,13 +108,12 @@ const getTicketTier = async (ticketTierId) => {
     return {};
   }
 
-  let tierData = ticketTier._doc;
   // get ticket tier smart contract data
   const contractData = await getTicketTierDetails(ticketTier.contract).catch((err) => {
     throw err;
   });
 
-  let response = { ...contractData, ...tierData };
+  let response = { ...contractData, ...ticketTier };
 
   return response;
 };

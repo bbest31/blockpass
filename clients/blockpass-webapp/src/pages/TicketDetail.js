@@ -18,6 +18,7 @@ import EnhancementItem from '../sections/EnhancementItem';
 import EnhancementDialog from '../sections/EnhancementDialog';
 import TransferDialog from '../sections/tickets/TransferDialog';
 import CancelSaleDialog from '../sections/tickets/CancelSaleDialog';
+import ListForSaleDialog from '../sections/tickets/ListForSaleDialog';
 // utils
 import axiosInstance from '../utils/axios';
 import { getSmartContract, getMarketplaceContract } from '../utils/web3Client';
@@ -47,8 +48,8 @@ export default function TicketDetail() {
   const [selectedEnhancement, setSelectedEnhancement] = useState({});
 
   const [showTransferDialog, setShowTransferDialog] = useState(false);
-
   const [showCancelSaleDialog, setShowCancelSaleDialog] = useState(false);
+  const [showSellDialog, setShowSellDialog] = useState(false);
 
   const [contract, setContract] = useState(null);
   const [marketplaceContract, setMarketplaceContract] = useState(null);
@@ -155,21 +156,6 @@ export default function TicketDetail() {
     setShowCancelSaleDialog(false);
   };
 
-  /**
-   * Lists the ticket for sale on the marketplace
-   * @param {number} price - the resale price of the ticket.
-   */
-  const sellTicketSaleHandler = (price) => {
-    marketplaceContract
-      .resellTicket(ticketTier.contract, parseInt(token, 10), price)
-      .send({ from: address })
-      .then(() => {
-        enqueueSnackbar('Ticket has been listed for sale.', { variant: 'success' });
-        setIsForSale(true);
-      })
-      .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
-  };
-
   const onShowEnhancementDialog = () => {
     setShowEnhancementDialog(!showEnhancementDialog);
   };
@@ -180,6 +166,10 @@ export default function TicketDetail() {
 
   const onShowCancelSaleDialog = () => {
     setShowCancelSaleDialog(!showCancelSaleDialog);
+  };
+
+  const onShowSellDialog = () => {
+    setShowSellDialog(!showSellDialog);
   };
 
   const enhancementOnClickHandler = (enhancement) => {
@@ -207,6 +197,14 @@ export default function TicketDetail() {
         open={showCancelSaleDialog}
         showHandler={onShowCancelSaleDialog}
         onCancelSaleHandler={cancelTicketResale}
+      />
+      <ListForSaleDialog
+        open={showSellDialog}
+        showHandler={onShowSellDialog}
+        from={address}
+        token={parseInt(token, 10)}
+        event={event}
+        tier={ticketTier}
       />
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <Grid container spacing={4} maxWidth={themeStretch ? false : 'xl'} sx={{ marginX: 12 }}>
@@ -264,9 +262,7 @@ export default function TicketDetail() {
                       token={parseInt(token, 10)}
                       event={event}
                       transferTicketHandler={onShowTransferDialog}
-                      sellTicketHandler={() => {
-                        console.log('sell ticket');
-                      }}
+                      sellTicketHandler={onShowSellDialog}
                       updateSalePriceHandler={() => {
                         console.log('update sale price');
                       }}

@@ -1,11 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
-import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material';
-// components
-import Iconify from '../../components/Iconify';
-// utils
-import { isValidEthAddress, transferToken } from '../../utils/web3Client';
+import { Grid, Dialog, Typography, Button } from '@mui/material';
 
 import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
@@ -27,7 +23,7 @@ export default function CancelSaleDialog({ open, showHandler, onCancelSaleHandle
       <Grid container spacing={2} sx={{ p: 2.5 }}>
         <Grid item xs={12}>
           <Typography variant="h3" sx={{ mb: 3 }}>
-            Cancel Sale
+            Delist Token
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -36,12 +32,12 @@ export default function CancelSaleDialog({ open, showHandler, onCancelSaleHandle
         <Grid container item xs={12} justifyContent={'center'} spacing={2} sx={{ mb: 2 }}>
           <Grid item xs="auto">
             <Button size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
-              Close
+              Cancel
             </Button>
           </Grid>
           <Grid item xs="auto">
             <Button size="large" variant="contained" color="warning" onClick={onCancelSaleHandler}>
-              Cancel Sale
+              Delist
             </Button>
           </Grid>
         </Grid>
