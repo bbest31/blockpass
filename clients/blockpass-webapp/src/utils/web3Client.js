@@ -27,7 +27,7 @@ export function getWalletAddress(accountChangedHandler) {
 /**
  * Gets the smart contract method array for a given contract address.
  * @param {string} contractAddress
- * @returns {Array<function>}
+ * @returns {web3.ContractInterfaceMethods<any>}
  */
 export function getSmartContract(contractAddress) {
   const web3 = new Web3(window.ethereum);
@@ -46,15 +46,55 @@ export function getMarketplaceContract(contractAddress) {
 
 /**
  * Initiates the safe transfer of an ERC-721 token from one wallet to another
- * @param {string} address
- * @param {string} from
- * @param {string} to
- * @param {number} token
+ * @param {string} ticketContract - the contract address of the ticket tier
+ * @param {string} from - the wallet address of the sender
+ * @param {string} to - the wallet address of the receiver
+ * @param {number} token - the token id of the token being transferred
  * @returns {Promise}
  */
-export function transferToken(address, from, to, token) {
-  const contract = getSmartContract(address);
+export function transferToken(ticketContract, from, to, token) {
+  const contract = getSmartContract(ticketContract);
   return contract.safeTransferFrom(from, to, parseInt(token, 10)).send({ from });
+}
+
+/**
+ * Initiates the listing of a token for sale on the secondary market
+ * @param {string} marketplace - the marketplace contract address
+ * @param {string} from - the wallet address to send the transaction from
+ * @param {string} ticketContract - the contract address of the ticket tier
+ * @param {number} price - the listing price to sell for.
+ * @param {number} token - the token id being listed for sale
+ * @returns {Promise}
+ */
+export function sellToken(marketplace, from, ticketContract, price, token) {
+  const contract = getMarketplaceContract(marketplace);
+  return contract.resellTicket(ticketContract, parseInt(token, 10), price).send({ from });
+}
+
+/**
+ * Initiaties the transaction to cancel the secondary sale of a ticket.
+ * @param {string} marketplace - the marketplace contract address
+ * @param {string} from - the wallet address to send the transaction from
+ * @param {string} ticketContract - the contract address of the ticket tier
+ * @param {number} token - the token id being listed for sale
+ * @returns {Promise}
+ */
+export function cancelResale(marketplace, from, ticketContract, token) {
+  const contract = getMarketplaceContract(marketplace);
+  return contract.cancelResale(ticketContract, parseInt(token, 10)).send({ from });
+}
+
+/**
+ * Initiaties the transaction to update the secondary sale price of a ticket.
+ * @param {string} marketplace - the marketplace contract address
+ * @param {string} from - the wallet address to send the transaction from
+ * @param {string} ticketContract - the contract address of the ticket tier
+ * @param {number} token - the token id being listed for sale
+ * @returns {Promise}
+ */
+export function updateTicketResalePrice(marketplace, from, ticketContract, token, newPrice) {
+  const contract = getMarketplaceContract(marketplace);
+  return contract.updateTicketResalePrice(parseInt(newPrice, 10), ticketContract, parseInt(token, 10)).send({ from });
 }
 
 export async function getCurrentChainIdHex() {

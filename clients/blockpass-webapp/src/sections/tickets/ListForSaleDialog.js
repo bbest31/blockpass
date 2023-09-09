@@ -7,8 +7,8 @@ import { Grid, Dialog, Typography, Button, TextField, Stack, Divider } from '@mu
 import Image from '../../components/Image';
 import Iconify from '../../components/Iconify';
 // utils
-import { isValidEthAddress, transferToken } from '../../utils/web3Client';
-
+import { sellToken } from '../../utils/web3Client';
+import { weiToFormattedEther } from '../../utils/formatNumber';
 import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
 // ----------------------------------------------------------------------
@@ -23,6 +23,8 @@ ListForSaleDialog.propTypes = {
 };
 
 export default function ListForSaleDialog({ open, showHandler, from, token, event, tier }) {
+  const [primarySalePrice] = useState(tier?.primarySalePrice);
+  const [secondaryMarkup] = useState(tier?.secondaryMarkup);
   const [price, setPrice] = useState(null);
   const [err, setErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -32,48 +34,52 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
     showHandler();
   };
 
-  const listTicketForSale = () => {
-    setListingComplete(true);
-    // if (isValidEthAddress(price)) {
-    //   setErr(false);
-    //   transferToken(contract, from, price, token)
-    //     .on('transactionHash', (hash) => {
-    //       setTxn(hash);
-    //       setListingComplete(true);
-    //       setErrorMsg(null);
-    //     })
-    //     .catch((err) => {
-    //       setErrorMsg(err.message);
-    //     });
-    // } else {
-    //   setErr(true);
-    // }
+  const onPriceChangeHandler = (e) => {
+    // ensure price is not above the max markup if before the event end
+    const maxPrice = primarySalePrice * (1 + secondaryMarkup / 10000);
+    if (e.target.value > maxPrice && new Date(event?.endDate) > new Date()) {
+      setErr(true);
+      setErrorMsg(`Ticket can't be sold for more than ${weiToFormattedEther(maxPrice)} ETH before the event end date.`);
+    }
+    setErr(false);
+    setErrorMsg(null);
+    setPrice(e.target.value);
   };
 
-  /**
-   * Lists the ticket for sale on the marketplace
-   * @param {number} price - the resale price of the ticket.
-   */
-  // const sellTicketSaleHandler = (price) => {
-  //   marketplaceContract
-  //     .resellTicket(ticketTier.contract, parseInt(token, 10), price)
-  //     .send({ from: address })
-  //     .then(() => {
-  //       enqueueSnackbar('Ticket has been listed for sale.', { variant: 'success' });
-  //       setIsForSale(true);
-  //     })
-  //     .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
-  // };
+  const listTicketForSale = () => {
+    if (price) {
+      setErr(false);
+      setErrorMsg(null);
+      sellToken(tier?.marketplaceContract, from, tier?.contract, price, parseInt(token, 10))
+        .on('confirmation', (res) => {
+          console.log(res);
+          setListingComplete(true);
+        })
+        .catch((err) => {
+          setErr(true);
+          setErrorMsg(err.message);
+        });
+    } else {
+      setErr(true);
+    }
+  };
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={showHandler}>
-      {!listingComplete ? (
-        <Grid container sx={{ p: 2.5 }}>
-          <Grid item xs={12}>
-            <Typography variant="h3" sx={{ mb: 3 }}>
-              List for sale
+      <Grid container sx={{ p: 2.5 }}>
+        <Grid item xs={12}>
+          <Typography variant="h3" sx={{ mb: 3 }}>
+            List for sale
+          </Typography>
+        </Grid>
+        {errorMsg && (
+          <Grid item xs={12} sx={{ mb: 1 }}>
+            <Typography variant="body1" color={'red'}>
+              {errorMsg}
             </Typography>
           </Grid>
+        )}
+        {!listingComplete ? (
           <Grid container item xs={6} spacing={3}>
             <Grid item xs={12}>
               <TextField
@@ -82,20 +88,19 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
                 type="number"
                 label="Price"
                 placeholder="0.00 ETH"
-                onChange={(e) => setPrice(e.target.value)}
-                helperText={true ? `Pre-event max price: 1.0 ETH` : null}
+                onChange={onPriceChangeHandler}
+                helperText={
+                  tier?.secondaryMarkup
+                    ? `Pre-event max price: ${weiToFormattedEther(
+                        primarySalePrice * (1 + secondaryMarkup / 10000)
+                      )} ETH`
+                    : null
+                }
                 InputProps={{
-                  endAdornment: <Iconify icon="ic:baseline-shield" color="success.dark" />,
+                  endAdornment: <Iconify icon="ic:baseline-shield" color="success.dark" />, // TODO: only show if scalping protected
                 }}
               />
             </Grid>
-            {errorMsg && (
-              <Grid item xs={12}>
-                <Typography variant="body1" color={'red'}>
-                  {errorMsg}
-                </Typography>
-              </Grid>
-            )}
             <Grid item xs={12}>
               <Typography variant="h5">Summary</Typography>
             </Grid>
@@ -124,39 +129,54 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button fullWidth size="large" variant="contained" color="primary" onClick={listTicketForSale}>
+              <Button
+                disabled={err}
+                fullWidth
+                size="large"
+                variant="contained"
+                color="primary"
+                onClick={listTicketForSale}
+              >
                 List ticket
               </Button>
             </Grid>
           </Grid>
-          <Grid container item xs={6} textAlign="center">
-            {/* TODO Add ticket URI */}
-            <Grid container item xs={12} justifyContent="center" sx={{ mb: 2 }}>
-              <Image objectFit="contain" src={tier?.tokenURI} sx={{ borderRadius: 12, width: 250, height: 250 }} />
+        ) : (
+          <Grid container item xs={6} spacing={3} textAlign="center">
+            <Grid item xs={12}>
+              <SuccessImg width={240} height={240} />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">
-                <strong>{event.name}</strong>
+              <Typography variant="h4" sx={{ mb: 3 }}>
+                <strong>Listing complete!</strong>
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1">
-                <strong>
-                  {tier?.displayName} — #{token}
-                </strong>
-              </Typography>
+              <Button fullWidth size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
+                Close
+              </Button>
             </Grid>
           </Grid>
-        </Grid>
-      ) : (
-        <Grid container spacing={2} sx={{ p: 2.5 }}>
+        )}
+
+        <Grid container item xs={6} textAlign="center">
+          <Grid container item xs={12} justifyContent="center" sx={{ mb: 2 }}>
+            <Image objectFit="contain" src={tier?.tokenURI} sx={{ borderRadius: 12, width: 250, height: 250 }} />
+          </Grid>
           <Grid item xs={12}>
-            <Typography variant="h3" sx={{ mb: 3 }}>
-              List for sale
+            <Typography variant="subtitle1">
+              <strong>{event?.name}</strong>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="subtitle1">
+              <strong>
+                {tier?.displayName} — #{token}
+              </strong>
             </Typography>
           </Grid>
         </Grid>
-      )}
+      </Grid>
     </Dialog>
   );
 }
