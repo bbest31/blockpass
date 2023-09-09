@@ -54,7 +54,7 @@ export function getMarketplaceContract(contractAddress) {
  */
 export function transferToken(ticketContract, from, to, token) {
   const contract = getSmartContract(ticketContract);
-  return contract.safeTransferFrom(from, to, parseInt(token, 10)).send({ from });
+  return contract.safeTransferFrom(from, to, parseInt(token, 10)).send({ from, gas: 3000000 });
 }
 
 /**
@@ -97,11 +97,43 @@ export function updateTicketResalePrice(marketplace, from, ticketContract, token
   return contract.updateTicketResalePrice(parseInt(newPrice, 10), ticketContract, parseInt(token, 10)).send({ from });
 }
 
+/**
+ * Estimates the gas and potential errors from a ticket contract function
+ * @param {string} contract
+ * @param {string} method
+ * @param {number} gas
+ * @param {array} params
+ * @returns {Promise}
+ */
+export function estimateTicketFunctionGas(contract, method, gas, params) {
+  const smartContract = getSmartContract(contract);
+  return smartContract[method](...params).estimateGas({ gas });
+}
+
+/**
+ * Estimates the gas and potential errors from a marketplace function
+ * @param {string} contract
+ * @param {string} method
+ * @param {number} gas
+ * @param {array} params
+ * @returns {Promise}
+ */
+export function estimateMarketplaceFunctionGas(contract, method, gas, params) {
+  const smartContract = getMarketplaceContract(contract);
+  return smartContract[method](...params).estimateGas({ gas });
+}
+
 export async function getCurrentChainIdHex() {
   const web3 = new Web3(window.ethereum);
   const chainId = await web3.eth.getChainId();
 
   return web3.utils.toHex(chainId);
+}
+
+export async function getBlockExplorerTxn(hash) {
+  return process.env.NODE_ENV !== 'production'
+    ? `https://etherscan.io/tx/${hash}`
+    : `https://sepolia.etherscan.io/tx/${hash}`;
 }
 
 export async function deployTicketTierContract(ticketTier, eventInfo) {

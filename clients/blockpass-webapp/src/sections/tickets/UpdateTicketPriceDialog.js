@@ -1,21 +1,22 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
-import { Grid, Dialog, Typography, Button, TextField } from '@mui/material';
+import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material';
 // components
 import Iconify from '../../components/Iconify';
 // utils
-import { updateTicketResalePrice } from '../../utils/web3Client';
+import { weiToFormattedEther } from '../../utils/formatNumber';
+import { updateTicketResalePrice, getBlockExplorerTxn, estimateMarketplaceFunctionGas } from '../../utils/web3Client';
 
 // ----------------------------------------------------------------------
 
 UpdateTicketPriceDialog.propTypes = {
   open: PropTypes.bool,
   showHandler: PropTypes.func.isRequired,
-  tier: PropTypes.string,
+  tier: PropTypes.object,
   from: PropTypes.string.isRequired,
   token: PropTypes.number.isRequired,
-  event: PropTypes.string,
+  event: PropTypes.object,
 };
 
 export default function UpdateTicketPriceDialog({ open, showHandler, tier, from, token, event }) {
@@ -24,7 +25,8 @@ export default function UpdateTicketPriceDialog({ open, showHandler, tier, from,
   const [price, setPrice] = useState(null);
   const [err, setErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [transactionComplete, setTransactionComplete] = useState(false);
+  const [transactionSent, setTransactionSent] = useState(false);
+  const [txn, setTxn] = useState(null);
 
   const onCloseHandler = () => {
     showHandler();
@@ -42,19 +44,30 @@ export default function UpdateTicketPriceDialog({ open, showHandler, tier, from,
     setPrice(e.target.value);
   };
 
-  const updatePriceOnClick = () => {
+  const updatePriceOnClick = async () => {
     if (price) {
-      setErr(false);
-      setErrorMsg(null);
-      updateTicketResalePrice(tier?.marketplaceContract, from, tier?.contract, parseInt(token, 10), price)
-        .on('confirmation', (res) => {
-          console.log(res);
-          setTransactionComplete(true);
-        })
-        .catch((err) => {
-          setErr(true);
-          setErrorMsg(err.message);
-        });
+      try {
+        await estimateMarketplaceFunctionGas(tier?.marketplaceContract, 'updateTicketSalePrice', 3000000, [
+          price,
+          tier?.contract,
+          parseInt(token, 10),
+        ]);
+
+        setErr(false);
+        setErrorMsg(null);
+        updateTicketResalePrice(tier?.marketplaceContract, from, tier?.contract, parseInt(token, 10), price)
+          .on('tnx', (hash) => {
+            setTxn(hash);
+            setTransactionSent(true);
+          })
+          .catch((err) => {
+            setErr(true);
+            setErrorMsg(err.message);
+          });
+      } catch (err) {
+        setErr(true);
+        setErrorMsg(err.message);
+      }
     } else {
       setErr(true);
     }
@@ -62,7 +75,7 @@ export default function UpdateTicketPriceDialog({ open, showHandler, tier, from,
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={showHandler} sx={{ textAlign: 'center' }}>
-      {!transactionComplete ? (
+      {!transactionSent ? (
         <Grid container spacing={2} sx={{ p: 2.5 }}>
           <Grid item xs={12}>
             <Typography variant="h3" sx={{ mb: 3 }}>
@@ -111,13 +124,27 @@ export default function UpdateTicketPriceDialog({ open, showHandler, tier, from,
         <Grid container justifyContent={'center'} spacing={2} sx={{ p: 2.5 }}>
           <Grid item xs={12}>
             <Typography variant="h3" sx={{ mb: 3 }}>
-              Price updated!
+              Price update initiated!
             </Typography>
           </Grid>
-          <Grid item xs="auto">
-            <Button size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
-              Close
-            </Button>
+          <Grid container item xs={12} justifyContent={'center'} spacing={2} sx={{ mb: 2 }}>
+            <Grid item xs="auto">
+              <Button size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
+                Close
+              </Button>
+            </Grid>
+            <Grid item xs="auto">
+              <Link target="_blank" href={getBlockExplorerTxn(txn)}>
+                <Button
+                  size="large"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Iconify icon="ic:baseline-launch" />}
+                >
+                  View Transaction
+                </Button>
+              </Link>
+            </Grid>
           </Grid>
         </Grid>
       )}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { useAccount } from 'wagmi';
 // @mui
@@ -22,7 +22,7 @@ import ListForSaleDialog from '../sections/tickets/ListForSaleDialog';
 import UpdateTicketPriceDialog from '../sections/tickets/UpdateTicketPriceDialog';
 // utils
 import axiosInstance from '../utils/axios';
-import { getSmartContract, getMarketplaceContract } from '../utils/web3Client';
+import { getMarketplaceContract } from '../utils/web3Client';
 // config
 import { SERVER_API_KEY, ZERO_ADDRESS } from '../config';
 
@@ -30,7 +30,6 @@ import { SERVER_API_KEY, ZERO_ADDRESS } from '../config';
 
 export default function TicketDetail() {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const segments = pathname.split('/');
   const ticketTierId = segments[2];
   const token = segments[4];
@@ -53,9 +52,6 @@ export default function TicketDetail() {
   const [showSellDialog, setShowSellDialog] = useState(false);
   const [showUpdatePriceDialog, setShowUpdatePriceDialog] = useState(false);
 
-  const [contract, setContract] = useState(null);
-  const [marketplaceContract, setMarketplaceContract] = useState(null);
-
   const { address } = useAccount();
 
   useEffect(() => {
@@ -69,9 +65,7 @@ export default function TicketDetail() {
       .then((res) => {
         setTicketTier(res.data);
         if (res.data.contract !== null || res.data.contract !== '') {
-          setContract(getSmartContract(res.data.contract));
           const marketplaceContract = getMarketplaceContract(res.data.marketplaceContract);
-          setMarketplaceContract(marketplaceContract);
 
           // check to see if the ticket is for sale
           marketplaceContract

@@ -6,7 +6,12 @@ import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material
 // components
 import Iconify from '../../components/Iconify';
 // utils
-import { isValidEthAddress, transferToken } from '../../utils/web3Client';
+import {
+  isValidEthAddress,
+  transferToken,
+  getBlockExplorerTxn,
+  estimateTicketFunctionGas,
+} from '../../utils/web3Client';
 
 import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
@@ -26,29 +31,35 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
   const [to, setTo] = useState(null);
   const [err, setErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [transferInitiated, setTransferInitiated] = useState(false);
+  const [transactionSent, setTransactionSent] = useState(false);
   const [txn, setTxn] = useState(null);
 
   const navigate = useNavigate();
 
   const onCloseHandler = () => {
-    if (transferInitiated) navigate('/tickets');
+    if (transactionSent) navigate('/tickets');
     showHandler();
   };
 
-  // TODO: use a more appropriate event to confirm it went through
-  const transferOnClick = () => {
+  const transferOnClick = async () => {
     if (isValidEthAddress(to)) {
-      setErr(false);
-      transferToken(contract, from, to, token)
-        .on('transactionHash', (hash) => {
-          setTxn(hash);
-          setTransferInitiated(true);
-          setErrorMsg(null);
-        })
-        .catch((err) => {
-          setErrorMsg(err.message);
-        });
+      try {
+        await estimateTicketFunctionGas(contract, 'safeTransferFrom', 3000000, [from, to, parseInt(token, 10)]);
+        setErr(false);
+        transferToken(contract, from, to, token)
+          .on('transactionHash', (hash) => {
+            setTxn(hash);
+            setTransactionSent(true);
+            setErrorMsg(null);
+          })
+          .catch((err) => {
+            setErr(true);
+            setErrorMsg(err.message);
+          });
+      } catch (error) {
+        setErr(true);
+        setErrorMsg(error.message);
+      }
     } else {
       setErr(true);
     }
@@ -56,7 +67,7 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={showHandler} sx={{ textAlign: 'center' }}>
-      {!transferInitiated ? (
+      {!transactionSent ? (
         <Grid container spacing={2} sx={{ p: 2.5 }}>
           <Grid item xs={12}>
             <Typography variant="h3" sx={{ mb: 3 }}>
@@ -91,7 +102,7 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
               </Button>
             </Grid>
           </Grid>
-          {errorMsg && (
+          {err && (
             <Grid container item xs={12} justifyContent={'center'} spacing={2}>
               <Typography variant="body1" color={'red'}>
                 {errorMsg}
@@ -119,13 +130,12 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
               </Button>
             </Grid>
             <Grid item xs="auto">
-              <Link target="_blank" href={`https://etherscan.io/tx/${txn}`}>
+              <Link target="_blank" href={getBlockExplorerTxn(txn)}>
                 <Button
                   size="large"
                   variant="contained"
                   color="primary"
                   startIcon={<Iconify icon="ic:baseline-launch" />}
-                  onClick={transferOnClick}
                 >
                   View Transaction
                 </Button>

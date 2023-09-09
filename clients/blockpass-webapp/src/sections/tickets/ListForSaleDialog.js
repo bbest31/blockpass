@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 // @mui
-import { Grid, Dialog, Typography, Button, TextField, Stack, Divider } from '@mui/material';
+import { Grid, Dialog, Typography, Button, TextField, Stack, Divider, Link } from '@mui/material';
 // components
 import Image from '../../components/Image';
 import Iconify from '../../components/Iconify';
 // utils
-import { sellToken } from '../../utils/web3Client';
+import {
+  sellToken,
+  getBlockExplorerTxn,
+  estimateMarketplaceFunctionGas,
+} from '../../utils/web3Client';
 import { weiToFormattedEther } from '../../utils/formatNumber';
 import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
@@ -18,17 +21,16 @@ ListForSaleDialog.propTypes = {
   showHandler: PropTypes.func.isRequired,
   from: PropTypes.string.isRequired,
   token: PropTypes.number.isRequired,
-  event: PropTypes.object.isRequired,
-  tier: PropTypes.object.isRequired,
+  event: PropTypes.object,
+  tier: PropTypes.object,
 };
 
 export default function ListForSaleDialog({ open, showHandler, from, token, event, tier }) {
-  const [primarySalePrice] = useState(tier?.primarySalePrice);
-  const [secondaryMarkup] = useState(tier?.secondaryMarkup);
   const [price, setPrice] = useState(null);
   const [err, setErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [listingComplete, setListingComplete] = useState(false);
+  const [transactionSent, setTransactionSent] = useState(false);
+  const [txn, setTxn] = useState(null);
 
   const onCloseHandler = () => {
     showHandler();
@@ -36,33 +38,56 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
 
   const onPriceChangeHandler = (e) => {
     // ensure price is not above the max markup if before the event end
-    const maxPrice = primarySalePrice * (1 + secondaryMarkup / 10000);
-    if (e.target.value > maxPrice && new Date(event?.endDate) > new Date()) {
+    const maxPrice = tier?.primarySalePrice * (1 + tier?.secondaryMarkup / 10000);
+    if (e.target.value * 10e18 > maxPrice && new Date(event?.endDate) > new Date()) {
       setErr(true);
-      setErrorMsg(`Ticket can't be sold for more than ${weiToFormattedEther(maxPrice)} ETH before the event end date.`);
-    }
-    setErr(false);
-    setErrorMsg(null);
-    setPrice(e.target.value);
-  };
-
-  const listTicketForSale = () => {
-    if (price) {
+      setErrorMsg(`Max price is ${weiToFormattedEther(maxPrice)} ETH before the event end.`);
+    } else {
       setErr(false);
       setErrorMsg(null);
-      sellToken(tier?.marketplaceContract, from, tier?.contract, price, parseInt(token, 10))
-        .on('confirmation', (res) => {
-          console.log(res);
-          setListingComplete(true);
-        })
-        .catch((err) => {
-          setErr(true);
-          setErrorMsg(err.message);
-        });
+      setPrice(e.target.value);
+    }
+  };
+
+  const listTicketForSale = async () => {
+    if (price) {
+      try {
+        await estimateMarketplaceFunctionGas(tier?.marketplaceContract, 'resellTicket', 3000000, [
+          tier?.contract,
+          parseInt(token, 10),
+          price * 10e18,
+        ]);
+        setErr(false);
+        setErrorMsg(null);
+        sellToken(tier?.marketplaceContract, from, tier?.contract, price * 10e18, parseInt(token, 10))
+          .on('transactionHash', (hash) => {
+            setTxn(hash);
+            setTransactionSent(true);
+          })
+          .catch((err) => {
+            setErr(true);
+            setErrorMsg(err.message);
+          });
+      } catch (err) {
+        setErr(true);
+        setErrorMsg(err.message);
+      }
     } else {
       setErr(true);
     }
   };
+
+  const errComponent = err ? (
+    <Grid item xs={12} sx={{ mb: 1 }}>
+      <Typography variant="body2" color={'red'}>
+        {errorMsg}
+      </Typography>
+    </Grid>
+  ) : (
+    <Grid item xs={12} sx={{ mb: 1 }}>
+      <div />
+    </Grid>
+  );
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={showHandler}>
@@ -72,14 +97,7 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
             List for sale
           </Typography>
         </Grid>
-        {errorMsg && (
-          <Grid item xs={12} sx={{ mb: 1 }}>
-            <Typography variant="body1" color={'red'}>
-              {errorMsg}
-            </Typography>
-          </Grid>
-        )}
-        {!listingComplete ? (
+        {!transactionSent ? (
           <Grid container item xs={6} spacing={3}>
             <Grid item xs={12}>
               <TextField
@@ -92,7 +110,7 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
                 helperText={
                   tier?.secondaryMarkup
                     ? `Pre-event max price: ${weiToFormattedEther(
-                        primarySalePrice * (1 + secondaryMarkup / 10000)
+                        tier?.primarySalePrice * (1 + tier?.secondaryMarkup / 10000)
                       )} ETH`
                     : null
                 }
@@ -101,6 +119,7 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
                 }}
               />
             </Grid>
+            {errComponent}
             <Grid item xs={12}>
               <Typography variant="h5">Summary</Typography>
             </Grid>
@@ -148,13 +167,27 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h4" sx={{ mb: 3 }}>
-                <strong>Listing complete!</strong>
+                <strong>Listing initiated!</strong>
               </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Button fullWidth size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
-                Close
-              </Button>
+            <Grid container item xs={12} justifyContent={'center'} spacing={2} sx={{ mb: 2 }}>
+              <Grid item xs={6}>
+                <Button fullWidth size="large" variant="outlined" color="inherit" onClick={onCloseHandler}>
+                  Close
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Link target="_blank" href={getBlockExplorerTxn(txn)}>
+                  <Button
+                    size="large"
+                    variant="contained"
+                    color="primary"
+                    startIcon={<Iconify icon="ic:baseline-launch" />}
+                  >
+                    View Transaction
+                  </Button>
+                </Link>
+              </Grid>
             </Grid>
           </Grid>
         )}
