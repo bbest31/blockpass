@@ -95,7 +95,7 @@ export function resellTicket(marketplace, from, ticketContract, price, token) {
  */
 export function cancelResale(marketplace, from, ticketContract, token) {
   const contract = getMarketplaceContract(marketplace);
-  const data = contract.cancelResale(ticketContract, parseInt(token, 10)).encodeABI();
+  const data = contract.cancelResale(ticketContract, token).encodeABI();
   const txnParams = {
     from,
     to: marketplace,

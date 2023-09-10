@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Grid, Dialog, Typography, Button, Link } from '@mui/material';
 // components
 import Iconify from '../../components/Iconify';
-import { cancelResale, estimateMarketplaceFunctionGas } from '../../utils/web3Client';
+import { cancelResale } from '../../utils/web3Client';
 
 // ----------------------------------------------------------------------
 
@@ -14,9 +14,10 @@ CancelSaleDialog.propTypes = {
   from: PropTypes.string.isRequired,
   tier: PropTypes.object,
   token: PropTypes.number.isRequired,
+  onForSaleHandler: PropTypes.func.isRequired,
 };
 
-export default function CancelSaleDialog({ open, showHandler, from, tier, token }) {
+export default function CancelSaleDialog({ open, showHandler, from, tier, token, onForSaleHandler }) {
   const [transactionSent, setTransactionSent] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [txn, setTxn] = useState(null);
@@ -30,6 +31,7 @@ export default function CancelSaleDialog({ open, showHandler, from, tier, token 
         setTxn(hash);
         setTransactionSent(true);
         setErrorMsg(null);
+        onForSaleHandler();
       })
       .catch((err) => {
         setErrorMsg(err);
@@ -55,8 +57,8 @@ export default function CancelSaleDialog({ open, showHandler, from, tier, token 
         {transactionSent ? (
           <Grid container item xs={12} justifyContent={'center'} spacing={2} sx={{ mb: 2 }}>
             <Grid item xs={12}>
-              <Typography variant="body2" color="success.main" sx={{ mb: 1 }}>
-                Sale cancelled successfully
+              <Typography variant="body2" color="success.dark" sx={{ mb: 1 }}>
+                Cancel sale initiated!
               </Typography>
             </Grid>
             <Grid container item xs={12} justifyContent={'center'} spacing={2} sx={{ mb: 2 }}>

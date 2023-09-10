@@ -174,6 +174,7 @@ export default function TicketDetail() {
         from={address}
         tier={ticketTier}
         token={parseInt(token, 10)}
+        onForSaleHandler={() => setIsForSale(false)}
       />
       <ListForSaleDialog
         open={showSellDialog}
