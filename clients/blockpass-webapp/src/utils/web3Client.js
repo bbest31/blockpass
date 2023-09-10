@@ -54,7 +54,7 @@ export function getMarketplaceContract(contractAddress) {
  */
 export async function transferToken(ticketContract, from, to, token) {
   const methods = getSmartContractMethods(ticketContract);
-  const data = methods['safeTransferFrom(address,address,uint256)'](from, to, token).encodeABI();
+  const data = methods.safeTransferFrom(from, to, token).encodeABI();
   const txnParams = {
     to: ticketContract,
     from,
@@ -73,10 +73,9 @@ export async function transferToken(ticketContract, from, to, token) {
  * @param {number} token - the token id being listed for sale
  * @returns {Promise}
  */
-export function sellToken(marketplace, from, ticketContract, price, token) {
-  console.log(price);
+export function resellTicket(marketplace, from, ticketContract, price, token) {
   const contract = getMarketplaceContract(marketplace);
-  const data = contract.resellTicket(ticketContract, parseInt(token, 10), price).encodeABI();
+  const data = contract.resellTicket(ticketContract, token, price).encodeABI();
   const txnParams = {
     to: marketplace,
     from,
@@ -112,13 +111,12 @@ export function cancelResale(marketplace, from, ticketContract, token) {
  * @param {string} from - the wallet address to send the transaction from
  * @param {string} ticketContract - the contract address of the ticket tier
  * @param {number} token - the token id being listed for sale
+ * @param {numer} newPrice - the new price in wei
  * @returns {Promise}
  */
-export function updateTicketResalePrice(marketplace, from, ticketContract, token, newPrice) {
+export function updateTicketSalePrice(marketplace, from, ticketContract, token, newPrice) {
   const contract = getMarketplaceContract(marketplace);
-  const data = contract
-    .updateTicketResalePrice(parseInt(newPrice, 10), ticketContract, parseInt(token, 10))
-    .encodeABI();
+  const data = contract.updateTicketSalePrice(newPrice, ticketContract, token).encodeABI();
   const txnParams = {
     from,
     to: marketplace,

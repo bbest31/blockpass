@@ -6,7 +6,7 @@ import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material
 import Iconify from '../../components/Iconify';
 // utils
 import { weiToFormattedEther } from '../../utils/formatNumber';
-import { updateTicketResalePrice, getBlockExplorerTxn, estimateMarketplaceFunctionGas } from '../../utils/web3Client';
+import { updateTicketSalePrice } from '../../utils/web3Client';
 
 // ----------------------------------------------------------------------
 
@@ -20,8 +20,6 @@ UpdateTicketPriceDialog.propTypes = {
 };
 
 export default function UpdateTicketPriceDialog({ open, showHandler, tier, from, token, event }) {
-  const [primarySalePrice] = useState(tier?.primarySalePrice);
-  const [secondaryMarkup] = useState(tier?.secondaryMarkup);
   const [price, setPrice] = useState(null);
   const [err, setErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -34,40 +32,30 @@ export default function UpdateTicketPriceDialog({ open, showHandler, tier, from,
 
   const onPriceChangeHandler = (e) => {
     // ensure price is not above the max markup if before the event end
-    const maxPrice = primarySalePrice * (1 + secondaryMarkup / 10000);
-    if (e.target.value > maxPrice && new Date(event?.endDate) > new Date()) {
+    const maxPrice = tier?.primarySalePrice * (1 + tier?.secondaryMarkup / 10000);
+    if (e.target.value * 10e18 > maxPrice && new Date(event?.endDate) > new Date()) {
       setErr(true);
       setErrorMsg(`Ticket can't be sold for more than ${weiToFormattedEther(maxPrice)} ETH before the event end date.`);
+    } else {
+      setErr(false);
+      setErrorMsg(null);
+      setPrice(e.target.value);
     }
-    setErr(false);
-    setErrorMsg(null);
-    setPrice(e.target.value);
   };
 
-  const updatePriceOnClick = async () => {
+  const updatePriceOnClick = () => {
     if (price) {
-      try {
-        await estimateMarketplaceFunctionGas(tier?.marketplaceContract, 'updateTicketSalePrice', 3000000, [
-          price,
-          tier?.contract,
-          parseInt(token, 10),
-        ]);
-
-        setErr(false);
-        setErrorMsg(null);
-        updateTicketResalePrice(tier?.marketplaceContract, from, tier?.contract, parseInt(token, 10), price)
-          .on('tnx', (hash) => {
-            setTxn(hash);
-            setTransactionSent(true);
-          })
-          .catch((err) => {
-            setErr(true);
-            setErrorMsg(err.message);
-          });
-      } catch (err) {
-        setErr(true);
-        setErrorMsg(err.message);
-      }
+      setErr(false);
+      setErrorMsg(null);
+      updateTicketSalePrice(tier?.marketplaceContract, from, tier?.contract, token, price * 10e18)
+        .then((hash) => {
+          setTxn(hash);
+          setTransactionSent(true);
+        })
+        .catch((err) => {
+          setErr(true);
+          setErrorMsg(err.message);
+        });
     } else {
       setErr(true);
     }
@@ -92,7 +80,9 @@ export default function UpdateTicketPriceDialog({ open, showHandler, tier, from,
               onChange={onPriceChangeHandler}
               helperText={
                 tier?.secondaryMarkup
-                  ? `Pre-event max price: ${weiToFormattedEther(primarySalePrice * (1 + secondaryMarkup / 10000))} ETH`
+                  ? `Pre-event max price: ${weiToFormattedEther(
+                      tier?.primarySalePrice * (1 + tier?.secondaryMarkup / 10000)
+                    )} ETH`
                   : null
               }
               InputProps={{
@@ -134,7 +124,14 @@ export default function UpdateTicketPriceDialog({ open, showHandler, tier, from,
               </Button>
             </Grid>
             <Grid item xs="auto">
-              <Link target="_blank" href={getBlockExplorerTxn(txn)}>
+              <Link
+                target="_blank"
+                href={
+                  process.env.NODE_ENV === 'production'
+                    ? `https://etherscan.io/tx/${txn}`
+                    : `https://sepolia.etherscan.io/tx/${txn}`
+                }
+              >
                 <Button
                   size="large"
                   variant="contained"

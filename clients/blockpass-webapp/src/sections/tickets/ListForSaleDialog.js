@@ -6,7 +6,7 @@ import { Grid, Dialog, Typography, Button, TextField, Stack, Divider, Link } fro
 import Image from '../../components/Image';
 import Iconify from '../../components/Iconify';
 // utils
-import { sellToken, getBlockExplorerTxn } from '../../utils/web3Client';
+import { resellTicket } from '../../utils/web3Client';
 import { weiToFormattedEther } from '../../utils/formatNumber';
 import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
@@ -19,9 +19,10 @@ ListForSaleDialog.propTypes = {
   token: PropTypes.number.isRequired,
   event: PropTypes.object,
   tier: PropTypes.object,
+  onForSaleHandler: PropTypes.func.isRequired,
 };
 
-export default function ListForSaleDialog({ open, showHandler, from, token, event, tier }) {
+export default function ListForSaleDialog({ open, showHandler, from, token, event, tier, onForSaleHandler }) {
   const [price, setPrice] = useState(null);
   const [err, setErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -47,16 +48,15 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
 
   const listTicketForSale = async () => {
     if (price) {
-      console.log(price * 10e18);
       setErr(false);
       setErrorMsg(null);
-      sellToken(tier?.marketplaceContract, from, tier?.contract, price * 10e18, parseInt(token, 10))
+      resellTicket(tier?.marketplaceContract, from, tier?.contract, price * 10e18, parseInt(token, 10))
         .then((hash) => {
           setTxn(hash);
           setTransactionSent(true);
+          onForSaleHandler();
         })
         .catch((err) => {
-          setErr(true);
           setErrorMsg(err.message);
         });
     } else {

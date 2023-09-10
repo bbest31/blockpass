@@ -182,6 +182,7 @@ export default function TicketDetail() {
         token={parseInt(token, 10)}
         event={event}
         tier={ticketTier}
+        onForSaleHandler={() => setIsForSale(true)}
       />
       <UpdateTicketPriceDialog
         open={showUpdatePriceDialog}
