@@ -6,12 +6,7 @@ import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material
 // components
 import Iconify from '../../components/Iconify';
 // utils
-import {
-  isValidEthAddress,
-  transferToken,
-  getBlockExplorerTxn,
-  estimateTicketFunctionGas,
-} from '../../utils/web3Client';
+import { isValidEthAddress, transferToken } from '../../utils/web3Client';
 
 import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
@@ -44,21 +39,20 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
   const transferOnClick = async () => {
     if (isValidEthAddress(to)) {
       try {
-        await estimateTicketFunctionGas(contract, 'safeTransferFrom', 3000000, [from, to, parseInt(token, 10)]);
-        setErr(false);
         transferToken(contract, from, to, token)
-          .on('transactionHash', (hash) => {
+          .then((hash) => {
             setTxn(hash);
             setTransactionSent(true);
             setErrorMsg(null);
+            setErr(false);
           })
           .catch((err) => {
             setErr(true);
             setErrorMsg(err.message);
           });
-      } catch (error) {
+      } catch (err) {
         setErr(true);
-        setErrorMsg(error.message);
+        setErrorMsg(err.message);
       }
     } else {
       setErr(true);
@@ -130,7 +124,14 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
               </Button>
             </Grid>
             <Grid item xs="auto">
-              <Link target="_blank" href={getBlockExplorerTxn(txn)}>
+              <Link
+                target="_blank"
+                href={
+                  process.env.NODE_ENV === 'production'
+                    ? `https://etherscan.io/tx/${txn}`
+                    : `https://sepolia.etherscan.io/tx/${txn}`
+                }
+              >
                 <Button
                   size="large"
                   variant="contained"

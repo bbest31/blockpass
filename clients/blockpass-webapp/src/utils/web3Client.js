@@ -29,7 +29,7 @@ export function getWalletAddress(accountChangedHandler) {
  * @param {string} contractAddress
  * @returns {web3.ContractInterfaceMethods<any>}
  */
-export function getSmartContract(contractAddress) {
+export function getSmartContractMethods(contractAddress) {
   const web3 = new Web3(window.ethereum);
   return new web3.eth.Contract(contractArtifact.abi, contractAddress).methods;
 }
@@ -52,9 +52,16 @@ export function getMarketplaceContract(contractAddress) {
  * @param {number} token - the token id of the token being transferred
  * @returns {Promise}
  */
-export function transferToken(ticketContract, from, to, token) {
-  const contract = getSmartContract(ticketContract);
-  return contract.safeTransferFrom(from, to, parseInt(token, 10)).send({ from, gas: 3000000 });
+export async function transferToken(ticketContract, from, to, token) {
+  const methods = getSmartContractMethods(ticketContract);
+  const data = methods['safeTransferFrom(address,address,uint256)'](from, to, token).encodeABI();
+  const txnParams = {
+    to: ticketContract,
+    from,
+    data,
+  };
+
+  return sendTransaction([txnParams]);
 }
 
 /**
@@ -67,8 +74,16 @@ export function transferToken(ticketContract, from, to, token) {
  * @returns {Promise}
  */
 export function sellToken(marketplace, from, ticketContract, price, token) {
+  console.log(price);
   const contract = getMarketplaceContract(marketplace);
-  return contract.resellTicket(ticketContract, parseInt(token, 10), price).send({ from });
+  const data = contract.resellTicket(ticketContract, parseInt(token, 10), price).encodeABI();
+  const txnParams = {
+    to: marketplace,
+    from,
+    data,
+  };
+
+  return sendTransaction([txnParams]);
 }
 
 /**
@@ -81,7 +96,14 @@ export function sellToken(marketplace, from, ticketContract, price, token) {
  */
 export function cancelResale(marketplace, from, ticketContract, token) {
   const contract = getMarketplaceContract(marketplace);
-  return contract.cancelResale(ticketContract, parseInt(token, 10)).send({ from });
+  const data = contract.cancelResale(ticketContract, parseInt(token, 10)).encodeABI();
+  const txnParams = {
+    from,
+    to: marketplace,
+    data,
+  };
+
+  return sendTransaction([txnParams]);
 }
 
 /**
@@ -94,20 +116,28 @@ export function cancelResale(marketplace, from, ticketContract, token) {
  */
 export function updateTicketResalePrice(marketplace, from, ticketContract, token, newPrice) {
   const contract = getMarketplaceContract(marketplace);
-  return contract.updateTicketResalePrice(parseInt(newPrice, 10), ticketContract, parseInt(token, 10)).send({ from });
+  const data = contract
+    .updateTicketResalePrice(parseInt(newPrice, 10), ticketContract, parseInt(token, 10))
+    .encodeABI();
+  const txnParams = {
+    from,
+    to: marketplace,
+    data,
+  };
+
+  return sendTransaction([txnParams]);
 }
 
 /**
  * Estimates the gas and potential errors from a ticket contract function
- * @param {string} contract
+ * @param {web3.ContractInterfaceMethods<any>} contract
  * @param {string} method
  * @param {number} gas
  * @param {array} params
  * @returns {Promise}
  */
-export function estimateTicketFunctionGas(contract, method, gas, params) {
-  const smartContract = getSmartContract(contract);
-  return smartContract[method](...params).estimateGas({ gas });
+export function estimateTicketFunctionGas(contract, method, from, params) {
+  return contract[method](...params).estimateGas({ from });
 }
 
 /**
@@ -134,6 +164,15 @@ export async function getBlockExplorerTxn(hash) {
   return process.env.NODE_ENV !== 'production'
     ? `https://etherscan.io/tx/${hash}`
     : `https://sepolia.etherscan.io/tx/${hash}`;
+}
+
+/**
+ * Sends a transaction to the connect network
+ * @param {Array} params
+ * @returns {Promise}
+ */
+function sendTransaction(params) {
+  return window.ethereum.request({ method: 'eth_sendTransaction', params });
 }
 
 export async function deployTicketTierContract(ticketTier, eventInfo) {

@@ -6,11 +6,7 @@ import { Grid, Dialog, Typography, Button, TextField, Stack, Divider, Link } fro
 import Image from '../../components/Image';
 import Iconify from '../../components/Iconify';
 // utils
-import {
-  sellToken,
-  getBlockExplorerTxn,
-  estimateMarketplaceFunctionGas,
-} from '../../utils/web3Client';
+import { sellToken, getBlockExplorerTxn } from '../../utils/web3Client';
 import { weiToFormattedEther } from '../../utils/formatNumber';
 import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
@@ -51,27 +47,18 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
 
   const listTicketForSale = async () => {
     if (price) {
-      try {
-        await estimateMarketplaceFunctionGas(tier?.marketplaceContract, 'resellTicket', 3000000, [
-          tier?.contract,
-          parseInt(token, 10),
-          price * 10e18,
-        ]);
-        setErr(false);
-        setErrorMsg(null);
-        sellToken(tier?.marketplaceContract, from, tier?.contract, price * 10e18, parseInt(token, 10))
-          .on('transactionHash', (hash) => {
-            setTxn(hash);
-            setTransactionSent(true);
-          })
-          .catch((err) => {
-            setErr(true);
-            setErrorMsg(err.message);
-          });
-      } catch (err) {
-        setErr(true);
-        setErrorMsg(err.message);
-      }
+      console.log(price * 10e18);
+      setErr(false);
+      setErrorMsg(null);
+      sellToken(tier?.marketplaceContract, from, tier?.contract, price * 10e18, parseInt(token, 10))
+        .then((hash) => {
+          setTxn(hash);
+          setTransactionSent(true);
+        })
+        .catch((err) => {
+          setErr(true);
+          setErrorMsg(err.message);
+        });
     } else {
       setErr(true);
     }
@@ -177,7 +164,14 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
                 </Button>
               </Grid>
               <Grid item xs={6}>
-                <Link target="_blank" href={getBlockExplorerTxn(txn)}>
+                <Link
+                  target="_blank"
+                  href={
+                    process.env.NODE_ENV === 'production'
+                      ? `https://etherscan.io/tx/${txn}`
+                      : `https://sepolia.etherscan.io/tx/${txn}`
+                  }
+                >
                   <Button
                     size="large"
                     variant="contained"

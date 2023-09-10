@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Grid, Dialog, Typography, Button, Link } from '@mui/material';
 // components
 import Iconify from '../../components/Iconify';
-import { cancelResale, getBlockExplorerTxn, estimateMarketplaceFunctionGas } from '../../utils/web3Client';
+import { cancelResale, estimateMarketplaceFunctionGas } from '../../utils/web3Client';
 
 // ----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ CancelSaleDialog.propTypes = {
   open: PropTypes.bool,
   showHandler: PropTypes.func.isRequired,
   from: PropTypes.string.isRequired,
-  tier: PropTypes.object.isRequired,
+  tier: PropTypes.object,
   token: PropTypes.number.isRequired,
 };
 
@@ -25,26 +25,16 @@ export default function CancelSaleDialog({ open, showHandler, from, tier, token 
   };
 
   const cancelTicketResale = async () => {
-    try {
-      await estimateMarketplaceFunctionGas(tier?.marketplaceContract, 'cancelResale', 3000000, [
-        tier?.contract,
-        parseInt(token, 10),
-      ]);
-
-      cancelResale(tier?.marketplaceContract, from, tier?.contract, token)
-        .on('transactionHash', (hash) => {
-          setTxn(hash);
-          setTransactionSent(true);
-          setErrorMsg(null);
-        })
-        .catch((err) => {
-          setErrorMsg(err);
-          setTransactionSent(false);
-        });
-    } catch (err) {
-      setErrorMsg(err);
-      setTransactionSent(false);
-    }
+    cancelResale(tier?.marketplaceContract, from, tier?.contract, token)
+      .then((hash) => {
+        setTxn(hash);
+        setTransactionSent(true);
+        setErrorMsg(null);
+      })
+      .catch((err) => {
+        setErrorMsg(err);
+        setTransactionSent(false);
+      });
   };
 
   return (
@@ -76,7 +66,14 @@ export default function CancelSaleDialog({ open, showHandler, from, tier, token 
                 </Button>
               </Grid>
               <Grid item xs="auto">
-                <Link target="_blank" href={getBlockExplorerTxn(txn)}>
+                <Link
+                  target="_blank"
+                  href={
+                    process.env.NODE_ENV === 'production'
+                      ? `https://etherscan.io/tx/${txn}`
+                      : `https://sepolia.etherscan.io/tx/${txn}`
+                  }
+                >
                   <Button
                     size="large"
                     variant="contained"

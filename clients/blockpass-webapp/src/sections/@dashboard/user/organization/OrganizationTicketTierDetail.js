@@ -21,7 +21,7 @@ import {
   OrganizationTicketTierEnhancementItem,
 } from '.';
 import axiosInstance from '../../../../utils/axios';
-import { getWalletAddress, getSmartContract } from '../../../../utils/web3Client';
+import { getWalletAddress, getSmartContractMethods } from '../../../../utils/web3Client';
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ export default function OrganizationTicketTierDetail({ details = null, event }) 
 
   useEffect(() => {
     if (ticketTierDetails.contract !== null || ticketTierDetails.contract !== '') {
-      setContract(getSmartContract(ticketTierDetails.contract));
+      setContract(getSmartContractMethods(ticketTierDetails.contract));
     }
   }, [ticketTierDetails]);
 
