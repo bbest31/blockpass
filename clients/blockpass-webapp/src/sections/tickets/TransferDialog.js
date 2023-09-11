@@ -126,6 +126,7 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
             <Grid item xs="auto">
               <Link
                 target="_blank"
+                rel="noopener"
                 href={
                   process.env.NODE_ENV === 'production'
                     ? `https://etherscan.io/tx/${txn}`

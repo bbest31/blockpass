@@ -126,6 +126,7 @@ export default function UpdateTicketPriceDialog({ open, showHandler, tier, from,
             <Grid item xs="auto">
               <Link
                 target="_blank"
+                rel="noopener"
                 href={
                   process.env.NODE_ENV === 'production'
                     ? `https://etherscan.io/tx/${txn}`

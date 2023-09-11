@@ -166,6 +166,7 @@ export default function ListForSaleDialog({ open, showHandler, from, token, even
               <Grid item xs={6}>
                 <Link
                   target="_blank"
+                  rel="noopener"
                   href={
                     process.env.NODE_ENV === 'production'
                       ? `https://etherscan.io/tx/${txn}`

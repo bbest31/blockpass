@@ -80,6 +80,7 @@ export default function CancelSaleDialog({ open, showHandler, from, tier, token,
                     size="large"
                     variant="contained"
                     color="primary"
+                    rel="noopener"
                     startIcon={<Iconify icon="ic:baseline-launch" />}
                   >
                     View Transaction
