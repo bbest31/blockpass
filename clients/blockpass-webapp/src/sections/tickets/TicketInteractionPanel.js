@@ -62,7 +62,6 @@ export default function TicketInteractionPanel({
 }) {
   const navigate = useNavigate();
 
-  console.log();
   return (
     <RootStyle {...other}>
       <Typography variant="h5" sx={{ mb: 0.5 }}>

@@ -36,7 +36,7 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
     showHandler();
   };
 
-  const transferOnClick = async () => {
+  const transferOnClick = () => {
     if (isValidEthAddress(to)) {
       try {
         transferToken(contract, from, to, token)
