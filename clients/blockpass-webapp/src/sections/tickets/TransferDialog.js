@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 // @mui
 import { Grid, Dialog, Typography, Button, TextField, Link } from '@mui/material';
 // components
-import Iconify from '../components/Iconify';
+import Iconify from '../../components/Iconify';
 // utils
-import { isValidEthAddress, transferToken } from '../utils/web3Client';
+import { isValidEthAddress, transferToken } from '../../utils/web3Client';
 
-import { ReactComponent as SuccessImg } from '../assets/images/undraw_transfer_confirmed.svg';
+import { ReactComponent as SuccessImg } from '../../assets/images/undraw_transfer_confirmed.svg';
 
 // ----------------------------------------------------------------------
 
@@ -26,28 +26,34 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
   const [to, setTo] = useState(null);
   const [err, setErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [transferInitiated, setTransferInitiated] = useState(false);
+  const [transactionSent, setTransactionSent] = useState(false);
   const [txn, setTxn] = useState(null);
 
   const navigate = useNavigate();
 
   const onCloseHandler = () => {
-    if (transferInitiated) navigate('/tickets');
+    if (transactionSent) navigate('/tickets');
     showHandler();
   };
 
   const transferOnClick = () => {
     if (isValidEthAddress(to)) {
-      setErr(false);
-      transferToken(contract, from, to, token)
-        .on('transactionHash', (hash) => {
-          setTxn(hash);
-          setTransferInitiated(true);
-          setErrorMsg(null);
-        })
-        .catch((err) => {
-          setErrorMsg(err.message);
-        });
+      try {
+        transferToken(contract, from, to, token)
+          .then((hash) => {
+            setTxn(hash);
+            setTransactionSent(true);
+            setErrorMsg(null);
+            setErr(false);
+          })
+          .catch((err) => {
+            setErr(true);
+            setErrorMsg(err.message);
+          });
+      } catch (err) {
+        setErr(true);
+        setErrorMsg(err.message);
+      }
     } else {
       setErr(true);
     }
@@ -55,7 +61,7 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={showHandler} sx={{ textAlign: 'center' }}>
-      {!transferInitiated ? (
+      {!transactionSent ? (
         <Grid container spacing={2} sx={{ p: 2.5 }}>
           <Grid item xs={12}>
             <Typography variant="h3" sx={{ mb: 3 }}>
@@ -90,7 +96,7 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
               </Button>
             </Grid>
           </Grid>
-          {errorMsg && (
+          {err && (
             <Grid container item xs={12} justifyContent={'center'} spacing={2}>
               <Typography variant="body1" color={'red'}>
                 {errorMsg}
@@ -118,13 +124,20 @@ export default function TransferDialog({ open, showHandler, contract, from, toke
               </Button>
             </Grid>
             <Grid item xs="auto">
-              <Link target="_blank" href={`https://etherscan.io/tx/${txn}`}>
+              <Link
+                target="_blank"
+                rel="noopener"
+                href={
+                  process.env.NODE_ENV === 'production'
+                    ? `https://etherscan.io/tx/${txn}`
+                    : `https://sepolia.etherscan.io/tx/${txn}`
+                }
+              >
                 <Button
                   size="large"
                   variant="contained"
                   color="primary"
                   startIcon={<Iconify icon="ic:baseline-launch" />}
-                  onClick={transferOnClick}
                 >
                   View Transaction
                 </Button>

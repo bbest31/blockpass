@@ -108,13 +108,12 @@ const getTicketTier = async (ticketTierId) => {
     return {};
   }
 
-  let tierData = ticketTier._doc;
   // get ticket tier smart contract data
   const contractData = await getTicketTierDetails(ticketTier.contract).catch((err) => {
     throw err;
   });
 
-  let response = { ...contractData, ...tierData };
+  let response = { ...contractData, ...ticketTier };
 
   return response;
 };
@@ -231,7 +230,8 @@ const getTicketTierStats = async (ticketTierId) => {
 
   // get event organizer take rate
   const marketplaceMethods = marketplaceContract.methods;
-  const eventOrganizerTakeRate = (await marketplaceMethods.EO_TAKE().call(contractCallCallback)) / 100;
+  const marketplaceTakeRate = (await marketplaceMethods.TAKE_RATE().call(contractCallCallback)) / 10000;
+  const eventOrganizerTakeRate = 1 - marketplaceTakeRate;
 
   const events = await marketplaceContract.getPastEvents('TicketSold', {
     filter: { ticketContract: address },

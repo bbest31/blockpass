@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { useAccount } from 'wagmi';
 // @mui
@@ -13,21 +13,23 @@ import Page from '../components/Page';
 import Image from '../components/Image';
 import HeaderBreadcrumbs from '../components/HeaderBreadcrumbs';
 // sections
-import TicketInteractionPanel from '../sections/TicketInteractionPanel';
+import TicketInteractionPanel from '../sections/tickets/TicketInteractionPanel';
 import EnhancementItem from '../sections/EnhancementItem';
 import EnhancementDialog from '../sections/EnhancementDialog';
-import TransferDialog from '../sections/TransferDialog';
+import TransferDialog from '../sections/tickets/TransferDialog';
+import CancelSaleDialog from '../sections/tickets/CancelSaleDialog';
+import ListForSaleDialog from '../sections/tickets/ListForSaleDialog';
+import UpdateTicketPriceDialog from '../sections/tickets/UpdateTicketPriceDialog';
 // utils
 import axiosInstance from '../utils/axios';
-import { getSmartContract } from '../utils/web3Client';
+import { getMarketplaceContract } from '../utils/web3Client';
 // config
-import { SERVER_API_KEY } from '../config';
+import { SERVER_API_KEY, ZERO_ADDRESS } from '../config';
 
 // ----------------------------------------------------------------------
 
 export default function TicketDetail() {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const segments = pathname.split('/');
   const ticketTierId = segments[2];
   const token = segments[4];
@@ -38,15 +40,17 @@ export default function TicketDetail() {
   const [event, setEvent] = useState(null);
   const [ticketTier, setTicketTier] = useState(null);
   const [enhancements, setEnhancements] = useState(null);
+  const [isForSale, setIsForSale] = useState(false);
+  const [salePrice, setSalePrice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [showEnhancementDialog, setShowEnhancementDialog] = useState(false);
   const [selectedEnhancement, setSelectedEnhancement] = useState({});
 
   const [showTransferDialog, setShowTransferDialog] = useState(false);
-
-  const [contract, setContract] = useState(null);
-  const [marketplaceContract, setMarketplaceContract] = useState(null);
+  const [showCancelSaleDialog, setShowCancelSaleDialog] = useState(false);
+  const [showSellDialog, setShowSellDialog] = useState(false);
+  const [showUpdatePriceDialog, setShowUpdatePriceDialog] = useState(false);
 
   const { address } = useAccount();
 
@@ -61,8 +65,19 @@ export default function TicketDetail() {
       .then((res) => {
         setTicketTier(res.data);
         if (res.data.contract !== null || res.data.contract !== '') {
-          setContract(getSmartContract(res.data.contract));
-          setMarketplaceContract(getSmartContract(res.data.marketplaceContract));
+          const marketplaceContract = getMarketplaceContract(res.data.marketplaceContract);
+
+          // check to see if the ticket is for sale
+          marketplaceContract
+            ._secondaryMarket(res.data.contract, token)
+            .call()
+            .then((res) => {
+              if (res.ticketContract !== ZERO_ADDRESS) {
+                setIsForSale(true);
+                setSalePrice(res.price);
+              }
+            })
+            .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
         }
         // get event information
         axiosInstance
@@ -84,15 +99,17 @@ export default function TicketDetail() {
 
         // get enhancements
         const enhancementsComponents = res.data.enhancements
-          .filter((e) => e.active === true)
-          .map((enhancement) => (
-            <EnhancementItem
-              key={enhancement._id}
-              enhancement={enhancement}
-              showDialogHandler={onShowEnhancementDialog}
-              onClickHandler={() => enhancementOnClickHandler(enhancement)}
-            />
-          ));
+          ? res.data.enhancements
+              .filter((e) => e.active === true)
+              .map((enhancement) => (
+                <EnhancementItem
+                  key={enhancement._id}
+                  enhancement={enhancement}
+                  showDialogHandler={onShowEnhancementDialog}
+                  onClickHandler={() => enhancementOnClickHandler(enhancement)}
+                />
+              ))
+          : null;
         setEnhancements(enhancementsComponents);
         setIsLoading(false);
       })
@@ -110,49 +127,24 @@ export default function TicketDetail() {
     // eslint-disable-next-line
   }, []);
 
-  const updateTicketSalePrice = (newPrice) => {
-    marketplaceContract
-      .updateTicketSalePrice(newPrice, ticketTier.contract, parseInt(token, 10))
-      .send({ from: address })
-      .then(() => {
-        enqueueSnackbar('Ticket sale price has been updated.', { variant: 'success' });
-        // TODO: re-render to show sale price.
-      })
-      .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
-  };
-
-  const cancelTicketResale = () => {
-    marketplaceContract
-      .cancelResale(ticketTier.contract, parseInt(token, 10))
-      .send({ from: address })
-      .then(() => {
-        enqueueSnackbar('Ticket sale successfully cancelled.', { variant: 'success' });
-        // TODO: update UI.
-      })
-      .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
-  };
-
-  /**
-   * Lists the ticket for sale on the marketplace
-   * @param {number} price - the resale price of the ticket.
-   */
-  const sellTicketSaleHandler = (price) => {
-    marketplaceContract
-      .resellTicket(ticketTier.contract, parseInt(token, 10), price)
-      .send({ from: address })
-      .then(() => {
-        enqueueSnackbar('Ticket has been listed for sale.', { variant: 'success' });
-        // TODO: set is for sale
-      })
-      .catch((err) => enqueueSnackbar(err.message, { variant: 'error' }));
-  };
-
   const onShowEnhancementDialog = () => {
     setShowEnhancementDialog(!showEnhancementDialog);
   };
 
   const onShowTransferDialog = () => {
     setShowTransferDialog(!showTransferDialog);
+  };
+
+  const onShowCancelSaleDialog = () => {
+    setShowCancelSaleDialog(!showCancelSaleDialog);
+  };
+
+  const onShowSellDialog = () => {
+    setShowSellDialog(!showSellDialog);
+  };
+
+  const onShowUpdatePriceDialog = () => {
+    setShowUpdatePriceDialog(!showUpdatePriceDialog);
   };
 
   const enhancementOnClickHandler = (enhancement) => {
@@ -175,6 +167,31 @@ export default function TicketDetail() {
         token={parseInt(token, 10)}
         event={event?.name}
         tierName={ticketTier?.displayName}
+      />
+      <CancelSaleDialog
+        open={showCancelSaleDialog}
+        showHandler={onShowCancelSaleDialog}
+        from={address}
+        tier={ticketTier}
+        token={parseInt(token, 10)}
+        onForSaleHandler={() => setIsForSale(false)}
+      />
+      <ListForSaleDialog
+        open={showSellDialog}
+        showHandler={onShowSellDialog}
+        from={address}
+        token={parseInt(token, 10)}
+        event={event}
+        tier={ticketTier}
+        onForSaleHandler={() => setIsForSale(true)}
+      />
+      <UpdateTicketPriceDialog
+        open={showUpdatePriceDialog}
+        showHandler={onShowUpdatePriceDialog}
+        from={address}
+        token={parseInt(token, 10)}
+        event={event}
+        tier={ticketTier}
       />
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <Grid container spacing={4} maxWidth={themeStretch ? false : 'xl'} sx={{ marginX: 12 }}>
@@ -232,21 +249,16 @@ export default function TicketDetail() {
                       token={parseInt(token, 10)}
                       event={event}
                       transferTicketHandler={onShowTransferDialog}
-                      sellTicketHandler={() => {
-                        console.log('sell ticket');
-                      }}
-                      updateSalePriceHandler={() => {
-                        console.log('update sale price');
-                      }}
-                      cancelSaleHandler={() => {
-                        console.log('cancel sale');
-                      }}
-                      isForSale={false} // TODO: check marketplace contract
+                      sellTicketHandler={onShowSellDialog}
+                      updateSalePriceHandler={onShowUpdatePriceDialog}
+                      cancelSaleHandler={onShowCancelSaleDialog}
+                      isForSale={isForSale}
+                      price={salePrice}
                     />
                   )}
                 </Grid>
                 {/* Perks section */}
-                {ticketTier?.enhancements.length !== 0 && (
+                {ticketTier?.enhancements?.length !== 0 && (
                   <Grid item xs={12}>
                     <Stack spacing={3}>
                       <Typography variant="h4" gutterBottom>

@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Stack, Button, Divider, Typography, Grid, Link } from '@mui/material';
-// components
-
+// utils
+import { weiToFormattedEther } from '../../utils/formatNumber';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
@@ -45,6 +45,7 @@ TicketInteractionPanel.propTypes = {
   updateSalePriceHandler: PropTypes.func.isRequired,
   cancelSaleHandler: PropTypes.func.isRequired,
   isForSale: PropTypes.bool,
+  price: PropTypes.any,
 };
 
 export default function TicketInteractionPanel({
@@ -56,6 +57,7 @@ export default function TicketInteractionPanel({
   updateSalePriceHandler,
   cancelSaleHandler,
   isForSale,
+  price,
   ...other
 }) {
   const navigate = useNavigate();
@@ -83,8 +85,8 @@ export default function TicketInteractionPanel({
           href={`https://etherscan.io/address/${ticketTier.contract}`}
           sx={{ mt: 0.5 }}
         >
-          {ticketTier.contract.slice(0, 6)}...
-          {ticketTier.contract.substr(ticketTier.contract.length - 4)}
+          {ticketTier?.contract ? ticketTier.contract.slice(0, 6) : null}...
+          {ticketTier?.contract ? ticketTier.contract.substr(ticketTier.contract.length - 4) : null}
         </Link>
       </Stack>
 
@@ -97,16 +99,27 @@ export default function TicketInteractionPanel({
         </Typography>
       </Stack>
 
+      {isForSale ? (
+        <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
+          <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+            Sale Price:
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 0.5 }}>
+            {weiToFormattedEther(price)} ETH
+          </Typography>
+        </Stack>
+      ) : null}
+
       <Divider sx={{ borderStyle: 'solid' }} />
       {isForSale ? (
         <Grid container direction="row" spacing={2} sx={{ mt: 2, mb: 3 }} alignItems="center" justifyContent="center">
           <Grid item xs={12} md={6}>
-            <Button fullWidth size="large" color="inherit" variant="contained" onClick={updateSalePriceHandler}>
+            <Button fullWidth size="large" color="inherit" variant="outlined" onClick={updateSalePriceHandler}>
               Update Price
             </Button>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Button fullWidth size="large" color="inherit" variant="contained" onClick={cancelSaleHandler}>
+            <Button fullWidth size="large" color="inherit" variant="outlined" onClick={cancelSaleHandler}>
               Cancel Sale
             </Button>
           </Grid>

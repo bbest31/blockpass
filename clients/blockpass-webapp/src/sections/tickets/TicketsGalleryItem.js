@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Grid, Card, Typography, CardContent, Avatar, AvatarGroup } from '@mui/material';
-// utils
-import cssStyles from '../utils/cssStyles';
 // components
-import Image from '../components/Image';
-import Iconify from '../components/Iconify';
+import Image from '../../components/Image';
+import Iconify from '../../components/Iconify';
 // config
-import { ENHANCEMENT_STYLE } from '../config';
+import { ENHANCEMENT_STYLE } from '../../config';
 
 const CaptionStyle = styled(CardContent)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
