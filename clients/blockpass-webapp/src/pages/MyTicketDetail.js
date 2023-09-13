@@ -28,7 +28,7 @@ import { SERVER_API_KEY, ZERO_ADDRESS } from '../config';
 
 // ----------------------------------------------------------------------
 
-export default function TicketDetail() {
+export default function MyTicketDetail() {
   const { pathname } = useLocation();
   const segments = pathname.split('/');
   const ticketTierId = segments[2];

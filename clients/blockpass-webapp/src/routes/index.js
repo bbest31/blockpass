@@ -77,7 +77,7 @@ export default function Router() {
         {
           element: (
             <AttendeeAuthGuard>
-              <TicketDetail />
+              <MyTicketDetail />
             </AttendeeAuthGuard>
           ),
           index: true,
@@ -120,7 +120,7 @@ export default function Router() {
 const Home = Loadable(lazy(() => import('../pages/Home')));
 const EventPreview = Loadable(lazy(() => import('../pages/EventPreview')));
 const MyTickets = Loadable(lazy(() => import('../pages/MyTickets')));
-const TicketDetail = Loadable(lazy(() => import('../pages/TicketDetail')));
+const MyTicketDetail = Loadable(lazy(() => import('../pages/MyTicketDetail')));
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));

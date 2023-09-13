@@ -121,8 +121,8 @@ function SnackbarIcon({ icon, color }) {
         borderRadius: 1.5,
         alignItems: 'center',
         justifyContent: 'center',
-        color: `${color}.main`,
-        bgcolor: (theme) => alpha(theme.palette[color].main, 0.16),
+        color: `${color}.lighter`,
+        bgcolor: (theme) => alpha(theme.palette[color].light, 0.16),
       }}
     >
       <Iconify icon={icon} width={24} height={24} />

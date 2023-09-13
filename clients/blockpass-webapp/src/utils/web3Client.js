@@ -111,7 +111,7 @@ export function cancelResale(marketplace, from, ticketContract, token) {
  * @param {string} from - the wallet address to send the transaction from
  * @param {string} ticketContract - the contract address of the ticket tier
  * @param {number} token - the token id being listed for sale
- * @param {numer} newPrice - the new price in wei
+ * @param {number} newPrice - the new price in wei
  * @returns {Promise}
  */
 export function updateTicketSalePrice(marketplace, from, ticketContract, token, newPrice) {
@@ -121,6 +121,28 @@ export function updateTicketSalePrice(marketplace, from, ticketContract, token, 
     from,
     to: marketplace,
     data,
+  };
+
+  return sendTransaction([txnParams]);
+}
+
+/**
+ * Initiaties the transaction to purchase a ticket.
+ * @param {string} marketplace - the marketplace contract address
+ * @param {string} from - the wallet address to send the transaction from
+ * @param {string} ticketContract - the contract address of the ticket tier
+ * @param {string} value - the value in wei being sent in the transcation
+ * @returns {Promise}
+ */
+export function buyTicket(marketplace, from, ticketContract, value) {
+  const contract = getMarketplaceContract(marketplace);
+  console.log(contract);
+  const data = contract.buyTicket(ticketContract).encodeABI();
+  const txnParams = {
+    from,
+    to: marketplace,
+    data,
+    value,
   };
 
   return sendTransaction([txnParams]);

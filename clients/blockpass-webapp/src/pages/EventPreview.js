@@ -10,6 +10,7 @@ import Iconify from '../components/Iconify';
 import EventPreviewInfoItem from '../sections/EventPreviewInfoItem';
 import EventPreviewHero from '../sections/EventPreviewHero';
 import EventPreviewTicket from '../sections/EventPreviewTicket';
+import TicketTierDetail from '../sections/tickets/TicketTierDetail';
 // utils
 import axiosInstance from '../utils/axios';
 import { fDateWithTimeZone, fDateTimespanWithTimeZone, fDate } from '../utils/formatTime';
@@ -25,6 +26,7 @@ export default function EventPreview() {
   const [eventOrganizer, setEventOrganizer] = useState(null);
   const [timeline, setTimeline] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedTickerTier, setSelectedTickerTier] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -93,10 +95,19 @@ export default function EventPreview() {
     );
   }
 
-  let tickets = null;
+  let ticketSection = null;
 
-  if (event && event.ticketTiers) {
-    tickets = event.ticketTiers.map((tier) => <EventPreviewTicket key={tier._id} ticketTier={tier} sx={{ mb: 2 }} />);
+  if (selectedTickerTier) {
+    ticketSection = <TicketTierDetail tier={selectedTickerTier} onBack={() => setSelectedTickerTier(null)} />;
+  } else if (event && event.ticketTiers) {
+    ticketSection = event.ticketTiers.map((tier) => (
+      <EventPreviewTicket
+        key={tier._id}
+        ticketTier={tier}
+        sx={{ mb: 2 }}
+        onSelected={(data) => setSelectedTickerTier(data)}
+      />
+    ));
   }
 
   return (
@@ -163,7 +174,7 @@ export default function EventPreview() {
                 <Skeleton variant="text" animation="wave" width="100%" height={200} />
               </div>
             ) : (
-              tickets
+              ticketSection
             )}
           </Grid>
         </Grid>

@@ -9,6 +9,7 @@ import Image from '../components/Image';
 import palette from '../theme/palette';
 // utils
 import { fDate } from '../utils/formatTime';
+import { TIER_STATE, determineTierState } from '../utils/ticketTierUtils';
 import axiosInstance from '../utils/axios';
 // config
 import { SERVER_API_KEY, ENHANCEMENT_STYLE } from '../config';
@@ -16,6 +17,7 @@ import { SERVER_API_KEY, ENHANCEMENT_STYLE } from '../config';
 EventPreviewTicket.propTypes = {
   ticketTier: PropTypes.object.isRequired,
   sx: PropTypes.object,
+  onSelected: PropTypes.func.isRequired,
 };
 
 /**
@@ -30,31 +32,11 @@ const truncateString = (str) => {
   return str;
 };
 
-const TierState = {
-  active: 'active',
-  pending: 'pending',
-  paused: 'paused',
-  closed: 'closed',
-  soldOut: 'soldOut',
-};
-
-export default function EventPreviewTicket({ ticketTier, sx }) {
+export default function EventPreviewTicket({ ticketTier, sx, onSelected }) {
   const [contractData, setContractData] = useState(null);
-  const [tierState, setTierState] = useState('closed');
+  const [tierState, setTierState] = useState(TIER_STATE.closed);
   const [isLoading, setIsLoading] = useState(true);
 
-  const determineTierState = (data) => {
-    if (data) {
-      const closeDate = new Date(data.closeDate);
-      const liveDate = new Date(data.liveDate);
-      if (parseInt(data.totalticketsForSale, 10) === 0) return TierState.soldOut;
-      if (closeDate <= new Date()) return TierState.closed;
-      if (data.paused) return TierState.paused;
-      if (liveDate > new Date()) return TierState.pending;
-      return TierState.active;
-    }
-    return TierState.closed;
-  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -82,18 +64,19 @@ export default function EventPreviewTicket({ ticketTier, sx }) {
   const hasEnhancements = ticketTier.enhancements.length > 0;
 
   let ctaButton = (
-    <Button variant="text" size="large">
+    <Button variant="text" size="large" onClick={() => onSelected(contractData)}>
       Learn more
     </Button>
   );
 
-  if (tierState === TierState.active) {
+  if (tierState === TIER_STATE.active) {
     ctaButton = (
       <Button
         variant="contained"
         color="secondary"
         size="large"
         sx={{ color: palette.light.text.primary, boxShadow: 0 }}
+        onClick={() => onSelected(contractData)}
       >
         BUY NOW
       </Button>
@@ -109,13 +92,13 @@ export default function EventPreviewTicket({ ticketTier, sx }) {
     const liveDate = new Date(data.liveDate);
     const closeDate = new Date(data.closeDate);
     switch (tierState) {
-      case TierState.active:
+      case TIER_STATE.active:
         return `Sale ends on ${fDate(closeDate)}`;
-      case TierState.pending:
+      case TIER_STATE.pending:
         return `Sale starts on ${fDate(liveDate)}`;
-      case TierState.closed:
+      case TIER_STATE.closed:
         return `Sale ended on ${fDate(closeDate)}`;
-      case TierState.soldOut:
+      case TIER_STATE.soldOut:
         return `Sold out`;
       default:
         return `Currently unavailable`;

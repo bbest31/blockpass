@@ -13,10 +13,6 @@ EnhancementDialog.propTypes = {
 };
 
 export default function EnhancementDialog({ open, showHandler, enhancement }) {
-  const onCloseHandler = () => {
-    showHandler();
-  };
-
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={showHandler}>
       <Grid container sx={{ p: 2.5 }}>
@@ -42,7 +38,7 @@ export default function EnhancementDialog({ open, showHandler, enhancement }) {
         </Grid>
         <Grid container item xs={12} justifyContent={'flex-end'}>
           <Grid item xs="auto">
-            <Button size="medium" variant="outline" color="inherit" onClick={onCloseHandler}>
+            <Button size="medium" variant="outline" color="inherit" onClick={showHandler}>
               Close
             </Button>
           </Grid>
