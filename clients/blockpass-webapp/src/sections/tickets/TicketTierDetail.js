@@ -13,7 +13,7 @@ import EnhancementItem from '../EnhancementItem';
 import EnhancementDialog from '../EnhancementDialog';
 import PurchaseConfirmationDialog from '../PurchaseConfirmationDialog';
 // utils
-import { buyTicket } from '../../utils/web3Client';
+import { buyTicket, estimateMarketplaceFunctionGas } from '../../utils/web3Client';
 import { determineTierState } from '../../utils/ticketTierUtils';
 
 // ----------------------------------------------------------------------
@@ -78,6 +78,29 @@ export default function TicketTierDetail({ tier, onBack }) {
     }
   };
 
+  const estimateGas = () => {
+    if (address) {
+      estimateMarketplaceFunctionGas(
+        tier.marketplaceContract,
+        'buyTicket(address)',
+        3000000000000,
+        [tier.contract],
+        tier.primarySalePrice,
+        address
+      )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          // show snackbar error
+          enqueueSnackbar(`Unable to complete purchase. ${err.message}`, { variant: 'error' });
+        });
+    } else {
+      // user must connect wallet first
+      enqueueSnackbar(`Please sign in first!`, { variant: 'info' });
+    }
+  };
+
   return (
     <Card sx={{ p: 5 }}>
       {showEnhancementDialog && (
@@ -113,7 +136,7 @@ export default function TicketTierDetail({ tier, onBack }) {
           <TicketTierInteractionPanel
             ticketTier={tier}
             state={determineTierState(tier)}
-            onBuyTicket={buyTicketHandler}
+            onBuyTicket={estimateGas}
             onBack={onBack}
           />
         </Grid>

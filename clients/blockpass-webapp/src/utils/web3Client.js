@@ -136,13 +136,14 @@ export function updateTicketSalePrice(marketplace, from, ticketContract, token, 
  */
 export function buyTicket(marketplace, from, ticketContract, value) {
   const contract = getMarketplaceContract(marketplace);
-  console.log(contract);
-  const data = contract.buyTicket(ticketContract).encodeABI();
+  console.log(value);
+  const data = contract['buyTicket(address)'](ticketContract).encodeABI();
   const txnParams = {
     from,
     to: marketplace,
     data,
     value,
+    gas: '300000'
   };
 
   return sendTransaction([txnParams]);
@@ -166,11 +167,13 @@ export function estimateTicketFunctionGas(contract, method, from, params) {
  * @param {string} method
  * @param {number} gas
  * @param {array} params
+ * @param {number} value
+ * @param {string} from
  * @returns {Promise}
  */
-export function estimateMarketplaceFunctionGas(contract, method, gas, params) {
+export function estimateMarketplaceFunctionGas(contract, method, gas, params, value, from) {
   const smartContract = getMarketplaceContract(contract);
-  return smartContract[method](...params).estimateGas({ gas });
+  return smartContract[method](...params).estimateGas({ gas, value: value || 0, from });
 }
 
 export async function getCurrentChainIdHex() {
